@@ -2,6 +2,7 @@
 #import "RFAPIDefineManager.h"
 #import "RFAPI.h"
 #import "RFAPIDefineConfigFileKeys.h"
+#import "NSDictionary+RFKit.h"
 
 #import "AFURLRequestSerialization.h"
 #import "AFURLResponseSerialization.h"
