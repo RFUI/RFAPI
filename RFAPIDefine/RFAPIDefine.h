@@ -1,16 +1,14 @@
 /*!
-    RFAPIDefine
-    RFAPI
-
-    Copyright (c) 2014 BB9z
-    https://github.com/RFUI/Alpha
-
-    The MIT License (MIT)
-    http://www.opensource.org/licenses/mit-license.php
-
-    Alpha
+ RFAPIDefine
+ RFAPI
+ 
+ Copyright (c) 2014, 2018 BB9z
+ https://github.com/RFUI/RFAPI
+ 
+ The MIT License (MIT)
+ http://www.opensource.org/licenses/mit-license.php
  */
-#import "RFRuntime.h"
+#import <RFKit/RFRuntime.h>
 #import "RFAPIDefineConfigFileKeys.h"
 
 @interface RFAPIDefine : NSObject <

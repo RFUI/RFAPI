@@ -2,5 +2,5 @@
 //  Use this file to import your target's public headers that you would like to expose to Swift.
 //
 
-#import "RFAPI.h"
-#import "RFSVProgressMessageManager.h"
+#import <RFAPI/RFAPI.h>
+#import <RFMessageManager/RFSVProgressMessageManager.h>

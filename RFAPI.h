@@ -7,7 +7,7 @@
  The MIT License (MIT)
  http://www.opensource.org/licenses/mit-license.php
  */
-#import "RFRuntime.h"
+#import <RFKit/RFRuntime.h>
 #import "RFAPIDefine.h"
 #import "RFAPIDefineManager.h"
 #import "RFAPICacheManager.h"

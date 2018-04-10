@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'RFAPI'
-  s.version          = '1.0.0'
+  s.version          = '1.1.0'
   s.summary          = 'API Manager.'
 
   s.homepage         = 'https://github.com/RFUI/RFAPI'
@@ -14,11 +14,12 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = '9.0'
 
   s.dependency 'JSONModel'
-  s.dependency 'RFKit/Runtime'
+  s.dependency 'AFNetworking/NSURLConnection', '~> 2.0'
+  s.dependency 'RFKit/Runtime', '> 1.7'
   s.dependency 'RFKit/Category/NSDictionary'
   s.dependency 'RFKit/Category/NSFileManager'
-  s.dependency 'RFInitializing'
-  s.dependency 'RFMessageManager/Manager'
+  s.dependency 'RFInitializing', '~> 1.1'
+  s.dependency 'RFMessageManager/Manager', '>= 0.3'
   s.dependency 'RFMessageManager/RFNetworkActivityIndicatorMessage'
   s.source_files = ['*.{h,m}', 'RFAPIDefine/*.{h,m}']
   s.public_header_files = ['*.h', 'RFAPIDefine/*.h']

@@ -1,17 +1,15 @@
 /*!
-    RFAPIDefineManager
-    RFAPI
-
-    Copyright (c) 2014-2016 BB9z
-    https://github.com/RFUI/Alpha
-
-    The MIT License (MIT)
-    http://www.opensource.org/licenses/mit-license.php
-
-    Alpha
+ RFAPIDefineManager
+ RFAPI
+ 
+ Copyright (c) 2014-2016, 2018 BB9z
+ https://github.com/RFUI/RFAPI
+ 
+ The MIT License (MIT)
+ http://www.opensource.org/licenses/mit-license.php
  */
+#import <RFInitializing/RFInitializing.h>
 #import "RFAPIDefine.h"
-#import "RFInitializing.h"
 
 @class RFAPI;
 @protocol AFURLRequestSerialization;

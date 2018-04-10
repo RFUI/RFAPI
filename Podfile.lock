@@ -7,15 +7,16 @@ PODS:
   - AFNetworking/Security (2.6.3)
   - AFNetworking/Serialization (2.6.3)
   - JSONModel (1.7.0)
-  - RFAPI (1.0.0):
+  - RFAPI (1.1.0):
+    - AFNetworking/NSURLConnection (~> 2.0)
     - JSONModel
-    - RFInitializing
+    - RFInitializing (~> 1.1)
     - RFKit/Category/NSDictionary
     - RFKit/Category/NSFileManager
-    - RFKit/Runtime
-    - RFMessageManager/Manager
+    - RFKit/Runtime (> 1.7)
+    - RFMessageManager/Manager (>= 0.3)
     - RFMessageManager/RFNetworkActivityIndicatorMessage
-  - RFInitializing (1.0.0)
+  - RFInitializing (1.1.0)
   - RFKit/Category/NSArray (1.7.1):
     - RFKit/Foundation
   - RFKit/Category/NSDictionary (1.7.1):
@@ -30,20 +31,18 @@ PODS:
   - RFKit/Foundation (1.7.1)
   - RFKit/Runtime (1.7.1):
     - RFKit/Foundation
-  - RFMessageManager/Manager (0.2.0):
+  - RFMessageManager/Manager (0.3.0):
     - RFInitializing
     - RFKit/Category/NSArray
-    - RFKit/Runtime
-  - RFMessageManager/RFNetworkActivityIndicatorMessage (0.2.0):
+  - RFMessageManager/RFNetworkActivityIndicatorMessage (0.3.0):
     - RFMessageManager/Manager
-  - RFMessageManager/SVProgressHUD (0.2.0):
+  - RFMessageManager/SVProgressHUD (0.3.0):
     - RFMessageManager/Manager
     - RFMessageManager/RFNetworkActivityIndicatorMessage
     - SVProgressHUD
   - SVProgressHUD (2.2.5)
 
 DEPENDENCIES:
-  - AFNetworking/NSURLConnection (~> 2.6)
   - RFAPI (from `.`)
   - RFMessageManager/SVProgressHUD (from `https://github.com/RFUI/RFMessageManager.git`)
 
@@ -55,18 +54,18 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   RFMessageManager:
-    :commit: cad1d7e5705d4f6f12a6897b4a2d9108277203af
+    :commit: 25b5c46e41739b1ac6c39606e8fc92fa7e40bf8d
     :git: https://github.com/RFUI/RFMessageManager.git
 
 SPEC CHECKSUMS:
   AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
   JSONModel: 840bc0fcffb24b8454d2c026bf26fea454b8e98d
-  RFAPI: 1ecbfefdb742faff2f6ec6724db4867de1f5b76e
-  RFInitializing: a90cf75405aba057dacaf8895a44681703a2fca5
+  RFAPI: 8889500344f841609ce2e0c589b3977c88b1dfd5
+  RFInitializing: 1ea7f66b2bf97a401a31482c4e2c2c19cdc9d89c
   RFKit: 3c5f2a181777dfeb57b0ea1a004a8ce02d7445ee
-  RFMessageManager: f84a346455de255430714492b3b01086c844f89b
+  RFMessageManager: 57ab3a100f9e09ef18413b9f535b46259a224ddb
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
 
-PODFILE CHECKSUM: 742a359b54f6c80aabfc8bff3741134dd8a7b3c7
+PODFILE CHECKSUM: 9f6c4a2ad5d0fc0713d5a2c65d7f47cd14d7c8b7
 
 COCOAPODS: 1.4.0
