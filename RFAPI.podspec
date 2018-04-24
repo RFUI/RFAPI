@@ -6,7 +6,10 @@ Pod::Spec.new do |s|
   s.homepage         = 'https://github.com/RFUI/RFAPI'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'BB9z' => 'bb9z@me.com' }
-  s.source           = { :git => 'https://github.com/RFUI/RFAPI.git', :tag => s.version.to_s }
+  s.source           = {
+    :git => 'https://github.com/RFUI/RFAPI.git',
+    :tag => s.version.to_s
+  }
 
   s.requires_arc = true
   s.osx.deployment_target = '10.8'
