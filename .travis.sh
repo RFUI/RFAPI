@@ -33,11 +33,8 @@ STAGE_MAIN() {
         else
             echo "TRAVIS_BRANCH = $TRAVIS_BRANCH"
             gem install cocoapods --no-rdoc --no-ri --no-document --quiet
-            if [ "$TRAVIS_BRANCH" = "develop" ]; then
-                pod lib lint --allow-warnings
-            else
-                pod lib lint
-            fi
+            # Always allow warnings as third-party dependencies generate unavoidable warnings.
+            pod lib lint --allow-warnings
         fi
 
     elif [ "$RFCI_TASK" = "Xcode9" ]; then
