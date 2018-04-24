@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.osx.deployment_target = '10.8'
   s.ios.deployment_target = '7.0'
-  s.tvos.deployment_target = '9.0'
+  # s.tvos.deployment_target = '9.0'
 
   s.dependency 'JSONModel'
   s.dependency 'AFNetworking/NSURLConnection', '~> 2.0'
