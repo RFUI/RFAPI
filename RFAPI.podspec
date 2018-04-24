@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.dependency 'RFKit/Runtime', '> 1.7'
   s.dependency 'RFKit/Category/NSDictionary'
   s.dependency 'RFKit/Category/NSFileManager'
-  s.dependency 'RFInitializing', '~> 1.1'
+  s.dependency 'RFInitializing', '>= 1.1'
   s.dependency 'RFMessageManager/Manager', '>= 0.3'
   s.dependency 'RFMessageManager/RFNetworkActivityIndicatorMessage'
   s.source_files = ['*.{h,m}', 'RFAPIDefine/*.{h,m}']
