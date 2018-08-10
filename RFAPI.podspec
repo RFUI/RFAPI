@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'RFAPI'
-  s.version          = '1.1.0'
+  s.version          = '2.0.0'
   s.summary          = 'API Manager.'
 
   s.homepage         = 'https://github.com/RFUI/RFAPI'
@@ -12,12 +12,13 @@ Pod::Spec.new do |s|
   }
 
   s.requires_arc = true
-  s.osx.deployment_target = '10.8'
+  s.osx.deployment_target = '10.9'
   s.ios.deployment_target = '7.0'
-  # s.tvos.deployment_target = '9.0'
+  s.tvos.deployment_target = '9.0'
+  s.watchos.deployment_target = '2.0'
 
   s.dependency 'JSONModel'
-  s.dependency 'AFNetworking/NSURLConnection', '~> 2.0'
+  s.dependency 'AFNetworking/NSURLSession', '~> 3.0'
   s.dependency 'RFKit/Runtime', '> 1.7'
   s.dependency 'RFKit/Category/NSDictionary'
   s.dependency 'RFKit/Category/NSFileManager'
