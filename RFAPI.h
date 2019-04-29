@@ -16,7 +16,7 @@
 @class AFSecurityPolicy;
 @protocol AFMultipartFormData;
 
-@class RFMessageManager, RFNetworkActivityIndicatorMessage, AFHTTPRequestOperation;
+@class RFMessageManager, RFNetworkActivityMessage, AFHTTPRequestOperation;
 @class RFAPIControl, RFHTTPRequestFormData;
 
 
@@ -171,7 +171,7 @@ extern NSString *_Nonnull const RFAPIRequestCustomizationControlKey;
 /** Activity message.
  请求开始前，自动进入消息显示队列。结束时自动从队列中清除。
 */
-@property (nullable, strong) RFNetworkActivityIndicatorMessage *message;
+@property (nullable, strong) RFNetworkActivityMessage *message;
 
 /// Identifier for request.
 @property (nullable, copy) NSString *identifier;
