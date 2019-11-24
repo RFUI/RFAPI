@@ -31,8 +31,12 @@
     r4.title = @"Empty object";
     r4.APIName = @"ObjEmpty";
     // r4 no progress
+    
+    RFDAPITestRequestObject *r5 = [RFDAPITestRequestObject new];
+    r5.title = @"Fail request";
+    r5.APIName = @"NotFound";
 
-    self.items = @[ r1, r2, r3, r4 ];
+    self.items = @[ r1, r2, r3, r4, r5 ];
 }
 
 #pragma mark - List
@@ -54,10 +58,7 @@
     [RFDTestAPI requestWithName:requestDefine.APIName parameters:nil viewController:self forceLoad:NO loadingMessage:requestDefine.message modal:requestDefine.modal success:^(AFHTTPRequestOperation *operation, id responseObject) {
         @strongify(self);
         [self displayResponse:responseObject error:nil];
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        @strongify(self);
-        [self displayResponse:nil error:error];
-    } completion:nil];
+    } failure:nil completion:nil];
 }
 
 - (void)displayResponse:(id)responseObject error:(NSError *)error {

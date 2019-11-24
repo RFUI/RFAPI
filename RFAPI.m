@@ -121,12 +121,12 @@ RFInitializingRootForNSObject
 
     // Request object get ready.
     // Build operation block.
-    RFNetworkActivityIndicatorMessage *message = controlInfo.message;
+    RFNetworkActivityMessage *message = controlInfo.message;
     void (^operationCompletion)(id) = ^(AFHTTPRequestOperation *blockOp) {
         dispatch_async_on_main(^{
             NSString *mid = message.identifier;
             if (mid) {
-                [self.networkActivityIndicatorManager hideWithIdentifier:mid];
+                [self.networkActivityIndicatorManager hideMessage:message];
             }
 
             if (completion) {
@@ -157,7 +157,7 @@ RFInitializingRootForNSObject
                     failure(blockOp, blockError);
                 }
                 else {
-                    [self.networkActivityIndicatorManager alertError:blockError title:@"请求失败"];
+                    [self.networkActivityIndicatorManager alertError:blockError title:nil fallbackMessage:@"Request Failed"];
                 }
             };
             operationCompletion(blockOp);
@@ -417,7 +417,7 @@ NSString *const RFAPIRequestCustomizationControlKey = @"_RFAPIRequestCustomizati
     self = [super init];
     if (self) {
         _identifier = identifier;
-        _message = [[RFNetworkActivityIndicatorMessage alloc] initWithIdentifier:identifier title:nil message:message status:RFNetworkActivityIndicatorStatusLoading];
+        _message = [[RFNetworkActivityMessage alloc] initWithIdentifier:identifier message:message status:RFNetworkActivityStatusLoading];
     }
     return self;
 }

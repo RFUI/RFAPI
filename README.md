@@ -15,7 +15,7 @@ pod 'RFAPI'
 Specify develop branch to install the lastest version:
 
 ```ruby
-pod 'RFMessageManager',
+pod 'RFAPI',
     :git => 'https://github.com/RFUI/RFAPI.git',
     :branch => 'develop'
 ```
