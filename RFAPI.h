@@ -1,7 +1,7 @@
 /*!
  RFAPI
  
- Copyright (c) 2014-2016, 2018 BB9z
+ Copyright (c) 2014-2016, 2018-2019 BB9z
  https://github.com/RFUI/RFAPI
  
  The MIT License (MIT)
@@ -10,7 +10,6 @@
 #import <RFKit/RFRuntime.h>
 #import "RFAPIDefine.h"
 #import "RFAPIDefineManager.h"
-#import "RFAPICacheManager.h"
 
 @class AFNetworkReachabilityManager;
 @class AFSecurityPolicy;
@@ -33,11 +32,6 @@
  Defult shared manager
  */
 @property (nonnull, readonly) AFNetworkReachabilityManager *reachabilityManager;
-
-/**
- @bug RFAPI cache management only works on iOS 7.
- */
-@property (nonnull, readonly) RFAPICacheManager *cacheManager;
 
 #pragma mark - Define
 

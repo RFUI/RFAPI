@@ -22,7 +22,6 @@ NSString *const RFAPIRequestForceQuryStringParametersKey = @"RFAPIRequestForceQu
 @property AFURLSessionManager *_RFAPI_sessionManager;
 @property (strong, readwrite) AFNetworkReachabilityManager *reachabilityManager;
 @property (strong, readwrite) RFAPIDefineManager *defineManager;
-@property (strong, readwrite) RFAPICacheManager *cacheManager;
 @end
 
 @implementation RFAPI
@@ -35,10 +34,6 @@ RFInitializingRootForNSObject
 
     self.securityPolicy = [AFSecurityPolicy defaultPolicy];
     self.shouldUseCredentialStorage = YES;
-
-    // As most request are API reqest, we dont need too much space
-    self.cacheManager = [[RFAPICacheManager alloc] initWithMemoryCapacity:500 * 1000 diskCapacity:10 * 1000 * 1000 diskPath:@"com.github.RFUI.RFAPICache"];
-    self.cacheManager.reachabilityManager = self.reachabilityManager;
 }
 
 - (void)afterInit {
@@ -166,27 +161,6 @@ RFInitializingRootForNSObject
         });
     };
 
-    // Check cache
-    NSCachedURLResponse *cachedResponse = [self.cacheManager cachedResponseForRequest:request define:define control:controlInfo];
-    if (cachedResponse) {
-        dout_debug(@"Cache(%@) vaild for request: %@", cachedResponse, request)
-        AFHTTPResponseSerializer *serializer = [self.defineManager responseSerializerForDefine:define];
-
-        NSError *error = nil;
-        id _Nullable responseObject = [serializer responseObjectForResponse:cachedResponse.response data:cachedResponse.data error:&error];
-        if (error) {
-            dispatch_async(self.responseProcessingQueue, ^{
-                operationFailure(nil, error);
-            });
-            return nil;
-        }
-
-        dispatch_async(self.responseProcessingQueue, ^{
-            [self processingCompletionWithHTTPOperation:nil responseObject:responseObject define:define control:controlInfo success:operationSuccess failure:operationFailure];
-        });
-        return nil;
-    }
-
     // Setup HTTP operation
     NSURLSessionDataTask *dataTask = nil;
     dataTask = [self._RFAPI_sessionManager dataTaskWithRequest:request uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
@@ -225,8 +199,6 @@ RFInitializingRootForNSObject
     NSError __autoreleasing *e = nil;
     NSURLRequest *request = [self URLRequestWithDefine:define parameters:parameters formData:nil controlInfo:nil error:&e];
     if (e) dout_error(@"%@", e)
-
-    [self.cacheManager removeCachedResponseForRequest:request];
 }
 
 #pragma mark - Build Request
@@ -250,7 +222,7 @@ RFInitializingRootForNSObject
     // Creat URL
     NSError __autoreleasing *e = nil;
     NSURL *url = [self.defineManager requestURLForDefine:define parameters:requestParameters error:&e];
-    RFAPIMakeRequestError_(!url);
+    RFAPIMakeRequestError_(!url)
 
     // Creat URLRequest
     NSMutableURLRequest *r;
@@ -266,8 +238,7 @@ RFInitializingRootForNSObject
         } error:&e];
     }
     else {
-        NSURLRequestCachePolicy cachePolicy = [self.cacheManager cachePolicyWithDefine:define control:controlInfo];
-        r = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:cachePolicy timeoutInterval:40];
+        r = [NSMutableURLRequest.alloc initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:40];
         [r setHTTPMethod:define.method];
         NSArray *arrayParameter = requestParameters[RFAPIRequestArrayParameterKey];
         r = [[s requestBySerializingRequest:r withParameters:arrayParameter?: requestParameters error:&e] mutableCopy];
