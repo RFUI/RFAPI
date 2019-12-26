@@ -1,7 +1,7 @@
-/*!
+/*
  RFAPI
- 
- Copyright (c) 2014-2016, 2018-2019 BB9z
+
+ Copyright © 2014-2016, 2018-2019 BB9z
  https://github.com/RFUI/RFAPI
  
  The MIT License (MIT)
@@ -19,6 +19,7 @@
 
 @class RFMessageManager, RFNetworkActivityMessage;
 @class RFAPIControl, RFHTTPRequestFormData;
+@protocol RFAPIModelTransformer;
 
 @protocol RFAPITask
 @required
@@ -97,10 +98,12 @@
 
 #pragma mark - Response
 
+@property (nullable) id<RFAPIModelTransformer> modelTransformer;
+
 /**
  If `NULL` (default), the main queue will be used.
  */
-@property (nonatomic, null_resettable, strong) dispatch_queue_t responseProcessingQueue;
+@property (null_resettable, nonatomic) dispatch_queue_t responseProcessingQueue;
 
 #pragma mark - Methods for overwrite
 
@@ -151,22 +154,23 @@ extern NSString *_Nonnull const RFAPIRequestCustomizationControlKey;
 /** Activity message.
  请求开始前，自动进入消息显示队列。结束时自动从队列中清除。
 */
-@property (nullable, strong) RFNetworkActivityMessage *message;
+@property (nullable) RFNetworkActivityMessage *message;
 
 /// Identifier for request.
-@property (nullable, copy) NSString *identifier;
+@property (nullable) NSString *identifier;
 
 /// Group identifier for request.
-@property (nullable, copy) NSString *groupIdentifier;
+@property (nullable) NSString *groupIdentifier;
 
 // No implementation
 @property BOOL backgroundTask;
 
-/// Ignore cache policy, force current request load from server.
+// Ignore cache policy, force current request load from server.
+// No implementation
 @property BOOL forceLoad;
 
 /// Customization URL request object
-@property (nullable, copy) NSMutableURLRequest *_Nullable (^requestCustomization)(NSMutableURLRequest *_Nonnull request);
+@property (nullable) NSMutableURLRequest *_Nullable (^requestCustomization)(NSMutableURLRequest *_Nonnull request);
 
 - (nonnull id)initWithDictionary:(nonnull NSDictionary *)info;
 - (nonnull id)initWithIdentifier:(nonnull NSString *)identifier loadingMessage:(nullable NSString *)message;

@@ -1,8 +1,8 @@
-/*!
+/*
  RFAPIDefine
  RFAPI
  
- Copyright (c) 2014, 2018-2019 BB9z
+ Copyright © 2014, 2018-2019 BB9z
  https://github.com/RFUI/RFAPI
  
  The MIT License (MIT)
@@ -73,7 +73,6 @@ typedef NS_ENUM(short, RFAPIDefineOfflinePolicy) {
 @property (nullable) Class responseSerializerClass;
 
 typedef NS_ENUM(short, RFAPIDefineResponseExpectType) {
-    // todo: add pass type
     RFAPIDefineResponseExpectDefault = 0,   /// 不特殊处理
     RFAPIDefineResponseExpectSuccess = 1,   /// Overwrite [RFAPI isSuccessResponse:error:] to  determine whether success or failure.
     RFAPIDefineResponseExpectObject  = 2,   /// Expect an object

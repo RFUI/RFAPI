@@ -1,11 +1,11 @@
 
 #import "RFAPIPrivate.h"
 #import "RFAPIDefineManager.h"
+#import "RFAPIModelTransformer.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
 #import <AFNetworking/AFURLRequestSerialization.h>
 #import <AFNetworking/AFURLResponseSerialization.h>
 #import <AFNetworking/AFNetworkReachabilityManager.h>
-#import <JSONModel/JSONModel.h>
 #import <RFMessageManager/RFMessageManager+RFDisplay.h>
 #import <RFKit/NSFileManager+RFKit.h>
 
@@ -17,6 +17,11 @@ NSString *const RFAPIRequestForceQuryStringParametersKey = @"RFAPIRequestForceQu
 NSString *RFAPILocalizedString(NSString *key, NSString *value) {
     return [NSBundle.mainBundle localizedStringForKey:key value:value table:nil];
 }
+
+@interface _RFAPITaskObject : NSObject <RFAPITask>
+@property NSURLSessionTask *sessionTask;
+@property BOOL isCacnceld;
+@end
 
 @interface RFAPI ()
 @property AFHTTPSessionManager *_RFAPI_sessionManager;
@@ -93,20 +98,6 @@ RFInitializingRootForNSObject
 #define RFAPICompletionCallback_(BLOCK, ...)\
     if (BLOCK) {\
         BLOCK(__VA_ARGS__);\
-    }
-
-#if RFDEBUG
-#   define RFAPILogError_(DEBUG_ERROR, ...) dout_error(DEBUG_ERROR, __VA_ARGS__);
-#else
-#   define RFAPILogError_(DEBUG_ERROR, ...)
-#endif
-
-#define RFAPICompletionCallback_ProccessError(CONDITION, DEBUG_ERROR, DEBUG_ARG, ERROR_DESCRIPTION, ERROR_FAILUREREASON, ERROR_RECOVERYSUGGESTION)\
-    if (CONDITION) {\
-        RFAPILogError_(DEBUG_ERROR, DEBUG_ARG);\
-        error = [NSError errorWithDomain:RFAPIErrorDomain code:0 userInfo:@{ NSLocalizedDescriptionKey: ERROR_DESCRIPTION, NSLocalizedFailureReasonErrorKey: ERROR_FAILUREREASON, NSLocalizedRecoverySuggestionErrorKey: ERROR_RECOVERYSUGGESTION }];\
-        RFAPICompletionCallback_(operationFailure, op, error);\
-        return;\
     }
 
 - (nullable id<RFAPITask>)requestWithName:(nonnull NSString *)APIName parameters:(NSDictionary *)parameters formData:(nullable NSArray<RFHTTPRequestFormData *> *)arrayContainsFormDataObj controlInfo:(nullable RFAPIControl *)controlInfo uploadProgress:(void (^_Nullable)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))progress success:(void (^_Nullable )(id<RFAPITask>_Nullable operation, id _Nullable responseObject))success failure:(void (^_Nullable)(id<RFAPITask>_Nullable operation, NSError *_Nonnull error))failure completion:(void (^_Nullable)(id<RFAPITask>_Nullable operation))completion {
@@ -196,8 +187,13 @@ RFInitializingRootForNSObject
             [self.networkActivityIndicatorManager showMessage:message];
         });
     }
-    [dataTask resume];
-    return dataTask;
+    _RFAPITaskObject *task = _RFAPITaskObject.new;
+    task.sessionTask = dataTask;
+    dispatch_async(self.responseProcessingQueue, ^{
+        if (task.isCacnceld) return;
+        [dataTask resume];
+    });
+    return task;
 }
 
 - (id<RFAPITask>)requestWithName:(nonnull NSString *)APIName parameters:(NSDictionary *)parameters controlInfo:(RFAPIControl *)controlInfo success:(void (^)(id<RFAPITask>, id))success failure:(void (^)(id<RFAPITask>, NSError *))failure completion:(void (^)(id<RFAPITask>))completion {
@@ -232,7 +228,7 @@ RFInitializingRootForNSObject
     AFHTTPRequestSerializer *s = [self.defineManager requestSerializerForDefine:define];
     if (RFFormData.count) {
         NSString *urlString = url.absoluteString;
-        r = [s multipartFormRequestWithMethod:define.method URLString:urlString parameters:requestParameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        r = [s multipartFormRequestWithMethod:define.method ?: @"GET" URLString:urlString parameters:requestParameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
             for (RFHTTPRequestFormData *file in RFFormData) {
                 NSError __autoreleasing *f_e = nil;
                 [file buildFormData:formData error:&f_e];
@@ -242,7 +238,7 @@ RFInitializingRootForNSObject
     }
     else {
         r = [NSMutableURLRequest.alloc initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:40];
-        [r setHTTPMethod:define.method];
+        [r setHTTPMethod:define.method ?: @"GET"];
         NSArray *arrayParameter = requestParameters[RFAPIRequestArrayParameterKey];
         r = [[s requestBySerializingRequest:r withParameters:arrayParameter?: requestParameters error:&e] mutableCopy];
     }
@@ -305,50 +301,44 @@ RFInitializingRootForNSObject
 
 - (void)processingCompletionWithHTTPOperation:(nullable id<RFAPITask>)op responseObject:(nullable id)responseObject define:(nonnull RFAPIDefine *)define control:(nullable RFAPIControl *)control success:(void (^_Nonnull)(id _Nullable, id _Nullable))operationSuccess failure:(void (^_Nonnull)(id _Nullable, NSError *_Nonnull))operationFailure {
 
-    if ((!responseObject || responseObject == [NSNull null])
+    if ((!responseObject || responseObject == NSNull.null)
         && define.responseAcceptNull) {
         operationSuccess(op, nil);
         return;
     }
-    Class expectClass = define.responseClass;
-    NSError *error = nil;
-    switch (define.responseExpectType) {
-        case RFAPIDefineResponseExpectObject: {
-            RFAPICompletionCallback_ProccessError(![responseObject isKindOfClass:[NSDictionary class]], @"期望的数据类型是字典，而实际是 %@\n请先确认一下代码，如果服务器没按要求返回请联系后台人员", [responseObject class], @"返回数据异常", @"可能服务器正在升级或者维护，也可能是应用bug", @"建议稍后重试，如果持续报告这个错误请检查AppStore是否有新版本")
 
-            NSError __autoreleasing *e = nil;
-            id JSONModelObject = [[expectClass alloc] initWithDictionary:responseObject error:&e];
-            RFAPICompletionCallback_ProccessError(!JSONModelObject, @"不能将返回内容转换为Model：%@\n请先确认一下代码，如果服务器没按要求返回请联系后台人员", e, @"返回数据异常", @"可能服务器正在升级或者维护，也可能是应用bug", @"建议稍后重试，如果持续报告这个错误请检查AppStore是否有新版本")
-            responseObject = JSONModelObject;
-            break;
-        }
-        case RFAPIDefineResponseExpectObjects: {
-            RFAPICompletionCallback_ProccessError(![responseObject isKindOfClass:[NSArray class]], @"期望的数据类型是数组，而实际是 %@\n", [responseObject class], @"返回数据异常", @"可能服务器正在升级或者维护，也可能是应用bug", @"建议稍后重试，如果持续报告这个错误请检查AppStore是否有新版本")
-
-            NSMutableArray *objects = [NSMutableArray arrayWithCapacity:[responseObject count]];
-            for (NSDictionary *info in responseObject) {
-                id obj = [[expectClass alloc] initWithDictionary:info error:&error];
-                RFAPICompletionCallback_ProccessError(!obj, @"不能将数组中的元素转换为Model %@\n请先确认一下代码，如果服务器没按要求返回请联系后台人员", error, @"返回数据异常", @"可能服务器正在升级或者维护，也可能是应用bug", @"建议稍后重试，如果持续报告这个错误请检查AppStore是否有新版本")
-                else {
-                    [objects addObject:obj];
-                }
-            }
-            responseObject = objects;
-            break;
+    RFAPIDefineResponseExpectType type = define.responseExpectType;
+    switch (type) {
+        case RFAPIDefineResponseExpectDefault: {
+            operationSuccess(op, responseObject);
+            return;
         }
         case RFAPIDefineResponseExpectSuccess: {
+            NSError *error = nil;
             if (![self isSuccessResponse:&responseObject error:&error]) {
                 operationFailure(op, error);
-                return;
             }
-            break;
+            else {
+                operationSuccess(op, responseObject);
+            }
+            return;
         }
-        case RFAPIDefineResponseExpectDefault:
+        case RFAPIDefineResponseExpectObject:
+        case RFAPIDefineResponseExpectObjects: {
+            NSError *error = nil;
+            id modelObject = [self.modelTransformer transformResponse:(id)responseObject toType:type kind:define.responseClass error:&error];
+            if (error) {
+                operationFailure(op, error);
+            }
+            else {
+                operationSuccess(op, modelObject);
+            }
+            return;
+        }
         default:
-            break;
+            NSAssert(false, @"Unexcept response type: %d", type);
+            return;
     }
-    _douto(responseObject)
-    operationSuccess(op, responseObject);
 }
 
 - (BOOL)generalHandlerForError:(nonnull NSError *)error withDefine:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo requestOperation:(nullable id<RFAPITask>)operation operationFailureCallback:(void (^_Nullable)(id<RFAPITask> _Nullable, NSError *_Nonnull))operationFailureCallback {
@@ -467,6 +457,15 @@ typedef NS_ENUM(short, RFHTTPRequestFormDataSourceType) {
         default:
             break;
     }
+}
+
+@end
+
+@implementation _RFAPITaskObject
+
+- (void)cancel {
+    self.isCacnceld = YES;
+    [self.sessionTask cancel];
 }
 
 @end

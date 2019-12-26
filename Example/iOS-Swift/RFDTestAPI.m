@@ -2,6 +2,7 @@
 #import "RFDTestAPI.h"
 #import "AFURLResponseSerialization.h"
 #import <RFAPI/RFAPIDefineConfigFile.h>
+#import <RFAPI/RFAPIJSONModelTransformer.h>
 #import <RFMessageManager/RFSVProgressMessageManager.h>
 #import <RFMessageManager/RFNetworkActivityMessage.h>
 
@@ -28,6 +29,7 @@
     [dm setDefinesWithRulesInfo:rules];
     dm.defaultResponseSerializer = [AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments];
     self.networkActivityIndicatorManager = [RFSVProgressMessageManager new];
+    self.modelTransformer = RFAPIJSONModelTransformer.new;
 }
 
 + (id<RFAPITask>)requestWithName:(NSString *)APIName parameters:(NSDictionary *)parameters viewController:(UIViewController *)viewController forceLoad:(BOOL)forceLoad loadingMessage:(NSString *)message modal:(BOOL)modal success:(void (^)(id<RFAPITask>, id))success failure:(void (^)(id<RFAPITask>operation, NSError *error))failure completion:(void (^)(id<RFAPITask>))completion {

@@ -95,10 +95,7 @@ static inline NSDictionary *_ruleDicKey(NSDictionary *rule, RFAPIDefineKey key) 
     self.notes = _ruleStrKey(rule, RFAPIDefineNotesKey);
 
 #undef RFAPIDefineConfigFileValue_
-#undef RFAPIDefineConfigFileProperty_
-#undef RFAPIDefineConfigFileDictionaryProperty_
 #undef RFAPIDefineConfigFileClassProperty_
-#undef RFAPIDefineConfigFileEnumCase_
     return self;
 }
 
