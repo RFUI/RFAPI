@@ -4,7 +4,7 @@
 #import "RFMessageManager+RFDisplay.h"
 #import "RFAPIDefineManager.h"
 
-#import "AFHTTPRequestOperation.h"
+#import "AFURLSessionManager.h"
 #import "AFURLRequestSerialization.h"
 #import "AFURLResponseSerialization.h"
 #import "AFNetworkReachabilityManager.h"
@@ -19,6 +19,7 @@ NSString *const RFAPIRequestForceQuryStringParametersKey = @"RFAPIRequestForceQu
 
 
 @interface RFAPI ()
+@property AFURLSessionManager *_RFAPI_sessionManager;
 @property (strong, readwrite) AFNetworkReachabilityManager *reachabilityManager;
 @property (strong, readwrite) RFAPIDefineManager *defineManager;
 @property (strong, readwrite) RFAPICacheManager *cacheManager;
@@ -29,7 +30,6 @@ RFInitializingRootForNSObject
 
 - (void)onInit {
     self.reachabilityManager = [AFNetworkReachabilityManager sharedManager];
-    self.maxConcurrentOperationCount = 5;
     self.defineManager = [[RFAPIDefineManager alloc] init];
     self.defineManager.master = self;
 
@@ -46,34 +46,36 @@ RFInitializingRootForNSObject
 }
 
 - (NSString *)debugDescription {
-    return [NSString stringWithFormat:@"<%@: %p, operations: %@>", self.class, (void *)self, self.operations];
+    return [NSString stringWithFormat:@"<%@: %p, operations: %@>", self.class, (void *)self, self._RFAPI_sessionManager.tasks];
 }
 
 #pragma mark - Request management
 
 - (void)cancelOperationWithIdentifier:(nullable NSString *)identifier {
-    for (AFHTTPRequestOperation *op in [self operationsWithIdentifier:identifier]) {
+    for (id<RFAPITask>op in [self operationsWithIdentifier:identifier]) {
         _dout_debug(@"Cancel HTTP request operation(%p) with identifier: %@", (void *)op, identifier);
         [op cancel];
     }
 }
 
 - (void)cancelOperationsWithGroupIdentifier:(nullable NSString *)identifier {
-    for (AFHTTPRequestOperation *op in [self operationsWithGroupIdentifier:identifier]) {
+    for (id<RFAPITask>op in [self operationsWithGroupIdentifier:identifier]) {
         _dout_debug(@"Cancel HTTP request operation(%p) with group identifier: %@", (void *)op, identifier);
         [op cancel];
     }
 }
 
-- (nonnull NSArray<AFHTTPRequestOperation *> *)operationsWithIdentifier:(nullable NSString *)identifier {
+- (nonnull NSArray<id<RFAPITask>> *)operationsWithIdentifier:(nullable NSString *)identifier {
     @autoreleasepool {
-        return [self.operations filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%K.%K.%K == %@", @keypathClassInstance(AFHTTPRequestOperation, userInfo), RFAPIOperationUIkControl, @keypathClassInstance(RFAPIControl, identifier), identifier]];
+        return @[];
+//        return [self.operations filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%K.%K.%K == %@", @keypathClassInstance(AFHTTPRequestOperation, userInfo), RFAPIOperationUIkControl, @keypathClassInstance(RFAPIControl, identifier), identifier]];
     }
 }
 
-- (nonnull NSArray<AFHTTPRequestOperation *> *)operationsWithGroupIdentifier:(nullable NSString *)identifier {
+- (nonnull NSArray<id<RFAPITask>> *)operationsWithGroupIdentifier:(nullable NSString *)identifier {
     @autoreleasepool {
-        return [self.operations filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%K.%K.%K == %@", @keypathClassInstance(AFHTTPRequestOperation, userInfo), RFAPIOperationUIkControl, @keypathClassInstance(RFAPIControl, groupIdentifier), identifier]];
+        return @[];
+//        return [self.operations filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%K.%K.%K == %@", @keypathClassInstance(AFHTTPRequestOperation, userInfo), RFAPIOperationUIkControl, @keypathClassInstance(RFAPIControl, groupIdentifier), identifier]];
     }
 }
 
@@ -98,31 +100,31 @@ RFInitializingRootForNSObject
         return;\
     }
 
-- (nullable AFHTTPRequestOperation *)requestWithName:(nonnull NSString *)APIName parameters:(NSDictionary *)parameters formData:(nullable NSArray<RFHTTPRequestFormData *> *)arrayContainsFormDataObj controlInfo:(nullable RFAPIControl *)controlInfo uploadProgress:(void (^_Nullable)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))progress success:(void (^_Nullable )(AFHTTPRequestOperation *_Nullable operation, id _Nullable responseObject))success failure:(void (^_Nullable)(AFHTTPRequestOperation *_Nullable operation, NSError *_Nonnull error))failure completion:(void (^_Nullable)(AFHTTPRequestOperation *_Nullable operation))completion {
+- (nullable id<RFAPITask>)requestWithName:(nonnull NSString *)APIName parameters:(NSDictionary *)parameters formData:(nullable NSArray<RFHTTPRequestFormData *> *)arrayContainsFormDataObj controlInfo:(nullable RFAPIControl *)controlInfo uploadProgress:(void (^_Nullable)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))progress success:(void (^_Nullable )(id<RFAPITask>_Nullable operation, id _Nullable responseObject))success failure:(void (^_Nullable)(id<RFAPITask>_Nullable operation, NSError *_Nonnull error))failure completion:(void (^_Nullable)(id<RFAPITask>_Nullable operation))completion {
     NSParameterAssert(APIName);
     RFAPIDefine *define = [self.defineManager defineForName:APIName];
-    RFAssert(define, @"Can not find an API with name: %@.", APIName);
+    RFAssert(define, @"Can not find an API with name: %@.", APIName)
     if (!define) return nil;
 
     NSError __autoreleasing *e = nil;
     NSMutableURLRequest *request = [self URLRequestWithDefine:define parameters:parameters formData:arrayContainsFormDataObj controlInfo:controlInfo error:&e];
     if (!request) {
-        RFAPILogError_(@"无法创建请求: %@", e);
+        RFAPILogError_(@"无法创建请求: %@", e)
         NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:@{
             NSLocalizedDescriptionKey : @"内部错误，无法创建请求",
             NSLocalizedFailureReasonErrorKey : @"很可能是应用 bug",
             NSLocalizedRecoverySuggestionErrorKey : @"请再试一次，如果依旧请尝试重启应用。给您带来不便，敬请谅解"
         }];
 
-        RFAPICompletionCallback_(failure, nil, error);
-        RFAPICompletionCallback_(completion, nil);
+        RFAPICompletionCallback_(failure, nil, error)
+        RFAPICompletionCallback_(completion, nil)
         return nil;
     }
 
     // Request object get ready.
     // Build operation block.
     RFNetworkActivityMessage *message = controlInfo.message;
-    void (^operationCompletion)(id) = ^(AFHTTPRequestOperation *blockOp) {
+    void (^operationCompletion)(id) = ^(id<RFAPITask>blockOp) {
         dispatch_async_on_main(^{
             NSString *mid = message.identifier;
             if (mid) {
@@ -135,7 +137,7 @@ RFInitializingRootForNSObject
         });
     };
 
-    void (^operationSuccess)(id, id) = ^(AFHTTPRequestOperation *blockOp, id blockResponse) {
+    void (^operationSuccess)(id, id) = ^(id<RFAPITask>blockOp, id blockResponse) {
         dispatch_async_on_main(^{
             if (success) {
                 success(blockOp, blockResponse);
@@ -144,10 +146,10 @@ RFInitializingRootForNSObject
         });
     };
 
-    void (^operationFailure)(id, NSError*) = ^(AFHTTPRequestOperation *blockOp, NSError *blockError) {
+    void (^operationFailure)(id, NSError*) = ^(id<RFAPITask>blockOp, NSError *blockError) {
         dispatch_async_on_main(^{
             if (blockError.code == NSURLErrorCancelled && blockError.domain == NSURLErrorDomain) {
-                dout_info(@"A HTTP operation cancelled: %@", blockOp);
+                dout_info(@"A HTTP operation cancelled: %@", blockOp)
                 operationCompletion(blockOp);
                 return;
             }
@@ -159,7 +161,7 @@ RFInitializingRootForNSObject
                 else {
                     [self.networkActivityIndicatorManager alertError:blockError title:nil fallbackMessage:@"Request Failed"];
                 }
-            };
+            }
             operationCompletion(blockOp);
         });
     };
@@ -167,7 +169,7 @@ RFInitializingRootForNSObject
     // Check cache
     NSCachedURLResponse *cachedResponse = [self.cacheManager cachedResponseForRequest:request define:define control:controlInfo];
     if (cachedResponse) {
-        dout_debug(@"Cache(%@) vaild for request: %@", cachedResponse, request);
+        dout_debug(@"Cache(%@) vaild for request: %@", cachedResponse, request)
         AFHTTPResponseSerializer *serializer = [self.defineManager responseSerializerForDefine:define];
 
         NSError *error = nil;
@@ -186,34 +188,31 @@ RFInitializingRootForNSObject
     }
 
     // Setup HTTP operation
-    AFHTTPRequestOperation *operation = [self requestOperationWithRequest:request define:define controlInfo:controlInfo];
-    operation.completionQueue = self.responseProcessingQueue;
-    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *_Nonnull op, id _Nullable responseObject) {
-        @autoreleasepool {
-            dout_debug(@"HTTP request operation(%p) with info: %@ completed.", (void *)op, [op valueForKeyPath:@"userInfo.RFAPIOperationUIkControl"]);
-
-            [self processingCompletionWithHTTPOperation:op responseObject:responseObject define:define control:controlInfo success:operationSuccess failure:operationFailure];
-            [self.cacheManager storeCachedResponseForRequest:op.request response:op.response data:op.responseData define:define control:controlInfo];
+    NSURLSessionDataTask *dataTask = nil;
+    dataTask = [self._RFAPI_sessionManager dataTaskWithRequest:request uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+        if (error) {
+            operationFailure(dataTask, error);
+            return;
         }
-    } failure:^(AFHTTPRequestOperation *_Nonnull op, NSError *_Nonnull error) {
-        operationFailure(op, error);
+        @autoreleasepool {
+            // todo: responseProcessingQueue
+            // todo: control info
+//            dout_debug(@"HTTP request operation(%p) with info: %@ completed.", (void *)dataTask, [op valueForKeyPath:@"userInfo.RFAPIOperationUIkControl"])
+
+            [self processingCompletionWithHTTPOperation:dataTask responseObject:responseObject define:define control:nil success:operationSuccess failure:operationFailure];
+        }
     }];
-
-    if (progress) {
-        [operation setUploadProgressBlock:progress];
-    }
-
     // Start request
     if (message) {
         dispatch_sync_on_main(^{
             [self.networkActivityIndicatorManager showMessage:message];
         });
     }
-    [self addOperation:operation];
-    return operation;
+    [dataTask resume];
+    return dataTask;
 }
 
-- (AFHTTPRequestOperation *)requestWithName:(nonnull NSString *)APIName parameters:(NSDictionary *)parameters controlInfo:(RFAPIControl *)controlInfo success:(void (^)(AFHTTPRequestOperation *, id))success failure:(void (^)(AFHTTPRequestOperation *, NSError *))failure completion:(void (^)(AFHTTPRequestOperation *))completion {
+- (id<RFAPITask>)requestWithName:(nonnull NSString *)APIName parameters:(NSDictionary *)parameters controlInfo:(RFAPIControl *)controlInfo success:(void (^)(id<RFAPITask>, id))success failure:(void (^)(id<RFAPITask>, NSError *))failure completion:(void (^)(id<RFAPITask>))completion {
     return [self requestWithName:APIName parameters:parameters formData:nil controlInfo:controlInfo uploadProgress:nil success:success failure:failure completion:completion];
 }
 
@@ -225,7 +224,7 @@ RFInitializingRootForNSObject
 
     NSError __autoreleasing *e = nil;
     NSURLRequest *request = [self URLRequestWithDefine:define parameters:parameters formData:nil controlInfo:nil error:&e];
-    if (e) dout_error(@"%@", e);
+    if (e) dout_error(@"%@", e)
 
     [self.cacheManager removeCachedResponseForRequest:request];
 }
@@ -262,7 +261,7 @@ RFInitializingRootForNSObject
             for (RFHTTPRequestFormData *file in RFFormData) {
                 NSError __autoreleasing *f_e = nil;
                 [file buildFormData:formData error:&f_e];
-                if (f_e) dout_error(@"%@", f_e);
+                if (f_e) dout_error(@"%@", f_e)
             }
         } error:&e];
     }
@@ -273,7 +272,7 @@ RFInitializingRootForNSObject
         NSArray *arrayParameter = requestParameters[RFAPIRequestArrayParameterKey];
         r = [[s requestBySerializingRequest:r withParameters:arrayParameter?: requestParameters error:&e] mutableCopy];
     }
-    RFAPIMakeRequestError_(!r);
+    RFAPIMakeRequestError_(!r)
 
     // Set header
     [requestHeaders enumerateKeysAndObjectsUsingBlock:^(id field, id value, BOOL *__unused stop) {
@@ -309,16 +308,17 @@ RFInitializingRootForNSObject
     return request;
 }
 
-- (nonnull AFHTTPRequestOperation *)requestOperationWithRequest:(nonnull NSURLRequest *)request define:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo {
-    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-    operation.responseSerializer = [self.defineManager responseSerializerForDefine:define];
-    operation.shouldUseCredentialStorage = self.shouldUseCredentialStorage;
-    operation.credential = self.credential;
-    operation.securityPolicy = self.securityPolicy;
-    if (controlInfo) {
-        operation.userInfo = @{ RFAPIOperationUIkControl : controlInfo };
-    }
-    return operation;
+- (nonnull id)requestOperationWithRequest:(nonnull NSURLRequest *)request define:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo {
+    return nil;
+//    id<RFAPITask>operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+//    operation.responseSerializer = [self.defineManager responseSerializerForDefine:define];
+//    operation.shouldUseCredentialStorage = self.shouldUseCredentialStorage;
+//    operation.credential = self.credential;
+//    operation.securityPolicy = self.securityPolicy;
+//    if (controlInfo) {
+//        operation.userInfo = @{ RFAPIOperationUIkControl : controlInfo };
+//    }
+//    return operation;
 }
 
 #pragma mark - Handel Response
@@ -329,7 +329,7 @@ RFInitializingRootForNSObject
     return _responseProcessingQueue;
 }
 
-- (void)processingCompletionWithHTTPOperation:(nullable AFHTTPRequestOperation *)op responseObject:(nullable id)responseObject define:(nonnull RFAPIDefine *)define control:(nullable RFAPIControl *)control success:(void (^_Nonnull)(AFHTTPRequestOperation *_Nullable, id _Nullable))operationSuccess failure:(void (^_Nonnull)(id _Nullable, NSError *_Nonnull))operationFailure {
+- (void)processingCompletionWithHTTPOperation:(nullable id<RFAPITask>)op responseObject:(nullable id)responseObject define:(nonnull RFAPIDefine *)define control:(nullable RFAPIControl *)control success:(void (^_Nonnull)(id _Nullable, id _Nullable))operationSuccess failure:(void (^_Nonnull)(id _Nullable, NSError *_Nonnull))operationFailure {
 
     if ((!responseObject || responseObject == [NSNull null])
         && define.responseAcceptNull) {
@@ -340,16 +340,16 @@ RFInitializingRootForNSObject
     NSError *error = nil;
     switch (define.responseExpectType) {
         case RFAPIDefineResponseExpectObject: {
-            RFAPICompletionCallback_ProccessError(![responseObject isKindOfClass:[NSDictionary class]], @"期望的数据类型是字典，而实际是 %@\n请先确认一下代码，如果服务器没按要求返回请联系后台人员", [responseObject class], @"返回数据异常", @"可能服务器正在升级或者维护，也可能是应用bug", @"建议稍后重试，如果持续报告这个错误请检查AppStore是否有新版本");
+            RFAPICompletionCallback_ProccessError(![responseObject isKindOfClass:[NSDictionary class]], @"期望的数据类型是字典，而实际是 %@\n请先确认一下代码，如果服务器没按要求返回请联系后台人员", [responseObject class], @"返回数据异常", @"可能服务器正在升级或者维护，也可能是应用bug", @"建议稍后重试，如果持续报告这个错误请检查AppStore是否有新版本")
 
             NSError __autoreleasing *e = nil;
             id JSONModelObject = [[expectClass alloc] initWithDictionary:responseObject error:&e];
-            RFAPICompletionCallback_ProccessError(!JSONModelObject, @"不能将返回内容转换为Model：%@\n请先确认一下代码，如果服务器没按要求返回请联系后台人员", e, @"返回数据异常", @"可能服务器正在升级或者维护，也可能是应用bug", @"建议稍后重试，如果持续报告这个错误请检查AppStore是否有新版本");
+            RFAPICompletionCallback_ProccessError(!JSONModelObject, @"不能将返回内容转换为Model：%@\n请先确认一下代码，如果服务器没按要求返回请联系后台人员", e, @"返回数据异常", @"可能服务器正在升级或者维护，也可能是应用bug", @"建议稍后重试，如果持续报告这个错误请检查AppStore是否有新版本")
             responseObject = JSONModelObject;
             break;
         }
         case RFAPIDefineResponseExpectObjects: {
-            RFAPICompletionCallback_ProccessError(![responseObject isKindOfClass:[NSArray class]], @"期望的数据类型是数组，而实际是 %@\n", [responseObject class], @"返回数据异常", @"可能服务器正在升级或者维护，也可能是应用bug", @"建议稍后重试，如果持续报告这个错误请检查AppStore是否有新版本");
+            RFAPICompletionCallback_ProccessError(![responseObject isKindOfClass:[NSArray class]], @"期望的数据类型是数组，而实际是 %@\n", [responseObject class], @"返回数据异常", @"可能服务器正在升级或者维护，也可能是应用bug", @"建议稍后重试，如果持续报告这个错误请检查AppStore是否有新版本")
 
             NSMutableArray *objects = [NSMutableArray arrayWithCapacity:[responseObject count]];
             for (NSDictionary *info in responseObject) {
@@ -377,7 +377,7 @@ RFInitializingRootForNSObject
     operationSuccess(op, responseObject);
 }
 
-- (BOOL)generalHandlerForError:(nonnull NSError *)error withDefine:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo requestOperation:(nullable AFHTTPRequestOperation *)operation operationFailureCallback:(void (^_Nullable)(AFHTTPRequestOperation *_Nullable, NSError *_Nonnull))operationFailureCallback {
+- (BOOL)generalHandlerForError:(nonnull NSError *)error withDefine:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo requestOperation:(nullable id<RFAPITask>)operation operationFailureCallback:(void (^_Nullable)(id<RFAPITask> _Nullable, NSError *_Nonnull))operationFailureCallback {
     return YES;
 }
 
@@ -488,6 +488,8 @@ typedef NS_ENUM(short, RFHTTPRequestFormDataSourceType) {
             }
             break;
         }
+        case RFHTTPRequestFormDataSourceTypeStream:
+            // todo
         default:
             break;
     }

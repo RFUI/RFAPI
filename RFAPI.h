@@ -16,11 +16,16 @@
 @class AFSecurityPolicy;
 @protocol AFMultipartFormData;
 
-@class RFMessageManager, RFNetworkActivityMessage, AFHTTPRequestOperation;
+@class RFMessageManager, RFNetworkActivityMessage;
 @class RFAPIControl, RFHTTPRequestFormData;
 
+@protocol RFAPITask
+@required
+- (void)cancel;
+@end
 
-@interface RFAPI : NSOperationQueue <
+
+@interface RFAPI : NSObject <
     RFInitializing
 >
 
@@ -40,8 +45,8 @@
 
 #pragma mark - Request management
 
-- (nonnull NSArray<AFHTTPRequestOperation *> *)operationsWithIdentifier:(nullable NSString *)identifier;
-- (nonnull NSArray<AFHTTPRequestOperation *> *)operationsWithGroupIdentifier:(nullable NSString *)identifier;
+- (nonnull NSArray<id> *)operationsWithIdentifier:(nullable NSString *)identifier;
+- (nonnull NSArray<id> *)operationsWithGroupIdentifier:(nullable NSString *)identifier;
 
 - (void)cancelOperationWithIdentifier:(nullable NSString *)identifier;
 - (void)cancelOperationsWithGroupIdentifier:(nullable NSString *)identifier;
@@ -66,26 +71,26 @@
  @param failure     请求失败回调的 block，可为空。为空时将用默认的方法显示错误信息
  @param completion  请求完成回掉的 block，必定会被调用（即使请求创建失败），会在 success 和 failure 回调后执行。被设计用来执行通用的清理。可为空。
  */
-- (nullable AFHTTPRequestOperation *)requestWithName:(nonnull NSString *)APIName
+- (nullable id<RFAPITask>)requestWithName:(nonnull NSString *)APIName
      parameters:(nullable NSDictionary *)parameters
     controlInfo:(nullable RFAPIControl *)controlInfo
-        success:(void (^_Nullable)(AFHTTPRequestOperation *_Nullable operation, id _Nullable responseObject))success
-        failure:(void (^_Nullable)(AFHTTPRequestOperation *_Nullable operation, NSError *_Nonnull error))failure
-     completion:(void (^_Nullable)(AFHTTPRequestOperation *_Nullable operation))completion;
+        success:(void (^_Nullable)(id<RFAPITask>_Nullable operation, id _Nullable responseObject))success
+        failure:(void (^_Nullable)(id<RFAPITask>_Nullable operation, NSError *_Nonnull error))failure
+     completion:(void (^_Nullable)(id<RFAPITask>_Nullable operation))completion;
 
 /**
  上传文件
 
  @param arrayContainsFormDataObj 包含 RFHTTPRequestFormData 对象的数组
  */
-- (nullable AFHTTPRequestOperation *)requestWithName:(nonnull NSString *)APIName
+- (nullable id<RFAPITask>)requestWithName:(nonnull NSString *)APIName
      parameters:(nullable NSDictionary *)parameters
        formData:(nullable NSArray<RFHTTPRequestFormData *> *)arrayContainsFormDataObj
     controlInfo:(nullable RFAPIControl *)controlInfo
  uploadProgress:(void (^_Nullable)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-        success:(void (^_Nullable)(AFHTTPRequestOperation *_Nullable operation, id _Nullable responseObject))success
-        failure:(void (^_Nullable)(AFHTTPRequestOperation *_Nullable operation, NSError *_Nonnull error))failure
-     completion:(void (^_Nullable)(AFHTTPRequestOperation *_Nullable operation))completion;
+        success:(void (^_Nullable)(id<RFAPITask>_Nullable operation, id _Nullable responseObject))success
+        failure:(void (^_Nullable)(id<RFAPITask>_Nullable operation, NSError *_Nonnull error))failure
+     completion:(void (^_Nullable)(id<RFAPITask>_Nullable operation))completion;
 
 /**
  Creat a mutable URLRequest with special info.
@@ -120,7 +125,7 @@
 
  @return 返回 YES 将继续错误的处理继续交由请求的回调处理，NO 处理结束
  */
-- (BOOL)generalHandlerForError:(nonnull NSError *)error withDefine:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo requestOperation:(nullable AFHTTPRequestOperation *)operation operationFailureCallback:(void (^_Nullable)(AFHTTPRequestOperation *_Nullable, NSError *_Nonnull))operationFailureCallback;
+- (BOOL)generalHandlerForError:(nonnull NSError *)error withDefine:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo requestOperation:(nullable id<RFAPITask>)operation operationFailureCallback:(void (^_Nullable)(id<RFAPITask>_Nullable, NSError *_Nonnull))operationFailureCallback;
 
 /**
  判断响应是否是成功的结果

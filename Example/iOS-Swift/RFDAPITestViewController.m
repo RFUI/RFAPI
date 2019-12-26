@@ -54,11 +54,14 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     RFDAPITestRequestObject *requestDefine = self.items[indexPath.row];
-    @weakify(self);
-    [RFDTestAPI requestWithName:requestDefine.APIName parameters:nil viewController:self forceLoad:NO loadingMessage:requestDefine.message modal:requestDefine.modal success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        @strongify(self);
+    @weakify(self)
+    [RFDTestAPI requestWithName:requestDefine.APIName parameters:nil viewController:self forceLoad:NO loadingMessage:requestDefine.message modal:requestDefine.modal success:^(id<RFAPITask>operation, id responseObject) {
+        @strongify(self)
         [self displayResponse:responseObject error:nil];
-    } failure:nil completion:nil];
+    } failure:^(id<RFAPITask>operation, NSError *error) {
+        @strongify(self)
+        [self displayResponse:nil error:error];
+    } completion:nil];
 }
 
 - (void)displayResponse:(id)responseObject error:(NSError *)error {

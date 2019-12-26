@@ -29,7 +29,7 @@
     self.networkActivityIndicatorManager = [RFSVProgressMessageManager new];
 }
 
-+ (AFHTTPRequestOperation *)requestWithName:(NSString *)APIName parameters:(NSDictionary *)parameters viewController:(UIViewController *)viewController forceLoad:(BOOL)forceLoad loadingMessage:(NSString *)message modal:(BOOL)modal success:(void (^)(AFHTTPRequestOperation *, id))success failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure completion:(void (^)(AFHTTPRequestOperation *))completion {
++ (id<RFAPITask>)requestWithName:(NSString *)APIName parameters:(NSDictionary *)parameters viewController:(UIViewController *)viewController forceLoad:(BOOL)forceLoad loadingMessage:(NSString *)message modal:(BOOL)modal success:(void (^)(id<RFAPITask>, id))success failure:(void (^)(id<RFAPITask>operation, NSError *error))failure completion:(void (^)(id<RFAPITask>))completion {
     RFAPIControl *cn = [[RFAPIControl alloc] init];
     if (message) {
         cn.message = [[RFNetworkActivityMessage alloc] initWithIdentifier:APIName message:message status:RFNetworkActivityStatusLoading];

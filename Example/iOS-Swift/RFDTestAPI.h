@@ -12,15 +12,15 @@
 
 + (instancetype)sharedInstance;
 
-+ (AFHTTPRequestOperation *)requestWithName:(NSString *)APIName
++ (id<RFAPITask>)requestWithName:(NSString *)APIName
                                  parameters:(NSDictionary *)parameters
                              viewController:(UIViewController *)viewController
                                   forceLoad:(BOOL)forceLoad
                              loadingMessage:(NSString *)message
                                       modal:(BOOL)modal
-                                    success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
-                                    failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
-                                 completion:(void (^)(AFHTTPRequestOperation *operation))completion;
+                                    success:(void (^)(id<RFAPITask>operation, id responseObject))success
+                                    failure:(void (^)(id<RFAPITask>operation, NSError *error))failure
+                                 completion:(void (^)(id<RFAPITask>operation))completion;
 @end
 
 
