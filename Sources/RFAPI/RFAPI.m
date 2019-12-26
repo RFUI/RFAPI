@@ -1,22 +1,22 @@
 
-#import "RFRuntime.h"
-#import "RFAPI.h"
-#import "RFMessageManager+RFDisplay.h"
+#import "RFAPIPrivate.h"
 #import "RFAPIDefineManager.h"
-
-#import "AFHTTPSessionManager.h"
-#import "AFURLRequestSerialization.h"
-#import "AFURLResponseSerialization.h"
-#import "AFNetworkReachabilityManager.h"
-#import "AFSecurityPolicy.h"
-#import "JSONModel.h"
-#import "NSFileManager+RFKit.h"
+#import <AFNetworking/AFHTTPSessionManager.h>
+#import <AFNetworking/AFURLRequestSerialization.h>
+#import <AFNetworking/AFURLResponseSerialization.h>
+#import <AFNetworking/AFNetworkReachabilityManager.h>
+#import <JSONModel/JSONModel.h>
+#import <RFMessageManager/RFMessageManager+RFDisplay.h>
+#import <RFKit/NSFileManager+RFKit.h>
 
 RFDefineConstString(RFAPIErrorDomain);
 static NSString *RFAPIOperationUIkControl = @"RFAPIOperationUIkControl";
 NSString *const RFAPIRequestArrayParameterKey = @"_RFArray_";
 NSString *const RFAPIRequestForceQuryStringParametersKey = @"RFAPIRequestForceQuryStringParametersKey";
 
+NSString *RFAPILocalizedString(NSString *key, NSString *value) {
+    return [NSBundle.mainBundle localizedStringForKey:key value:value table:nil];
+}
 
 @interface RFAPI ()
 @property AFHTTPSessionManager *_RFAPI_sessionManager;
