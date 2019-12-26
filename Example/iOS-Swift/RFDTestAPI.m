@@ -1,6 +1,7 @@
 
 #import "RFDTestAPI.h"
 #import "AFURLResponseSerialization.h"
+#import <RFAPI/RFAPIDefineConfigFile.h>
 #import <RFMessageManager/RFSVProgressMessageManager.h>
 #import <RFMessageManager/RFNetworkActivityMessage.h>
 

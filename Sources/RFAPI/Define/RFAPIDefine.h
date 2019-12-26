@@ -10,12 +10,14 @@
  */
 #import <RFKit/RFRuntime.h>
 
+typedef NSString * RFAPIName NS_EXTENSIBLE_STRING_ENUM;
+
 @interface RFAPIDefine : NSObject <
     NSCopying,
     NSSecureCoding
 >
 /// Used to get a deine from a RFAPIDefineManager
-@property (copy, nullable) NSString *name;
+@property (copy, nullable) RFAPIName name;
 
 /// HTTP base URL
 @property (copy, nullable, nonatomic) NSURL *baseURL;
@@ -93,11 +95,4 @@ typedef NS_ENUM(short, RFAPIDefineResponseExpectType) {
 
 /// Comment
 @property (copy, nullable) NSString *notes;
-@end
-
-
-#import "RFAPIDefineConfigFileKeys.h"
-
-@interface RFAPIDefine (RFConfigFile)
-- (nonnull instancetype)initWithRule:(nonnull NSDictionary<RFAPIDefineKey, id> *)rule name:(nonnull NSString *)name;
 @end

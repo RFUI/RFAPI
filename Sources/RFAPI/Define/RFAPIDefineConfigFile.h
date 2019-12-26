@@ -1,5 +1,5 @@
 /*!
- RFAPIDefineConfigFileKeys
+ RFAPIDefineConfigFile
  RFAPI
  
  Copyright (c) 2014, 2018-2019 BB9z
@@ -8,13 +8,16 @@
  The MIT License (MIT)
  http://www.opensource.org/licenses/mit-license.php
  */
-#import <Foundation/Foundation.h>
+
+#import "RFAPIDefine.h"
+#import "RFAPIDefineManager.h"
 
 typedef NSString * RFAPIDefineKey;
+typedef NSDictionary<RFAPIDefineKey, id> * RFAPIDefineRawConfig;
 
 NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineDefaultKey;               /// DEFAULT
+FOUNDATION_EXTERN NSString *const RFAPIDefineDefaultKey;               /// DEFAULT
 
 FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineNameKey;                  /// Name
 FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineBaseKey;                  /// Base
@@ -40,3 +43,17 @@ FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineUserInfoKey;              /// 
 FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineNotesKey;                 /// Notes
 
 NS_ASSUME_NONNULL_END
+
+@interface RFAPIDefine (RFConfigFile)
+
+// todo: debug mode
+- (nonnull instancetype)initWithRule:(nonnull NSDictionary<RFAPIDefineKey, id> *)rule name:(nonnull NSString *)name;
+@end
+
+@interface RFAPIDefineManager (RFConfigFile)
+
+- (void)setDefinesWithRulesInfo:(nonnull NSDictionary<NSString *, NSDictionary<NSString *, id> *> *)rules;
+
+@end
+
+// todo: setup update manager using config file
