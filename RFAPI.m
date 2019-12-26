@@ -30,7 +30,6 @@ RFInitializingRootForNSObject
 - (void)onInit {
     self.reachabilityManager = [AFNetworkReachabilityManager sharedManager];
     self.defineManager = [[RFAPIDefineManager alloc] init];
-    self.defineManager.master = self;
 
     self.securityPolicy = [AFSecurityPolicy defaultPolicy];
     self.shouldUseCredentialStorage = YES;

@@ -11,12 +11,10 @@
 #import <RFInitializing/RFInitializing.h>
 #import "RFAPIDefine.h"
 
-@class RFAPI;
 @protocol AFURLRequestSerialization;
 @protocol AFURLResponseSerialization;
 
 @interface RFAPIDefineManager : NSObject <RFInitializing>
-@property (weak, nonatomic) RFAPI *master;
 
 /**
  You cannot get default rule with RFAPIDefineDefaultKey.
