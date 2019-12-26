@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
 
   s.requires_arc = true
   s.osx.deployment_target = '10.9'
-  s.ios.deployment_target = '7.0'
+  s.ios.deployment_target = '8.0'
   s.tvos.deployment_target = '9.0'
   s.watchos.deployment_target = '2.0'
 
@@ -23,8 +23,8 @@ Pod::Spec.new do |s|
   s.dependency 'RFKit/Category/NSDictionary'
   s.dependency 'RFKit/Category/NSFileManager'
   s.dependency 'RFInitializing', '>= 1.1'
-  s.dependency 'RFMessageManager/Manager', '>= 0.3'
-  s.dependency 'RFMessageManager/RFNetworkActivityIndicatorMessage'
+  s.dependency 'RFMessageManager/Manager', '>= 0.5'
+  s.dependency 'RFMessageManager/RFNetworkActivityMessage'
   s.source_files = ['*.{h,m}', 'RFAPIDefine/*.{h,m}']
   s.public_header_files = ['*.h', 'RFAPIDefine/*.h']
 

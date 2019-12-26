@@ -57,5 +57,12 @@
 		<key>Response Class</key>
 		<string>RFDTestEntity</string>
 	</dict>
+	<key>NotFound</key>
+	<dict>
+		<key>Path</key>
+		<string>404.json</string>
+		<key>Response Type</key>
+		<integer>0</integer>
+	</dict>
 </dict>
 </plist>
