@@ -25,8 +25,8 @@ Pod::Spec.new do |s|
   s.dependency 'RFInitializing', '>= 1.1'
   s.dependency 'RFMessageManager/Manager', '>= 0.5'
   s.dependency 'RFMessageManager/RFNetworkActivityMessage'
-  s.source_files = ['*.{h,m}', 'RFAPIDefine/*.{h,m}']
-  s.public_header_files = ['*.h', 'RFAPIDefine/*.h']
+  s.source_files = ['Sources/**/*.{h,m}']
+  s.public_header_files = ['Sources/**/*.h']
 
   s.pod_target_xcconfig = {
     # These config should only exsists in develop branch.
