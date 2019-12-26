@@ -63,8 +63,3 @@
 - (id)responseSerializerForDefine:(RFAPIDefine *)define;
 
 @end
-
-@interface RFAPIDefine (RFConfigFile)
-- (instancetype)initWithRule:(NSDictionary *)rule name:(NSString *)name;
-
-@end

@@ -2,7 +2,7 @@
  RFAPIDefineConfigFileKeys
  RFAPI
  
- Copyright (c) 2014, 2018 BB9z
+ Copyright (c) 2014, 2018-2019 BB9z
  https://github.com/RFUI/RFAPI
  
  The MIT License (MIT)
@@ -10,27 +10,33 @@
  */
 #import <Foundation/Foundation.h>
 
-extern NSString *const RFAPIDefineDefaultKey;               /// DEFAULT
+typedef NSString * RFAPIDefineKey;
 
-extern NSString *const RFAPIDefineNameKey;                  /// Name
-extern NSString *const RFAPIDefineBaseKey;                  /// Base
-extern NSString *const RFAPIDefinePathPrefixKey;            /// Path Prefix
-extern NSString *const RFAPIDefinePathKey;                  /// Path
-extern NSString *const RFAPIDefineMethodKey;                /// Method
-extern NSString *const RFAPIDefineHeadersKey;               /// Headers
+NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const RFAPIDefineParametersKey;            /// Parameters
-extern NSString *const RFAPIDefineAuthorizationKey;         /// Authorization
-extern NSString *const RFAPIDefineRequestSerializerKey;     /// Serializer
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineDefaultKey;               /// DEFAULT
 
-extern NSString *const RFAPIDefineCachePolicyKey;           /// Cache Policy
-extern NSString *const RFAPIDefineExpireKey;                /// Expire
-extern NSString *const RFAPIDefineOfflinePolicyKey;         /// Offline Policy
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineNameKey;                  /// Name
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineBaseKey;                  /// Base
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefinePathPrefixKey;            /// Path Prefix
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefinePathKey;                  /// Path
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineMethodKey;                /// Method
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineHeadersKey;               /// Headers
 
-extern NSString *const RFAPIDefineResponseSerializerKey;    /// Response Serializer
-extern NSString *const RFAPIDefineResponseTypeKey;          /// Response Type
-extern NSString *const RFAPIDefineResponseAcceptNullKey;    /// Response Accept Null
-extern NSString *const RFAPIDefineResponseClassKey;         /// Response Class
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineParametersKey;            /// Parameters
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineAuthorizationKey;         /// Authorization
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineRequestSerializerKey;     /// Serializer
 
-extern NSString *const RFAPIDefineUserInfoKey;              /// User Info
-extern NSString *const RFAPIDefineNotesKey;                 /// Notes
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineCachePolicyKey;           /// Cache Policy
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineExpireKey;                /// Expire
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineOfflinePolicyKey;         /// Offline Policy
+
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineResponseSerializerKey;    /// Response Serializer
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineResponseTypeKey;          /// Response Type
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineResponseAcceptNullKey;    /// Response Accept Null
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineResponseClassKey;         /// Response Class
+
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineUserInfoKey;              /// User Info
+FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineNotesKey;                 /// Notes
+
+NS_ASSUME_NONNULL_END

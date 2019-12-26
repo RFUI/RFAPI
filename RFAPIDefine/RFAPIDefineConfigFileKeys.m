@@ -1,26 +1,26 @@
 #import "RFAPIDefineConfigFileKeys.h"
 
-NSString *const RFAPIDefineDefaultKey       = @"DEFAULT";
+RFAPIDefineKey const RFAPIDefineDefaultKey       = @"DEFAULT";
 
-NSString *const RFAPIDefineNameKey          = @"Name";
-NSString *const RFAPIDefineBaseKey          = @"Base";
-NSString *const RFAPIDefinePathPrefixKey    = @"Path Prefix";
-NSString *const RFAPIDefinePathKey          = @"Path";
-NSString *const RFAPIDefineMethodKey        = @"Method";
-NSString *const RFAPIDefineHeadersKey       = @"Headers";
+RFAPIDefineKey const RFAPIDefineNameKey          = @"Name";
+RFAPIDefineKey const RFAPIDefineBaseKey          = @"Base";
+RFAPIDefineKey const RFAPIDefinePathPrefixKey    = @"Path Prefix";
+RFAPIDefineKey const RFAPIDefinePathKey          = @"Path";
+RFAPIDefineKey const RFAPIDefineMethodKey        = @"Method";
+RFAPIDefineKey const RFAPIDefineHeadersKey       = @"Headers";
 
-NSString *const RFAPIDefineParametersKey    = @"Parameters";
-NSString *const RFAPIDefineAuthorizationKey = @"Authorization";
-NSString *const RFAPIDefineRequestSerializerKey = @"Serializer";
+RFAPIDefineKey const RFAPIDefineParametersKey    = @"Parameters";
+RFAPIDefineKey const RFAPIDefineAuthorizationKey = @"Authorization";
+RFAPIDefineKey const RFAPIDefineRequestSerializerKey = @"Serializer";
 
-NSString *const RFAPIDefineCachePolicyKey   = @"Cache Policy";
-NSString *const RFAPIDefineExpireKey        = @"Expire";
-NSString *const RFAPIDefineOfflinePolicyKey = @"Offline Policy";
+RFAPIDefineKey const RFAPIDefineCachePolicyKey   = @"Cache Policy";
+RFAPIDefineKey const RFAPIDefineExpireKey        = @"Expire";
+RFAPIDefineKey const RFAPIDefineOfflinePolicyKey = @"Offline Policy";
 
-NSString *const RFAPIDefineResponseSerializerKey = @"Response Serializer";
-NSString *const RFAPIDefineResponseTypeKey  = @"Response Type";
-NSString *const RFAPIDefineResponseAcceptNullKey = @"Response Accept Null";
-NSString *const RFAPIDefineResponseClassKey = @"Response Class";
+RFAPIDefineKey const RFAPIDefineResponseSerializerKey = @"Response Serializer";
+RFAPIDefineKey const RFAPIDefineResponseTypeKey  = @"Response Type";
+RFAPIDefineKey const RFAPIDefineResponseAcceptNullKey = @"Response Accept Null";
+RFAPIDefineKey const RFAPIDefineResponseClassKey = @"Response Class";
 
-NSString *const RFAPIDefineUserInfoKey      = @"User Info";
-NSString *const RFAPIDefineNotesKey         = @"Notes";
+RFAPIDefineKey const RFAPIDefineUserInfoKey      = @"User Info";
+RFAPIDefineKey const RFAPIDefineNotesKey         = @"Notes";
