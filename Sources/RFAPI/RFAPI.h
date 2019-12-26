@@ -14,7 +14,7 @@
 #import "RFAPIDefineManager.h"
 
 @class AFNetworkReachabilityManager;
-@class AFSecurityPolicy;
+@class AFHTTPSessionManager, AFSecurityPolicy;
 @protocol AFMultipartFormData;
 
 @class RFMessageManager, RFNetworkActivityMessage;
@@ -30,14 +30,16 @@
     RFInitializing
 >
 
+@property (null_resettable, nonatomic) AFHTTPSessionManager *http;
+
 /**
  Defult shared manager
  */
-@property (nonnull, readonly) AFNetworkReachabilityManager *reachabilityManager;
+@property (readonly, nonnull, nonatomic) AFNetworkReachabilityManager *reachabilityManager;
 
 #pragma mark - Define
 
-@property (nonnull, readonly) RFAPIDefineManager *defineManager;
+@property (readonly, nonnull) RFAPIDefineManager *defineManager;
 
 #pragma mark - Request management
 
@@ -49,7 +51,7 @@
 
 #pragma mark - Activity Indicator
 
-@property (nullable, strong) RFMessageManager *networkActivityIndicatorManager;
+@property (nullable) __kindof RFMessageManager *networkActivityIndicatorManager;
 
 #pragma mark - Request
 
@@ -100,8 +102,6 @@
  */
 @property (nonatomic, null_resettable, strong) dispatch_queue_t responseProcessingQueue;
 
-- (void)invalidateCacheWithName:(nullable NSString *)APIName parameters:(nullable NSDictionary *)parameters;
-
 #pragma mark - Methods for overwrite
 
 /**
@@ -134,27 +134,6 @@
  @param error 可选的错误信息
  */
 - (BOOL)isSuccessResponse:(id _Nullable __strong *_Nonnull)responseObjectRef error:(NSError *_Nullable __autoreleasing *_Nullable)error;
-
-#pragma mark - Credentials & Security
-
-/**
- Whether request operations should consult the credential storage for authenticating the connection. `YES` by default.
-
- @see AFURLConnectionOperation -shouldUseCredentialStorage
- */
-@property BOOL shouldUseCredentialStorage;
-
-/**
- The credential used by request operations for authentication challenges.
-
- @see AFURLConnectionOperation -credential
- */
-@property (nullable, strong) NSURLCredential *credential;
-
-/**
- The security policy used by created request operations to evaluate server trust for secure connections. `RFAPI` uses the `defaultPolicy` unless otherwise specified.
- */
-@property (nonnull, strong) AFSecurityPolicy *securityPolicy;
 
 @end
 

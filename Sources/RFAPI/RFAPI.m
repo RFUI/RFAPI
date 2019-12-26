@@ -4,7 +4,7 @@
 #import "RFMessageManager+RFDisplay.h"
 #import "RFAPIDefineManager.h"
 
-#import "AFURLSessionManager.h"
+#import "AFHTTPSessionManager.h"
 #import "AFURLRequestSerialization.h"
 #import "AFURLResponseSerialization.h"
 #import "AFNetworkReachabilityManager.h"
@@ -19,28 +19,43 @@ NSString *const RFAPIRequestForceQuryStringParametersKey = @"RFAPIRequestForceQu
 
 
 @interface RFAPI ()
-@property AFURLSessionManager *_RFAPI_sessionManager;
-@property (strong, readwrite) AFNetworkReachabilityManager *reachabilityManager;
-@property (strong, readwrite) RFAPIDefineManager *defineManager;
+@property AFHTTPSessionManager *_RFAPI_sessionManager;
+@property (readwrite) RFAPIDefineManager *defineManager;
 @end
 
 @implementation RFAPI
 RFInitializingRootForNSObject
 
 - (void)onInit {
-    self.reachabilityManager = [AFNetworkReachabilityManager sharedManager];
-    self.defineManager = [[RFAPIDefineManager alloc] init];
-
-    self.securityPolicy = [AFSecurityPolicy defaultPolicy];
-    self.shouldUseCredentialStorage = YES;
+    self.defineManager = [RFAPIDefineManager.alloc init];
 }
 
 - (void)afterInit {
     [self.reachabilityManager startMonitoring];
 }
 
-- (NSString *)debugDescription {
-    return [NSString stringWithFormat:@"<%@: %p, operations: %@>", self.class, (void *)self, self._RFAPI_sessionManager.tasks];
+//- (NSString *)debugDescription {
+//    return [NSString stringWithFormat:@"<%@: %p, operations: %@>", self.class, (void *)self, self.http.tasks];
+//}
+
+- (AFHTTPSessionManager *)http {
+    if (self._RFAPI_sessionManager) return self._RFAPI_sessionManager;
+    NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
+    AFHTTPSessionManager *http = [AFHTTPSessionManager.alloc initWithBaseURL:nil sessionConfiguration:config];
+    http.requestSerializer = [AFJSONRequestSerializer.alloc init];
+    AFJSONResponseSerializer *rspSerializer = [AFJSONResponseSerializer.alloc init];
+    rspSerializer.acceptableStatusCodes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(200, 400)];
+    http.responseSerializer = rspSerializer;
+    http.completionQueue = self.responseProcessingQueue;
+    self._RFAPI_sessionManager = http;
+    return self._RFAPI_sessionManager;
+}
+- (void)setHttp:(AFHTTPSessionManager *)http {
+    self._RFAPI_sessionManager = http;
+}
+
+- (AFNetworkReachabilityManager *)reachabilityManager {
+    return self.http.reachabilityManager;
 }
 
 #pragma mark - Request management
@@ -162,7 +177,7 @@ RFInitializingRootForNSObject
 
     // Setup HTTP operation
     NSURLSessionDataTask *dataTask = nil;
-    dataTask = [self._RFAPI_sessionManager dataTaskWithRequest:request uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+    dataTask = [self.http dataTaskWithRequest:request uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
         if (error) {
             operationFailure(dataTask, error);
             return;
@@ -187,17 +202,6 @@ RFInitializingRootForNSObject
 
 - (id<RFAPITask>)requestWithName:(nonnull NSString *)APIName parameters:(NSDictionary *)parameters controlInfo:(RFAPIControl *)controlInfo success:(void (^)(id<RFAPITask>, id))success failure:(void (^)(id<RFAPITask>, NSError *))failure completion:(void (^)(id<RFAPITask>))completion {
     return [self requestWithName:APIName parameters:parameters formData:nil controlInfo:controlInfo uploadProgress:nil success:success failure:failure completion:completion];
-}
-
-- (void)invalidateCacheWithName:(nullable NSString *)APIName parameters:(nullable NSDictionary *)parameters {
-    if (!APIName.length) return;
-
-    RFAPIDefine *define = [self.defineManager defineForName:APIName];
-    if (!define) return;
-
-    NSError __autoreleasing *e = nil;
-    NSURLRequest *request = [self URLRequestWithDefine:define parameters:parameters formData:nil controlInfo:nil error:&e];
-    if (e) dout_error(@"%@", e)
 }
 
 #pragma mark - Build Request

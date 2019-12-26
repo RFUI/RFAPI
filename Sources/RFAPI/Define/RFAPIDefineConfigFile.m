@@ -133,10 +133,13 @@ static inline NSDictionary *_ruleDicKey(NSDictionary *rule, RFAPIDefineKey key) 
     RFAssert(ruleCount == prules.count, @"There are defines with the same name.")
 
     NSMutableArray<RFAPIDefine *> *defines = [NSMutableArray.alloc initWithCapacity:prules.count];
+    RFAPIDefineRawConfig defaultRule = prules[RFAPIDefineDefaultKey];
     [prules enumerateKeysAndObjectsUsingBlock:^(RFAPIName  _Nonnull key, RFAPIDefineRawConfig  _Nonnull obj, BOOL * _Nonnull stop) {
-        [defines addObject:[RFAPIDefine.alloc initWithRule:obj name:key]];
+        NSMutableDictionary<RFAPIDefineKey, id> *rule = [NSMutableDictionary.alloc initWithDictionary:defaultRule];
+        [rule addEntriesFromDictionary:obj];
+        [defines addObject:[RFAPIDefine.alloc initWithRule:rule name:key]];
     }];
-    
+
     self.defines = defines;
 }
 

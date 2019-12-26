@@ -17,7 +17,7 @@ typedef NSDictionary<RFAPIDefineKey, id> * RFAPIDefineRawConfig;
 
 NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXTERN NSString *const RFAPIDefineDefaultKey;               /// DEFAULT
+FOUNDATION_EXTERN RFAPIName const RFAPIDefineDefaultKey;               /// DEFAULT
 
 FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineNameKey;                  /// Name
 FOUNDATION_EXTERN RFAPIDefineKey const RFAPIDefineBaseKey;                  /// Base
@@ -55,5 +55,3 @@ NS_ASSUME_NONNULL_END
 - (void)setDefinesWithRulesInfo:(nonnull NSDictionary<NSString *, NSDictionary<NSString *, id> *> *)rules;
 
 @end
-
-// todo: setup update manager using config file
