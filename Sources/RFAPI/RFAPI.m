@@ -2,6 +2,7 @@
 #import "RFAPIPrivate.h"
 #import "RFAPIDefineManager.h"
 #import "RFAPIModelTransformer.h"
+#import "RFAPISessionManager.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
 #import <AFNetworking/AFURLRequestSerialization.h>
 #import <AFNetworking/AFURLResponseSerialization.h>
@@ -24,7 +25,7 @@ NSString *RFAPILocalizedString(NSString *key, NSString *value) {
 @end
 
 @interface RFAPI ()
-@property AFHTTPSessionManager *_RFAPI_sessionManager;
+@property _RFURLSessionManager *_RFAPI_sessionManager;
 @property (readwrite) RFAPIDefineManager *defineManager;
 @end
 
@@ -43,19 +44,15 @@ RFInitializingRootForNSObject
 //    return [NSString stringWithFormat:@"<%@: %p, operations: %@>", self.class, (void *)self, self.http.tasks];
 //}
 
-- (AFHTTPSessionManager *)http {
+- (_RFURLSessionManager *)http {
     if (self._RFAPI_sessionManager) return self._RFAPI_sessionManager;
     NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
-    AFHTTPSessionManager *http = [AFHTTPSessionManager.alloc initWithBaseURL:nil sessionConfiguration:config];
-    http.requestSerializer = [AFJSONRequestSerializer.alloc init];
-    AFJSONResponseSerializer *rspSerializer = [AFJSONResponseSerializer.alloc init];
-    rspSerializer.acceptableStatusCodes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(200, 400)];
-    http.responseSerializer = rspSerializer;
+    _RFURLSessionManager *http = [_RFURLSessionManager.alloc initWithSessionConfiguration:config];
     http.completionQueue = self.responseProcessingQueue;
     self._RFAPI_sessionManager = http;
     return self._RFAPI_sessionManager;
 }
-- (void)setHttp:(AFHTTPSessionManager *)http {
+- (void)setHttp:(_RFURLSessionManager *)http {
     self._RFAPI_sessionManager = http;
 }
 

@@ -31,7 +31,7 @@
     RFInitializing
 >
 
-@property (null_resettable, nonatomic) AFHTTPSessionManager *http;
+//@property (null_resettable, nonatomic) AFHTTPSessionManager *http;
 
 /**
  Defult shared manager
