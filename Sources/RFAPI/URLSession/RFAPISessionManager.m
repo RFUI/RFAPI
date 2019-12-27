@@ -49,34 +49,36 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
 
 #pragma mark -
 
-@interface _RFURLSessionManagerTaskDelegate : NSObject <NSURLSessionTaskDelegate, NSURLSessionDataDelegate, NSURLSessionDownloadDelegate>
+@interface _RFURLSessionManagerTaskDelegate : NSObject <
+    NSURLSessionTaskDelegate,
+    NSURLSessionDataDelegate,
+    NSURLSessionDownloadDelegate
+>
+@property (weak, nullable) AFURLSessionManager *manager;
+@property (nullable) NSMutableData *mutableData;
+@property (nonnull) NSProgress *uploadProgress;
+@property (nonnull) NSProgress *downloadProgress;
+@property (copy, nullable) NSURL *downloadFileURL;
+@property (copy, nullable) AFURLSessionDownloadTaskDidFinishDownloadingBlock downloadTaskDidFinishDownloading;
+@property (copy, nullable) AFURLSessionTaskProgressBlock uploadProgressBlock;
+@property (copy, nullable) AFURLSessionTaskProgressBlock downloadProgressBlock;
+@property (copy, nullable) AFURLSessionTaskCompletionHandler completionHandler;
+
 - (instancetype)initWithTask:(NSURLSessionTask *)task;
-@property (nonatomic, weak) AFURLSessionManager *manager;
-@property (nonatomic, strong) NSMutableData *mutableData;
-@property (nonatomic, strong) NSProgress *uploadProgress;
-@property (nonatomic, strong) NSProgress *downloadProgress;
-@property (nonatomic, copy) NSURL *downloadFileURL;
-@property (nonatomic, copy) AFURLSessionDownloadTaskDidFinishDownloadingBlock downloadTaskDidFinishDownloading;
-@property (nonatomic, copy) AFURLSessionTaskProgressBlock uploadProgressBlock;
-@property (nonatomic, copy) AFURLSessionTaskProgressBlock downloadProgressBlock;
-@property (nonatomic, copy) AFURLSessionTaskCompletionHandler completionHandler;
 @end
 
 @implementation _RFURLSessionManagerTaskDelegate
 
 - (instancetype)initWithTask:(NSURLSessionTask *)task {
     self = [super init];
-    if (!self) {
-        return nil;
-    }
+    if (!self) return nil;
 
-    _mutableData = [NSMutableData data];
-    _uploadProgress = [[NSProgress alloc] initWithParent:nil userInfo:nil];
-    _downloadProgress = [[NSProgress alloc] initWithParent:nil userInfo:nil];
+    _mutableData = [NSMutableData.alloc initWithCapacity:512];
+    _uploadProgress = [NSProgress.alloc initWithParent:nil userInfo:nil];
+    _downloadProgress = [NSProgress.alloc initWithParent:nil userInfo:nil];
 
     __weak __typeof__(task) weakTask = task;
-    for (NSProgress *progress in @[ _uploadProgress, _downloadProgress ])
-    {
+    for (NSProgress *progress in @[ _uploadProgress, _downloadProgress ]) {
         progress.totalUnitCount = NSURLSessionTransferSizeUnknown;
         progress.cancellable = YES;
         progress.cancellationHandler = ^{
@@ -86,21 +88,13 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
         progress.pausingHandler = ^{
             [weakTask suspend];
         };
-#if AF_CAN_USE_AT_AVAILABLE
-        if (@available(iOS 9, macOS 10.11, *))
-#else
-        if ([progress respondsToSelector:@selector(setResumingHandler:)])
-#endif
-        {
+        if (@available(iOS 9, macOS 10.11, *)) {
             progress.resumingHandler = ^{
                 [weakTask resume];
             };
         }
 
-        [progress addObserver:self
-                   forKeyPath:NSStringFromSelector(@selector(fractionCompleted))
-                      options:NSKeyValueObservingOptionNew
-                      context:NULL];
+        [progress addObserver:self forKeyPath:NSStringFromSelector(@selector(fractionCompleted)) options:NSKeyValueObservingOptionNew context:NULL];
     }
     return self;
 }
@@ -110,7 +104,7 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     [self.uploadProgress removeObserver:self forKeyPath:NSStringFromSelector(@selector(fractionCompleted))];
 }
 
-#pragma mark - NSProgress Tracking
+#pragma mark NSProgress Tracking
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
    if ([object isEqual:self.downloadProgress]) {
@@ -125,7 +119,7 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     }
 }
 
-#pragma mark - NSURLSessionTaskDelegate
+#pragma mark NSURLSessionTaskDelegate
 
 - (void)URLSession:(__unused NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
     __strong AFURLSessionManager *manager = self.manager;
@@ -164,7 +158,7 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     }
 }
 
-#pragma mark - NSURLSessionDataDelegate
+#pragma mark NSURLSessionDataDelegate
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
     self.downloadProgress.totalUnitCount = dataTask.countOfBytesExpectedToReceive;
@@ -179,7 +173,7 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     self.uploadProgress.completedUnitCount = task.countOfBytesSent;
 }
 
-#pragma mark - NSURLSessionDownloadDelegate
+#pragma mark NSURLSessionDownloadDelegate
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
 
@@ -214,7 +208,7 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
 @property (readwrite, nonatomic, strong) NSURLSessionConfiguration *sessionConfiguration;
 @property (readwrite, nonatomic, strong) NSOperationQueue *operationQueue;
 @property (readwrite, nonatomic, strong) NSURLSession *session;
-@property (readwrite, nonatomic, strong) NSMutableDictionary *mutableTaskDelegatesKeyedByTaskIdentifier;
+@property (readwrite, nonatomic, strong) NSMutableDictionary<NSNumber *, _RFURLSessionManagerTaskDelegate *> *mutableTaskDelegatesKeyedByTaskIdentifier;
 @property (readonly, nonatomic, copy) NSString *taskDescriptionForSessionTasks;
 @property (readwrite, nonatomic, strong) NSLock *lock;
 @property (readwrite, nonatomic, copy) AFURLSessionDidBecomeInvalidBlock sessionDidBecomeInvalid;
@@ -264,9 +258,9 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     self.reachabilityManager = [AFNetworkReachabilityManager sharedManager];
 #endif
 
-    self.mutableTaskDelegatesKeyedByTaskIdentifier = [[NSMutableDictionary alloc] init];
+    self.mutableTaskDelegatesKeyedByTaskIdentifier = [NSMutableDictionary.alloc initWithCapacity:8];
 
-    self.lock = [[NSLock alloc] init];
+    self.lock = [NSLock.alloc init];
     self.lock.name = @"com.github.RFUI.RFAPI.session.manager.lock";
 
     [self.session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
@@ -290,13 +284,11 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark -
+#pragma mark Task Delegate
 
 - (NSString *)taskDescriptionForSessionTasks {
     return [NSString stringWithFormat:@"%p", (void *)self];
 }
-
-#pragma mark -
 
 - (_RFURLSessionManagerTaskDelegate *)delegateForTask:(NSURLSessionTask *)task {
     NSParameterAssert(task);
@@ -368,7 +360,7 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     [self.lock unlock];
 }
 
-#pragma mark -
+#pragma mark Tasks
 
 - (NSArray *)tasksForKeyPath:(NSString *)keyPath {
     __block NSArray *tasks = nil;
@@ -418,15 +410,13 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     }
 }
 
-#pragma mark -
-
 - (void)setResponseSerializer:(id <AFURLResponseSerialization>)responseSerializer {
     NSParameterAssert(responseSerializer);
 
     _responseSerializer = responseSerializer;
 }
 
-#pragma mark -
+#pragma mark Create Request
 
 - (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request uploadProgress:(nullable void (^)(NSProgress *uploadProgress)) uploadProgressBlock downloadProgress:(nullable void (^)(NSProgress *downloadProgress)) downloadProgressBlock completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject,  NSError * _Nullable error))completionHandler {
 
@@ -434,8 +424,6 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     [self addDelegateForDataTask:dataTask uploadProgress:uploadProgressBlock downloadProgress:downloadProgressBlock completionHandler:completionHandler];
     return dataTask;
 }
-
-#pragma mark -
 
 - (NSURLSessionUploadTask *)uploadTaskWithRequest:(NSURLRequest *)request fromFile:(NSURL *)fileURL progress:(void (^)(NSProgress *uploadProgress)) uploadProgressBlock completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler {
     NSURLSessionUploadTask *uploadTask = [self.session uploadTaskWithRequest:request fromFile:fileURL];
@@ -455,8 +443,6 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     return uploadTask;
 }
 
-#pragma mark -
-
 - (NSURLSessionDownloadTask *)downloadTaskWithRequest:(NSURLRequest *)request progress:(void (^)(NSProgress *downloadProgress)) downloadProgressBlock destination:(NSURL * (^)(NSURL *targetPath, NSURLResponse *response))destination completionHandler:(void (^)(NSURLResponse *response, NSURL *filePath, NSError *error))completionHandler {
 
     NSURLSessionDownloadTask *downloadTask = [self.session downloadTaskWithRequest:request];
@@ -470,7 +456,8 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     return downloadTask;
 }
 
-#pragma mark -
+#pragma mark Progress
+
 - (NSProgress *)uploadProgressForTask:(NSURLSessionTask *)task {
     return [[self delegateForTask:task] uploadProgress];
 }
@@ -479,7 +466,7 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     return [[self delegateForTask:task] downloadProgress];
 }
 
-#pragma mark -
+#pragma mark Callbacks
 
 - (void)setSessionDidBecomeInvalidBlock:(void (^)(NSURLSession *session, NSError *error))block {
     self.sessionDidBecomeInvalid = block;
@@ -488,8 +475,6 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
 - (void)setSessionDidReceiveAuthenticationChallengeBlock:(NSURLSessionAuthChallengeDisposition (^)(NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential * __autoreleasing *credential))block {
     self.sessionDidReceiveAuthenticationChallenge = block;
 }
-
-#pragma mark -
 
 - (void)setTaskNeedNewBodyStreamBlock:(NSInputStream * (^)(NSURLSession *session, NSURLSessionTask *task))block {
     self.taskNeedNewBodyStream = block;
@@ -511,8 +496,6 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     self.taskDidComplete = block;
 }
 
-#pragma mark -
-
 - (void)setDataTaskDidReceiveResponseBlock:(NSURLSessionResponseDisposition (^)(NSURLSession *session, NSURLSessionDataTask *dataTask, NSURLResponse *response))block {
     self.dataTaskDidReceiveResponse = block;
 }
@@ -528,8 +511,6 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
 - (void)setDataTaskWillCacheResponseBlock:(NSCachedURLResponse * (^)(NSURLSession *session, NSURLSessionDataTask *dataTask, NSCachedURLResponse *proposedResponse))block {
     self.dataTaskWillCacheResponse = block;
 }
-
-#pragma mark -
 
 - (void)setDownloadTaskDidFinishDownloadingBlock:(NSURL * (^)(NSURLSession *session, NSURLSessionDownloadTask *downloadTask, NSURL *location))block {
     self.downloadTaskDidFinishDownloading = block;
@@ -560,7 +541,7 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     return [[self class] instancesRespondToSelector:selector];
 }
 
-#pragma mark - NSURLSessionDelegate
+#pragma mark NSURLSessionDelegate
 
 - (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(NSError *)error {
     if (self.sessionDidBecomeInvalid) {
@@ -596,7 +577,7 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     }
 }
 
-#pragma mark - NSURLSessionTaskDelegate
+#pragma mark NSURLSessionTaskDelegate
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest *))completionHandler {
     NSURLRequest *redirectRequest = request;
@@ -684,7 +665,7 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     }
 }
 
-#pragma mark - NSURLSessionDataDelegate
+#pragma mark NSURLSessionDataDelegate
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler {
     NSURLSessionResponseDisposition disposition = NSURLSessionResponseAllow;
@@ -732,7 +713,7 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     }
 }
 
-#pragma mark - NSURLSessionDownloadDelegate
+#pragma mark NSURLSessionDownloadDelegate
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
     _RFURLSessionManagerTaskDelegate *delegate = [self delegateForTask:downloadTask];
