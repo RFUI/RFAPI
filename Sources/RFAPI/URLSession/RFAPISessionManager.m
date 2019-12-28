@@ -4,13 +4,11 @@
 #import "RFAPISessionTask.h"
 
 @interface _RFURLSessionManager ()
-@property (readwrite, nonatomic, strong) NSURLSessionConfiguration *sessionConfiguration;
-@property (readwrite, nonatomic, strong) NSOperationQueue *operationQueue;
-@property (readwrite, nonatomic, strong) NSURLSession *session;
-@property (readwrite, nonatomic, strong) NSMutableDictionary<NSNumber *, _RFURLSessionManagerTaskDelegate *> *mutableTaskDelegatesKeyedByTaskIdentifier;
-@property (readonly, nonatomic, copy) NSString *taskDescriptionForSessionTasks;
-@property (readwrite, nonatomic, strong) NSLock *lock;
-
+@property NSOperationQueue *operationQueue;
+@property NSURLSession *session;
+@property NSMutableDictionary<NSNumber *, _RFURLSessionManagerTaskDelegate *> *mutableTaskDelegatesKeyedByTaskIdentifier;
+@property (readonly) NSString *taskDescriptionForSessionTasks;
+@property NSLock *lock;
 @end
 
 @implementation _RFURLSessionManager
@@ -29,27 +27,17 @@
         configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     }
 
-    self.sessionConfiguration = configuration;
-
     self.operationQueue = [NSOperationQueue.alloc init];
     self.operationQueue.maxConcurrentOperationCount = 1;
 
-    self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration delegate:self delegateQueue:self.operationQueue];
-
-    self.responseSerializer = [AFJSONResponseSerializer serializer];
-
-    self.securityPolicy = [AFSecurityPolicy defaultPolicy];
-
-#if !TARGET_OS_WATCH
-    self.reachabilityManager = [AFNetworkReachabilityManager sharedManager];
-#endif
+    self.session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:self.operationQueue];
 
     self.mutableTaskDelegatesKeyedByTaskIdentifier = [NSMutableDictionary.alloc initWithCapacity:8];
 
     self.lock = [NSLock.alloc init];
     self.lock.name = @"com.github.RFUI.RFAPI.session.manager.lock";
 
-    [self.session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+    [self.session getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> * dataTasks, NSArray<NSURLSessionUploadTask *> * uploadTasks, NSArray<NSURLSessionDownloadTask *> * downloadTasks) {
         for (NSURLSessionDataTask *task in dataTasks) {
             [self addDelegateForDataTask:task uploadProgress:nil downloadProgress:nil completionHandler:nil];
         }
@@ -66,9 +54,37 @@
     return self;
 }
 
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+#pragma mark Resettable propertys
+
+- (id<AFURLRequestSerialization>)requestSerializer {
+    if (!_requestSerializer) {
+        _requestSerializer = [AFJSONRequestSerializer.alloc init];
+    }
+    return _requestSerializer;
 }
+
+- (id<AFURLResponseSerialization>)responseSerializer {
+    if (!_responseSerializer) {
+        _responseSerializer = [AFJSONResponseSerializer.alloc init];
+    }
+    return _responseSerializer;
+}
+
+- (AFSecurityPolicy *)securityPolicy {
+    if (!_securityPolicy) {
+        _securityPolicy = [AFSecurityPolicy defaultPolicy];
+    }
+    return _securityPolicy;
+}
+
+#if !TARGET_OS_WATCH
+- (AFNetworkReachabilityManager *)reachabilityManager {
+    if (!_reachabilityManager) {
+        _reachabilityManager = [AFNetworkReachabilityManager sharedManager];
+    }
+    return _reachabilityManager;
+}
+#endif
 
 #pragma mark Task Delegate
 
@@ -194,12 +210,6 @@
     } else {
         [self.session finishTasksAndInvalidate];
     }
-}
-
-- (void)setResponseSerializer:(id <AFURLResponseSerialization>)responseSerializer {
-    NSParameterAssert(responseSerializer);
-
-    _responseSerializer = responseSerializer;
 }
 
 #pragma mark Create Request

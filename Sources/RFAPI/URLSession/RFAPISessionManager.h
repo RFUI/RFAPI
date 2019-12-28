@@ -23,19 +23,26 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  The managed session.
  */
-@property (readonly, nonatomic, strong) NSURLSession *session;
+@property (readonly) NSURLSession *session;
 
 /**
  The operation queue on which delegate callbacks are run.
  */
-@property (readonly, nonatomic, strong) NSOperationQueue *operationQueue;
+@property (readonly) NSOperationQueue *operationQueue;
 
 /**
- Responses sent from the server in data tasks created with `dataTaskWithRequest:success:failure:` and run using the `GET` / `POST` / et al. convenience methods are automatically validated and serialized by the response serializer. By default, this property is set to an instance of `AFJSONResponseSerializer`.
+ Default request serializer.
 
- @warning `responseSerializer` must not be `nil`.
+ Default value is an `AFJSONRequestSerializer`.
  */
-@property (nonatomic, strong) id <AFURLResponseSerialization> responseSerializer;
+@property (null_resettable, nonatomic) id<AFURLRequestSerialization> requestSerializer;
+
+/**
+ Default response serializer.
+
+ Default value is an `AFJSONResponseSerializer`.
+ */
+@property (null_resettable, nonatomic) id <AFURLResponseSerialization> responseSerializer;
 
 ///-------------------------------
 /// @name Managing Security Policy
@@ -44,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  The security policy used by created session to evaluate server trust for secure connections. `AFURLSessionManager` uses the `defaultPolicy` unless otherwise specified.
  */
-@property (nonatomic, strong) AFSecurityPolicy *securityPolicy;
+@property (null_resettable, nonatomic) AFSecurityPolicy *securityPolicy;
 
 #if !TARGET_OS_WATCH
 ///--------------------------------------
@@ -54,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  The network reachability manager. `AFURLSessionManager` uses the `sharedManager` by default.
  */
-@property (readwrite, nonatomic, strong) AFNetworkReachabilityManager *reachabilityManager;
+@property (null_resettable, nonatomic) AFNetworkReachabilityManager *reachabilityManager;
 #endif
 
 ///----------------------------
