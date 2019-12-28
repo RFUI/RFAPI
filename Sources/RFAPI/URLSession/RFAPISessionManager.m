@@ -7,7 +7,7 @@
 @property NSOperationQueue *operationQueue;
 @property NSURLSession *session;
 @property NSMutableDictionary<NSNumber *, _RFURLSessionManagerTaskDelegate *> *mutableTaskDelegatesKeyedByTaskIdentifier;
-@property (readonly) NSString *taskDescriptionForSessionTasks;
+@property NSString *taskDescriptionForSessionTasks;
 @property NSLock *lock;
 @end
 
@@ -36,6 +36,7 @@
 
     self.lock = [NSLock.alloc init];
     self.lock.name = @"com.github.RFUI.RFAPI.session.manager.lock";
+    self.taskDescriptionForSessionTasks = NSUUID.UUID.UUIDString;
 
     [self.session getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> * dataTasks, NSArray<NSURLSessionUploadTask *> * uploadTasks, NSArray<NSURLSessionDownloadTask *> * downloadTasks) {
         for (NSURLSessionDataTask *task in dataTasks) {
@@ -87,10 +88,6 @@
 #endif
 
 #pragma mark Task Delegate
-
-- (NSString *)taskDescriptionForSessionTasks {
-    return [NSString stringWithFormat:@"%p", (void *)self];
-}
 
 - (_RFURLSessionManagerTaskDelegate *)delegateForTask:(NSURLSessionTask *)task {
     NSParameterAssert(task);
