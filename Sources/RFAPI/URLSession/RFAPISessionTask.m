@@ -22,7 +22,7 @@ static dispatch_group_t url_session_manager_completion_group() {
     return af_url_session_manager_completion_group;
 }
 
-@implementation _RFURLSessionManagerTaskDelegate
+@implementation _RFAPISessionTask
 
 - (instancetype)initWithTask:(NSURLSessionTask *)task {
     self = [super init];

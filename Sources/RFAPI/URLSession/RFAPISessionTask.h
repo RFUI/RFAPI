@@ -15,7 +15,7 @@ http://www.opensource.org/licenses/mit-license.php
 
 typedef NSURL *__nullable (^AFURLSessionDownloadTaskDidFinishDownloadingBlock)(NSURLSession *__nonnull session, NSURLSessionDownloadTask *__nonnull downloadTask, NSURL *__nonnull location);
 
-@interface _RFURLSessionManagerTaskDelegate : NSObject <
+@interface _RFAPISessionTask : NSObject <
     NSURLSessionTaskDelegate,
     NSURLSessionDataDelegate,
     NSURLSessionDownloadDelegate

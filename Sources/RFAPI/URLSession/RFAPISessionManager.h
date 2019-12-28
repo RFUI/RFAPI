@@ -75,22 +75,22 @@ http://www.opensource.org/licenses/mit-license.php
 /**
  The data, upload, and download tasks currently run by the managed session.
  */
-@property (readonly, nonnull) NSArray <NSURLSessionTask *> *tasks;
+@property (readonly, nonnull, nonatomic) NSArray <NSURLSessionTask *> *tasks;
 
 /**
  The data tasks currently run by the managed session.
  */
-@property (readonly, nonnull) NSArray <NSURLSessionDataTask *> *dataTasks;
+@property (readonly, nonnull, nonatomic) NSArray <NSURLSessionDataTask *> *dataTasks;
 
 /**
  The upload tasks currently run by the managed session.
  */
-@property (readonly, nonnull) NSArray <NSURLSessionUploadTask *> *uploadTasks;
+@property (readonly, nonnull, nonatomic) NSArray <NSURLSessionUploadTask *> *uploadTasks;
 
 /**
  The download tasks currently run by the managed session.
  */
-@property (readonly, nonnull) NSArray <NSURLSessionDownloadTask *> *downloadTasks;
+@property (readonly, nonnull, nonatomic) NSArray <NSURLSessionDownloadTask *> *downloadTasks;
 
 #pragma mark -
 

@@ -6,7 +6,7 @@
 @interface _RFURLSessionManager ()
 @property NSOperationQueue *operationQueue;
 @property NSURLSession *session;
-@property NSMutableDictionary<NSNumber *, _RFURLSessionManagerTaskDelegate *> *mutableTaskDelegatesKeyedByTaskIdentifier;
+@property NSMutableDictionary<NSNumber *, _RFAPISessionTask *> *mutableTaskDelegatesKeyedByTaskIdentifier;
 @property NSString *taskDescriptionForSessionTasks;
 @property NSLock *lock;
 @end
@@ -89,10 +89,10 @@
 
 #pragma mark Task Delegate
 
-- (_RFURLSessionManagerTaskDelegate *)delegateForTask:(NSURLSessionTask *)task {
+- (_RFAPISessionTask *)delegateForTask:(NSURLSessionTask *)task {
     NSParameterAssert(task);
 
-    _RFURLSessionManagerTaskDelegate *delegate = nil;
+    _RFAPISessionTask *delegate = nil;
     [self.lock lock];
     delegate = self.mutableTaskDelegatesKeyedByTaskIdentifier[@(task.taskIdentifier)];
     [self.lock unlock];
@@ -100,7 +100,7 @@
     return delegate;
 }
 
-- (void)setDelegate:(_RFURLSessionManagerTaskDelegate *)delegate forTask:(NSURLSessionTask *)task {
+- (void)setDelegate:(_RFAPISessionTask *)delegate forTask:(NSURLSessionTask *)task {
     NSParameterAssert(task);
     NSParameterAssert(delegate);
 
@@ -109,8 +109,16 @@
     [self.lock unlock];
 }
 
+- (void)removeDelegateForTask:(NSURLSessionTask *)task {
+    NSParameterAssert(task);
+
+    [self.lock lock];
+    [self.mutableTaskDelegatesKeyedByTaskIdentifier removeObjectForKey:@(task.taskIdentifier)];
+    [self.lock unlock];
+}
+
 - (void)addDelegateForDataTask:(NSURLSessionDataTask *)dataTask uploadProgress:(nullable void (^)(NSProgress *uploadProgress)) uploadProgressBlock downloadProgress:(nullable void (^)(NSProgress *downloadProgress)) downloadProgressBlock completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler {
-    _RFURLSessionManagerTaskDelegate *delegate = [[_RFURLSessionManagerTaskDelegate alloc] initWithTask:dataTask];
+    _RFAPISessionTask *delegate = [[_RFAPISessionTask alloc] initWithTask:dataTask];
     delegate.manager = self;
     delegate.completionHandler = completionHandler;
 
@@ -122,7 +130,7 @@
 }
 
 - (void)addDelegateForUploadTask:(NSURLSessionUploadTask *)uploadTask progress:(void (^)(NSProgress *uploadProgress)) uploadProgressBlock completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler {
-    _RFURLSessionManagerTaskDelegate *delegate = [[_RFURLSessionManagerTaskDelegate alloc] initWithTask:uploadTask];
+    _RFAPISessionTask *delegate = [[_RFAPISessionTask alloc] initWithTask:uploadTask];
     delegate.manager = self;
     delegate.completionHandler = completionHandler;
 
@@ -134,7 +142,7 @@
 }
 
 - (void)addDelegateForDownloadTask:(NSURLSessionDownloadTask *)downloadTask progress:(void (^)(NSProgress *downloadProgress)) downloadProgressBlock destination:(NSURL * (^)(NSURL *targetPath, NSURLResponse *response))destination completionHandler:(void (^)(NSURLResponse *response, NSURL *filePath, NSError *error))completionHandler {
-    _RFURLSessionManagerTaskDelegate *delegate = [[_RFURLSessionManagerTaskDelegate alloc] initWithTask:downloadTask];
+    _RFAPISessionTask *delegate = [[_RFAPISessionTask alloc] initWithTask:downloadTask];
     delegate.manager = self;
     delegate.completionHandler = completionHandler;
 
@@ -149,14 +157,6 @@
     [self setDelegate:delegate forTask:downloadTask];
 
     delegate.downloadProgressBlock = downloadProgressBlock;
-}
-
-- (void)removeDelegateForTask:(NSURLSessionTask *)task {
-    NSParameterAssert(task);
-
-    [self.lock lock];
-    [self.mutableTaskDelegatesKeyedByTaskIdentifier removeObjectForKey:@(task.taskIdentifier)];
-    [self.lock unlock];
 }
 
 #pragma mark Tasks
@@ -369,7 +369,7 @@
         }
     }
 
-    _RFURLSessionManagerTaskDelegate *delegate = [self delegateForTask:task];
+    _RFAPISessionTask *delegate = [self delegateForTask:task];
     [delegate URLSession:session task:task didSendBodyData:bytesSent totalBytesSent:totalBytesSent totalBytesExpectedToSend:totalBytesExpectedToSend];
 
     if (self.taskDidSendBodyData) {
@@ -378,7 +378,7 @@
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
-    _RFURLSessionManagerTaskDelegate *delegate = [self delegateForTask:task];
+    _RFAPISessionTask *delegate = [self delegateForTask:task];
 
     // delegate may be nil when completing a task in the background
     if (delegate) {
@@ -407,7 +407,7 @@
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
-    _RFURLSessionManagerTaskDelegate *delegate = [self delegateForTask:dataTask];
+    _RFAPISessionTask *delegate = [self delegateForTask:dataTask];
     if (delegate) {
         [self removeDelegateForTask:dataTask];
         [self setDelegate:delegate forTask:downloadTask];
@@ -420,7 +420,7 @@
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
 
-    _RFURLSessionManagerTaskDelegate *delegate = [self delegateForTask:dataTask];
+    _RFAPISessionTask *delegate = [self delegateForTask:dataTask];
     [delegate URLSession:session dataTask:dataTask didReceiveData:data];
 
     if (self.dataTaskDidReceiveData) {
@@ -443,7 +443,7 @@
 #pragma mark NSURLSessionDownloadDelegate
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
-    _RFURLSessionManagerTaskDelegate *delegate = [self delegateForTask:downloadTask];
+    _RFAPISessionTask *delegate = [self delegateForTask:downloadTask];
     if (self.downloadTaskDidFinishDownloading) {
         NSURL *fileURL = self.downloadTaskDidFinishDownloading(session, downloadTask, location);
         if (fileURL) {
@@ -458,7 +458,7 @@
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
 
-    _RFURLSessionManagerTaskDelegate *delegate = [self delegateForTask:downloadTask];
+    _RFAPISessionTask *delegate = [self delegateForTask:downloadTask];
     [delegate URLSession:session downloadTask:downloadTask didWriteData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
     if (self.downloadTaskDidWriteData) {
         self.downloadTaskDidWriteData(session, downloadTask, bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
@@ -467,7 +467,7 @@
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
 
-    _RFURLSessionManagerTaskDelegate *delegate = [self delegateForTask:downloadTask];
+    _RFAPISessionTask *delegate = [self delegateForTask:downloadTask];
     [delegate URLSession:session downloadTask:downloadTask didResumeAtOffset:fileOffset expectedTotalBytes:expectedTotalBytes];
     if (self.downloadTaskDidResume) {
          self.downloadTaskDidResume(session, downloadTask, fileOffset, expectedTotalBytes);
