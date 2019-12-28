@@ -11,8 +11,6 @@ http://www.opensource.org/licenses/mit-license.php
 
 #import <AFNetworking/AFHTTPSessionManager.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface _RFURLSessionManager : NSObject <
     NSURLSessionDelegate,
     NSURLSessionTaskDelegate,
@@ -23,12 +21,14 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  The managed session.
  */
-@property (readonly) NSURLSession *session;
+@property (readonly, nonnull) NSURLSession *session;
 
+#if !TARGET_OS_WATCH
 /**
- The operation queue on which delegate callbacks are run.
+ The network reachability manager. `AFURLSessionManager` uses the `sharedManager` by default.
  */
-@property (readonly) NSOperationQueue *operationQueue;
+@property (null_resettable, nonatomic) AFNetworkReachabilityManager *reachabilityManager;
+#endif
 
 /**
  Default request serializer.
@@ -53,58 +53,46 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (null_resettable, nonatomic) AFSecurityPolicy *securityPolicy;
 
-#if !TARGET_OS_WATCH
-///--------------------------------------
-/// @name Monitoring Network Reachability
-///--------------------------------------
+#pragma mark - Queue
 
 /**
- The network reachability manager. `AFURLSessionManager` uses the `sharedManager` by default.
+ The operation queue on which delegate callbacks are run.
  */
-@property (null_resettable, nonatomic) AFNetworkReachabilityManager *reachabilityManager;
-#endif
-
-///----------------------------
-/// @name Getting Session Tasks
-///----------------------------
-
-/**
- The data, upload, and download tasks currently run by the managed session.
- */
-@property (readonly, nonatomic, strong) NSArray <NSURLSessionTask *> *tasks;
-
-/**
- The data tasks currently run by the managed session.
- */
-@property (readonly, nonatomic, strong) NSArray <NSURLSessionDataTask *> *dataTasks;
-
-/**
- The upload tasks currently run by the managed session.
- */
-@property (readonly, nonatomic, strong) NSArray <NSURLSessionUploadTask *> *uploadTasks;
-
-/**
- The download tasks currently run by the managed session.
- */
-@property (readonly, nonatomic, strong) NSArray <NSURLSessionDownloadTask *> *downloadTasks;
-
-///-------------------------------
-/// @name Managing Callback Queues
-///-------------------------------
+@property (readonly, nonnull) NSOperationQueue *operationQueue;
 
 /**
  The dispatch queue for `completionBlock`. If `NULL` (default), the main queue is used.
  */
-@property (nonatomic, strong, nullable) dispatch_queue_t completionQueue;
+@property (nullable, nonatomic) dispatch_queue_t completionQueue;
 
 /**
  The dispatch group for `completionBlock`. If `NULL` (default), a private dispatch group is used.
  */
-@property (nonatomic, strong, nullable) dispatch_group_t completionGroup;
+@property (nullable, nonatomic) dispatch_group_t completionGroup;
 
-///---------------------
-/// @name Initialization
-///---------------------
+#pragma mark - Getting Session Tasks
+
+/**
+ The data, upload, and download tasks currently run by the managed session.
+ */
+@property (readonly, nonnull) NSArray <NSURLSessionTask *> *tasks;
+
+/**
+ The data tasks currently run by the managed session.
+ */
+@property (readonly, nonnull) NSArray <NSURLSessionDataTask *> *dataTasks;
+
+/**
+ The upload tasks currently run by the managed session.
+ */
+@property (readonly, nonnull) NSArray <NSURLSessionUploadTask *> *uploadTasks;
+
+/**
+ The download tasks currently run by the managed session.
+ */
+@property (readonly, nonnull) NSArray <NSURLSessionDownloadTask *> *downloadTasks;
+
+#pragma mark -
 
 /**
  Creates and returns a manager for a session created with the specified configuration. This is the designated initializer.
@@ -113,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
 
  @return A manager for a newly-created session.
  */
-- (instancetype)initWithSessionConfiguration:(nullable NSURLSessionConfiguration *)configuration NS_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithSessionConfiguration:(nullable NSURLSessionConfiguration *)configuration NS_DESIGNATED_INITIALIZER;
 
 /**
  Invalidates the managed session, optionally canceling pending tasks.
@@ -122,9 +110,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)invalidateSessionCancelingTasks:(BOOL)cancelPendingTasks;
 
-///-------------------------
-/// @name Running Data Tasks
-///-------------------------
+#pragma mark - Running Tasks
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  Creates an `NSURLSessionDataTask` with the specified request.
@@ -135,10 +123,6 @@ NS_ASSUME_NONNULL_BEGIN
  @param completionHandler A block object to be executed when the task finishes. This block has no return value and takes three arguments: the server response, the response object created by that serializer, and the error that occurred, if any.
  */
 - (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request uploadProgress:(nullable void (^)(NSProgress *uploadProgress))uploadProgressBlock downloadProgress:(nullable void (^)(NSProgress *downloadProgress))downloadProgressBlock completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject,  NSError * _Nullable error))completionHandler;
-
-///---------------------------
-/// @name Running Upload Tasks
-///---------------------------
 
 /**
  Creates an `NSURLSessionUploadTask` with the specified request for a local file.
@@ -169,10 +153,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (NSURLSessionUploadTask *)uploadTaskWithStreamedRequest:(NSURLRequest *)request progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgressBlock completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
 
-///-----------------------------
-/// @name Running Download Tasks
-///-----------------------------
-
 /**
  Creates an `NSURLSessionDownloadTask` with the specified request.
 
@@ -195,9 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (NSURLSessionDownloadTask *)downloadTaskWithResumeData:(NSData *)resumeData progress:(nullable void (^)(NSProgress *downloadProgress))downloadProgressBlock destination:(nullable NSURL * (^)(NSURL *targetPath, NSURLResponse *response))destination completionHandler:(nullable void (^)(NSURLResponse *response, NSURL * _Nullable filePath, NSError * _Nullable error))completionHandler;
 
-///---------------------------------
-/// @name Getting Progress for Tasks
-///---------------------------------
+#pragma mark - Getting Progress for Tasks
 
 /**
  Returns the upload progress of the specified task.
@@ -206,7 +184,7 @@ NS_ASSUME_NONNULL_BEGIN
 
  @return An `NSProgress` object reporting the upload progress of a task, or `nil` if the progress is unavailable.
  */
-- (nullable NSProgress *)uploadProgressForTask:(NSURLSessionTask *)task;
+- (nullable NSProgress *)uploadProgressForTask:(nonnull NSURLSessionTask *)task;
 
 /**
  Returns the download progress of the specified task.
@@ -215,11 +193,9 @@ NS_ASSUME_NONNULL_BEGIN
 
  @return An `NSProgress` object reporting the download progress of a task, or `nil` if the progress is unavailable.
  */
-- (nullable NSProgress *)downloadProgressForTask:(NSURLSessionTask *)task;
+- (nullable NSProgress *)downloadProgressForTask:(nonnull NSURLSessionTask *)task;
 
-///-----------------------------------------
-/// @name Setting Session Delegate Callbacks
-///-----------------------------------------
+#pragma mark - Callbacks
 
 /**
  Sets a block to be executed when the managed session becomes invalid, as handled by the `NSURLSessionDelegate` method `URLSession:didBecomeInvalidWithError:`.
@@ -234,10 +210,6 @@ NS_ASSUME_NONNULL_BEGIN
  @param block A block object to be executed when a connection level authentication challenge has occurred. The block returns the disposition of the authentication challenge, and takes three arguments: the session, the authentication challenge, and a pointer to the credential that should be used to resolve the challenge.
  */
 @property (nullable) NSURLSessionAuthChallengeDisposition (^sessionDidReceiveAuthenticationChallenge)(NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential * _Nullable __autoreleasing * _Nullable credential);
-
-///--------------------------------------
-/// @name Setting Task Delegate Callbacks
-///--------------------------------------
 
 /**
  Sets a block to be executed when a task requires a new request body stream to send to the remote server, as handled by the `NSURLSessionTaskDelegate` method `URLSession:task:needNewBodyStream:`.
@@ -273,10 +245,6 @@ NS_ASSUME_NONNULL_BEGIN
  @param block A block object to be executed when a session task is completed. The block has no return value, and takes three arguments: the session, the task, and any error that occurred in the process of executing the task.
  */
 @property (nullable) void (^taskDidComplete)(NSURLSession *session, NSURLSessionTask *task, NSError * _Nullable error);
-
-///-------------------------------------------
-/// @name Setting Data Task Delegate Callbacks
-///-------------------------------------------
 
 /**
  Sets a block to be executed when a data task has received a response, as handled by the `NSURLSessionDataDelegate` method `URLSession:dataTask:didReceiveResponse:completionHandler:`.
@@ -327,6 +295,5 @@ Sets a block to be executed when a download task has been resumed, as handled by
 */
 @property (nullable) void (^downloadTaskDidResume)(NSURLSession *session, NSURLSessionDownloadTask *downloadTask, int64_t fileOffset, int64_t expectedTotalBytes);
 
-@end
-
 NS_ASSUME_NONNULL_END
+@end
