@@ -2,6 +2,9 @@
 #import "RFAPISessionTask.h"
 #import "RFAPISessionManager.h"
 
+@interface _RFAPISessionTask ()
+@property (nullable) NSMutableData *mutableData;
+@end
 
 @implementation _RFAPISessionTask
 
@@ -9,6 +12,7 @@
     self = [super init];
     if (!self) return nil;
 
+    _task = task;
     _mutableData = [NSMutableData.alloc initWithCapacity:512];
     _uploadProgress = [NSProgress.alloc initWithParent:nil userInfo:nil];
     _downloadProgress = [NSProgress.alloc initWithParent:nil userInfo:nil];
@@ -43,12 +47,12 @@
 #pragma mark NSProgress Tracking
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
-   if ([object isEqual:self.downloadProgress]) {
+   if (object == self.downloadProgress) {
         if (self.downloadProgressBlock) {
             self.downloadProgressBlock(object);
         }
     }
-    else if ([object isEqual:self.uploadProgress]) {
+    else if (object == self.uploadProgress) {
         if (self.uploadProgressBlock) {
             self.uploadProgressBlock(object);
         }
@@ -58,40 +62,35 @@
 #pragma mark NSURLSessionTaskDelegate
 
 - (void)URLSession:(__unused NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
-    __strong _RFURLSessionManager *manager = self.manager;
+    _RFURLSessionManager *manager = self.manager;
 
-    __block id responseObject = nil;
-
-    //Performance Improvement from #2672
-    NSData *data = nil;
-    if (self.mutableData) {
-        data = [self.mutableData copy];
-        //We no longer need the reference, so nil it out to gain back some memory.
+    NSData *data = self.mutableData;
+    if (data) {
         self.mutableData = nil;
     }
 
     if (error) {
         dispatch_group_async(manager.completionGroup, manager.completionQueue, ^{
             if (self.completionHandler) {
-                self.completionHandler(task.response, responseObject, error);
+                self.completionHandler(task.response, nil, error);
             }
         });
-    } else {
-        dispatch_async(manager.processingQueue, ^{
-            NSError *serializationError = nil;
-            responseObject = [manager.responseSerializer responseObjectForResponse:task.response data:data error:&serializationError];
-
-            if (self.downloadFileURL) {
-                responseObject = self.downloadFileURL;
-            }
-
-            dispatch_group_async(manager.completionGroup, manager.completionQueue, ^{
-                if (self.completionHandler) {
-                    self.completionHandler(task.response, responseObject, serializationError);
-                }
-            });
-        });
+        return;
     }
+    dispatch_async(manager.processingQueue, ^{
+        NSError *serializationError = nil;
+        id responseObject = [manager.responseSerializer responseObjectForResponse:task.response data:data error:&serializationError];
+
+        if (self.downloadFileURL) {
+            responseObject = self.downloadFileURL;
+        }
+
+        dispatch_group_async(manager.completionGroup, manager.completionQueue, ^{
+            if (self.completionHandler) {
+                self.completionHandler(task.response, responseObject, serializationError);
+            }
+        });
+    });
 }
 
 #pragma mark NSURLSessionDataDelegate
@@ -134,6 +133,10 @@
             [[NSFileManager defaultManager] moveItemAtURL:location toURL:fileURL error:&fileManagerError];
         }
     }
+}
+
+- (void)cancel {
+    [self.task cancel];
 }
 
 @end

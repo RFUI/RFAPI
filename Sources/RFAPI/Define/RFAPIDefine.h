@@ -12,6 +12,8 @@
 
 typedef NSString * RFAPIName NS_EXTENSIBLE_STRING_ENUM;
 
+// todo: Default define
+
 @interface RFAPIDefine : NSObject <
     NSCopying,
     NSSecureCoding

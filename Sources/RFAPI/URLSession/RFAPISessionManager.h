@@ -11,6 +11,9 @@ http://www.opensource.org/licenses/mit-license.php
 
 #import <AFNetworking/AFHTTPSessionManager.h>
 
+@class AFHTTPRequestSerializer;
+@class AFHTTPResponseSerializer;
+
 @interface _RFURLSessionManager : NSObject <
     NSURLSessionDelegate,
     NSURLSessionTaskDelegate,
@@ -44,14 +47,14 @@ http://www.opensource.org/licenses/mit-license.php
 
  Default value is an `AFJSONRequestSerializer`.
  */
-@property (null_resettable, nonatomic) id<AFURLRequestSerialization> requestSerializer;
+@property (null_resettable, nonatomic) __kindof AFHTTPRequestSerializer <AFURLRequestSerialization> *requestSerializer;
 
 /**
  Default response serializer.
 
  Default value is an `AFJSONResponseSerializer`.
  */
-@property (null_resettable, nonatomic) id <AFURLResponseSerialization> responseSerializer;
+@property (null_resettable, nonatomic) __kindof AFHTTPResponseSerializer <AFURLResponseSerialization> *responseSerializer;
 
 ///-------------------------------
 /// @name Managing Security Policy

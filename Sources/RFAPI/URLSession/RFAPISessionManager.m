@@ -77,14 +77,14 @@ static dispatch_group_t url_session_manager_completion_group() {
 
 #pragma mark Resettable propertys
 
-- (id<AFURLRequestSerialization>)requestSerializer {
+- (AFHTTPRequestSerializer<AFURLRequestSerialization> *)requestSerializer {
     if (!_requestSerializer) {
         _requestSerializer = [AFJSONRequestSerializer.alloc init];
     }
     return _requestSerializer;
 }
 
-- (id<AFURLResponseSerialization>)responseSerializer {
+- (AFHTTPResponseSerializer<AFURLResponseSerialization> *)responseSerializer {
     if (!_responseSerializer) {
         _responseSerializer = [AFJSONResponseSerializer.alloc init];
     }

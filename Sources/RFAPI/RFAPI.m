@@ -211,8 +211,8 @@ RFInitializingRootForNSObject
     NSParameterAssert(define);
 
     // Preprocessing arguments
-    NSMutableDictionary *requestParameters = [NSMutableDictionary new];
-    NSMutableDictionary *requestHeaders = [NSMutableDictionary new];
+    NSMutableDictionary *requestParameters = [NSMutableDictionary.alloc initWithCapacity:16];
+    NSMutableDictionary *requestHeaders = [NSMutableDictionary.alloc initWithCapacity:4];
     [self preprocessingRequestParameters:&requestParameters HTTPHeaders:&requestHeaders withParameters:(NSDictionary *)parameters define:define controlInfo:controlInfo];
 
     // Creat URL

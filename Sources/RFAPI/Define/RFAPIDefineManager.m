@@ -1,6 +1,6 @@
 
 #import "RFAPIDefineManager.h"
-#import "RFAPI.h"
+#import "RFAPIPrivate.h"
 #import "RFAPIDefineConfigFile.h"
 #import "NSDictionary+RFKit.h"
 
@@ -76,7 +76,7 @@
 
         id parameter = parameters[key];
         if (parameter) {
-            NSString *encodedParameter = [[(id)parameter description] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+            NSString *encodedParameter = [[(NSObject *)parameter description] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
             [path replaceCharactersInRange:match.range withString:encodedParameter];
             [parameters removeObjectForKey:key];
         }
@@ -95,9 +95,7 @@
     }
     
     if (!url) {
-#if RFDEBUG
-        dout_error(@"无法拼接路径 %@ 到 %@\n请检查接口定义", path, define.baseURL);
-#endif
+        RFAPILogError_(@"无法拼接路径 %@ 到 %@\n请检查接口定义", path, define.baseURL);
         if (error) {
             *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorBadURL userInfo:@{
                 NSLocalizedDescriptionKey : @"内部错误，无法创建请求",
@@ -116,7 +114,8 @@
             [queryStringPair addObject:[NSString stringWithFormat:@"%@=%@", key, forceQuryStringParameters[key]]];
         }
         NSString *query = [queryStringPair componentsJoinedByString:@"&"];
-        url = [NSURL URLWithString:[url.absoluteString stringByAppendingFormat:url.query.length ? @"&%@" : @"?%@", query]];
+        NSString *urlString = [url.absoluteString stringByAppendingFormat:url.query.length ? @"&%@" : @"?%@", query];
+        url = [NSURL.alloc initWithString:urlString];
     }
     
     return url;
