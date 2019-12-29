@@ -100,6 +100,7 @@
 
 @property (nullable) id<RFAPIModelTransformer> modelTransformer;
 
+// todo: 和 SM 队列合一
 /**
  If `NULL` (default), the main queue will be used.
  */

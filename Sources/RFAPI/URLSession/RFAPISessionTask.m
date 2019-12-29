@@ -44,6 +44,21 @@
     [self.uploadProgress removeObserver:self forKeyPath:NSStringFromSelector(@selector(fractionCompleted))];
 }
 
+- (BOOL)isEnd {
+    switch (self.task.state) {
+        case NSURLSessionTaskStateRunning:
+        case NSURLSessionTaskStateSuspended:
+            return NO;
+        case NSURLSessionTaskStateCanceling:
+        case NSURLSessionTaskStateCompleted:
+            return YES;
+    }
+}
+
+- (void)cancel {
+    [self.task cancel];
+}
+
 #pragma mark NSProgress Tracking
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
@@ -133,10 +148,6 @@
             [[NSFileManager defaultManager] moveItemAtURL:location toURL:fileURL error:&fileManagerError];
         }
     }
-}
-
-- (void)cancel {
-    [self.task cancel];
 }
 
 @end

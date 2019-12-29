@@ -22,6 +22,9 @@ http://www.opensource.org/licenses/mit-license.php
 @property (weak, nullable) _RFURLSessionManager *manager;
 @property (readonly, nonnull) NSURLSessionTask *task;
 
+/// 
+@property (readonly, nonatomic) BOOL isEnd;
+
 @property (nonnull) NSProgress *uploadProgress;
 @property (nonnull) NSProgress *downloadProgress;
 @property (nullable) void (^uploadProgressBlock)(NSProgress *__nonnull);

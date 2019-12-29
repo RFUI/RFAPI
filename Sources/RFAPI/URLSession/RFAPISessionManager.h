@@ -14,6 +14,8 @@ http://www.opensource.org/licenses/mit-license.php
 @class AFHTTPRequestSerializer;
 @class AFHTTPResponseSerializer;
 
+@class _RFAPISessionTask;
+
 @interface _RFURLSessionManager : NSObject <
     NSURLSessionDelegate,
     NSURLSessionTaskDelegate,
@@ -118,68 +120,7 @@ http://www.opensource.org/licenses/mit-license.php
 
 #pragma mark - Running Tasks
 
-NS_ASSUME_NONNULL_BEGIN
-
-/**
- Creates an `NSURLSessionDataTask` with the specified request.
-
- @param request The HTTP request for the request.
- @param uploadProgressBlock A block object to be executed when the upload progress is updated. Note this block is called on the session queue, not the main queue.
- @param downloadProgressBlock A block object to be executed when the download progress is updated. Note this block is called on the session queue, not the main queue.
- @param completionHandler A block object to be executed when the task finishes. This block has no return value and takes three arguments: the server response, the response object created by that serializer, and the error that occurred, if any.
- */
-- (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request uploadProgress:(nullable void (^)(NSProgress *uploadProgress))uploadProgressBlock downloadProgress:(nullable void (^)(NSProgress *downloadProgress))downloadProgressBlock completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject,  NSError * _Nullable error))completionHandler;
-
-/**
- Creates an `NSURLSessionUploadTask` with the specified request for a local file.
-
- @param request The HTTP request for the request.
- @param fileURL A URL to the local file to be uploaded.
- @param uploadProgressBlock A block object to be executed when the upload progress is updated. Note this block is called on the session queue, not the main queue.
- @param completionHandler A block object to be executed when the task finishes. This block has no return value and takes three arguments: the server response, the response object created by that serializer, and the error that occurred, if any.
- */
-- (NSURLSessionUploadTask *)uploadTaskWithRequest:(NSURLRequest *)request fromFile:(NSURL *)fileURL progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgressBlock completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError  * _Nullable error))completionHandler;
-
-/**
- Creates an `NSURLSessionUploadTask` with the specified request for an HTTP body.
-
- @param request The HTTP request for the request.
- @param bodyData A data object containing the HTTP body to be uploaded.
- @param uploadProgressBlock A block object to be executed when the upload progress is updated. Note this block is called on the session queue, not the main queue.
- @param completionHandler A block object to be executed when the task finishes. This block has no return value and takes three arguments: the server response, the response object created by that serializer, and the error that occurred, if any.
- */
-- (NSURLSessionUploadTask *)uploadTaskWithRequest:(NSURLRequest *)request fromData:(nullable NSData *)bodyData progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgressBlock completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
-
-/**
- Creates an `NSURLSessionUploadTask` with the specified streaming request.
-
- @param request The HTTP request for the request.
- @param uploadProgressBlock A block object to be executed when the upload progress is updated. Note this block is called on the session queue, not the main queue.
- @param completionHandler A block object to be executed when the task finishes. This block has no return value and takes three arguments: the server response, the response object created by that serializer, and the error that occurred, if any.
- */
-- (NSURLSessionUploadTask *)uploadTaskWithStreamedRequest:(NSURLRequest *)request progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgressBlock completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
-
-/**
- Creates an `NSURLSessionDownloadTask` with the specified request.
-
- @param request The HTTP request for the request.
- @param downloadProgressBlock A block object to be executed when the download progress is updated. Note this block is called on the session queue, not the main queue.
- @param destination A block object to be executed in order to determine the destination of the downloaded file. This block takes two arguments, the target path & the server response, and returns the desired file URL of the resulting download. The temporary file used during the download will be automatically deleted after being moved to the returned URL.
- @param completionHandler A block to be executed when a task finishes. This block has no return value and takes three arguments: the server response, the path of the downloaded file, and the error describing the network or parsing error that occurred, if any.
-
- @warning If using a background `NSURLSessionConfiguration` on iOS, these blocks will be lost when the app is terminated. Background sessions may prefer to use `-setDownloadTaskDidFinishDownloadingBlock:` to specify the URL for saving the downloaded file, rather than the destination block of this method.
- */
-- (NSURLSessionDownloadTask *)downloadTaskWithRequest:(NSURLRequest *)request progress:(nullable void (^)(NSProgress *downloadProgress))downloadProgressBlock destination:(nullable NSURL * (^)(NSURL *targetPath, NSURLResponse *response))destination completionHandler:(nullable void (^)(NSURLResponse *response, NSURL * _Nullable filePath, NSError * _Nullable error))completionHandler;
-
-/**
- Creates an `NSURLSessionDownloadTask` with the specified resume data.
-
- @param resumeData The data used to resume downloading.
- @param downloadProgressBlock A block object to be executed when the download progress is updated. Note this block is called on the session queue, not the main queue.
- @param destination A block object to be executed in order to determine the destination of the downloaded file. This block takes two arguments, the target path & the server response, and returns the desired file URL of the resulting download. The temporary file used during the download will be automatically deleted after being moved to the returned URL.
- @param completionHandler A block to be executed when a task finishes. This block has no return value and takes three arguments: the server response, the path of the downloaded file, and the error describing the network or parsing error that occurred, if any.
- */
-- (NSURLSessionDownloadTask *)downloadTaskWithResumeData:(NSData *)resumeData progress:(nullable void (^)(NSProgress *downloadProgress))downloadProgressBlock destination:(nullable NSURL * (^)(NSURL *targetPath, NSURLResponse *response))destination completionHandler:(nullable void (^)(NSURLResponse *response, NSURL * _Nullable filePath, NSError * _Nullable error))completionHandler;
+- (nullable _RFAPISessionTask *)addSessionTask:(nullable NSURLSessionTask *)sessionTask;
 
 #pragma mark - Getting Progress for Tasks
 
@@ -202,6 +143,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSProgress *)downloadProgressForTask:(nonnull NSURLSessionTask *)task;
 
 #pragma mark - Callbacks
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  Sets a block to be executed when the managed session becomes invalid, as handled by the `NSURLSessionDelegate` method `URLSession:didBecomeInvalidWithError:`.

@@ -3,6 +3,7 @@
 #import "RFAPIDefineManager.h"
 #import "RFAPIModelTransformer.h"
 #import "RFAPISessionManager.h"
+#import "RFAPISessionTask.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
 #import <AFNetworking/AFURLRequestSerialization.h>
 #import <AFNetworking/AFURLResponseSerialization.h>
@@ -19,13 +20,9 @@ NSString *RFAPILocalizedString(NSString *key, NSString *value) {
     return [NSBundle.mainBundle localizedStringForKey:key value:value table:nil];
 }
 
-@interface _RFAPITaskObject : NSObject <RFAPITask>
-@property NSURLSessionTask *sessionTask;
-@property BOOL isCacnceld;
-@end
-
 @interface RFAPI ()
 @property _RFURLSessionManager *_RFAPI_sessionManager;
+@property (null_resettable, nonatomic) _RFURLSessionManager *http;
 @property (readwrite) RFAPIDefineManager *defineManager;
 @end
 
@@ -48,7 +45,6 @@ RFInitializingRootForNSObject
     if (self._RFAPI_sessionManager) return self._RFAPI_sessionManager;
     NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
     _RFURLSessionManager *http = [_RFURLSessionManager.alloc initWithSessionConfiguration:config];
-    http.completionQueue = self.responseProcessingQueue;
     self._RFAPI_sessionManager = http;
     return self._RFAPI_sessionManager;
 }
@@ -164,8 +160,11 @@ RFInitializingRootForNSObject
     };
 
     // Setup HTTP operation
-    NSURLSessionDataTask *dataTask = nil;
-    dataTask = [self.http dataTaskWithRequest:request uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+    NSURLSessionDataTask *dataTask = [self.http.session dataTaskWithRequest:request];
+    _RFAPISessionTask *task = [self.http addSessionTask:dataTask];
+    @weakify(task)
+    task.completionHandler = ^(NSURLResponse * _Nullable response, id  _Nullable responseObject, NSError * _Nullable error) {
+        @strongify(task)
         if (error) {
             operationFailure(dataTask, error);
             return;
@@ -173,21 +172,20 @@ RFInitializingRootForNSObject
         @autoreleasepool {
             // todo: responseProcessingQueue
             // todo: control info
-//            dout_debug(@"HTTP request operation(%p) with info: %@ completed.", (void *)dataTask, [op valueForKeyPath:@"userInfo.RFAPIOperationUIkControl"])
+            //            dout_debug(@"HTTP request operation(%p) with info: %@ completed.", (void *)dataTask, [op valueForKeyPath:@"userInfo.RFAPIOperationUIkControl"])
 
-            [self processingCompletionWithHTTPOperation:dataTask responseObject:responseObject define:define control:nil success:operationSuccess failure:operationFailure];
+            [self processingCompletionWithHTTPOperation:task responseObject:responseObject define:define control:nil success:operationSuccess failure:operationFailure];
         }
-    }];
+    };
+
     // Start request
     if (message) {
         dispatch_sync_on_main(^{
             [self.networkActivityIndicatorManager showMessage:message];
         });
     }
-    _RFAPITaskObject *task = _RFAPITaskObject.new;
-    task.sessionTask = dataTask;
-    dispatch_async(self.responseProcessingQueue, ^{
-        if (task.isCacnceld) return;
+    dispatch_async(self.http.processingQueue, ^{
+        if (task.isEnd) return;
         [dataTask resume];
     });
     return task;
@@ -454,15 +452,6 @@ typedef NS_ENUM(short, RFHTTPRequestFormDataSourceType) {
         default:
             break;
     }
-}
-
-@end
-
-@implementation _RFAPITaskObject
-
-- (void)cancel {
-    self.isCacnceld = YES;
-    [self.sessionTask cancel];
 }
 
 @end

@@ -47,10 +47,12 @@ static dispatch_group_t url_session_manager_completion_group() {
         configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     }
 
-    self.operationQueue = [NSOperationQueue.alloc init];
-    self.operationQueue.maxConcurrentOperationCount = 1;
+    NSOperationQueue *sessionQueue = [NSOperationQueue.alloc init];
+    sessionQueue.maxConcurrentOperationCount = 1;
+    sessionQueue.name = @"com.github.RFUI.RFAPI.session.delegate";
 
-    self.session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:self.operationQueue];
+    self.operationQueue = sessionQueue;
+    self.session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:sessionQueue];
 
     self.mutableTaskDelegatesKeyedByTaskIdentifier = [NSMutableDictionary.alloc initWithCapacity:8];
 
@@ -60,15 +62,15 @@ static dispatch_group_t url_session_manager_completion_group() {
 
     [self.session getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> * dataTasks, NSArray<NSURLSessionUploadTask *> * uploadTasks, NSArray<NSURLSessionDownloadTask *> * downloadTasks) {
         for (NSURLSessionDataTask *task in dataTasks) {
-            [self addDelegateForDataTask:task uploadProgress:nil downloadProgress:nil completionHandler:nil];
+            [self addSessionTask:task];
         }
 
-        for (NSURLSessionUploadTask *uploadTask in uploadTasks) {
-            [self addDelegateForUploadTask:uploadTask progress:nil completionHandler:nil];
+        for (NSURLSessionUploadTask *task in uploadTasks) {
+            [self addSessionTask:task];
         }
 
-        for (NSURLSessionDownloadTask *downloadTask in downloadTasks) {
-            [self addDelegateForDownloadTask:downloadTask progress:nil destination:nil completionHandler:nil];
+        for (NSURLSessionDownloadTask *task in downloadTasks) {
+            [self addSessionTask:task];
         }
     }];
 
@@ -128,7 +130,7 @@ static dispatch_group_t url_session_manager_completion_group() {
     return _completionGroup;
 }
 
-#pragma mark Task Delegate
+#pragma mark API Task / Delegate
 
 - (_RFAPISessionTask *)delegateForTask:(NSURLSessionTask *)task {
     NSParameterAssert(task);
@@ -158,49 +160,18 @@ static dispatch_group_t url_session_manager_completion_group() {
     [self.lock unlock];
 }
 
-- (void)addDelegateForDataTask:(NSURLSessionDataTask *)dataTask uploadProgress:(nullable void (^)(NSProgress *uploadProgress)) uploadProgressBlock downloadProgress:(nullable void (^)(NSProgress *downloadProgress)) downloadProgressBlock completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler {
-    _RFAPISessionTask *delegate = [[_RFAPISessionTask alloc] initWithTask:dataTask];
+- (_RFAPISessionTask *)addSessionTask:(NSURLSessionTask *)sessionTask {
+    if (!sessionTask) return nil;
+
+    _RFAPISessionTask *delegate = [[_RFAPISessionTask alloc] initWithTask:sessionTask];
     delegate.manager = self;
-    delegate.completionHandler = completionHandler;
 
-    dataTask.taskDescription = self.taskDescriptionForSessionTasks;
-    [self setDelegate:delegate forTask:dataTask];
-
-    delegate.uploadProgressBlock = uploadProgressBlock;
-    delegate.downloadProgressBlock = downloadProgressBlock;
+    sessionTask.taskDescription = self.taskDescriptionForSessionTasks;
+    [self setDelegate:delegate forTask:sessionTask];
+    return delegate;
 }
 
-- (void)addDelegateForUploadTask:(NSURLSessionUploadTask *)uploadTask progress:(void (^)(NSProgress *uploadProgress)) uploadProgressBlock completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler {
-    _RFAPISessionTask *delegate = [[_RFAPISessionTask alloc] initWithTask:uploadTask];
-    delegate.manager = self;
-    delegate.completionHandler = completionHandler;
-
-    uploadTask.taskDescription = self.taskDescriptionForSessionTasks;
-
-    [self setDelegate:delegate forTask:uploadTask];
-
-    delegate.uploadProgressBlock = uploadProgressBlock;
-}
-
-- (void)addDelegateForDownloadTask:(NSURLSessionDownloadTask *)downloadTask progress:(void (^)(NSProgress *downloadProgress)) downloadProgressBlock destination:(NSURL * (^)(NSURL *targetPath, NSURLResponse *response))destination completionHandler:(void (^)(NSURLResponse *response, NSURL *filePath, NSError *error))completionHandler {
-    _RFAPISessionTask *delegate = [[_RFAPISessionTask alloc] initWithTask:downloadTask];
-    delegate.manager = self;
-    delegate.completionHandler = completionHandler;
-
-    if (destination) {
-        delegate.downloadTaskDidFinishDownloading = ^NSURL * (NSURLSession * __unused session, NSURLSessionDownloadTask *task, NSURL *location) {
-            return destination(location, task.response);
-        };
-    }
-
-    downloadTask.taskDescription = self.taskDescriptionForSessionTasks;
-
-    [self setDelegate:delegate forTask:downloadTask];
-
-    delegate.downloadProgressBlock = downloadProgressBlock;
-}
-
-#pragma mark Tasks
+#pragma mark Session Tasks
 
 - (NSArray *)tasksForKeyPath:(NSString *)keyPath {
     __block NSArray *tasks = nil;
@@ -248,46 +219,6 @@ static dispatch_group_t url_session_manager_completion_group() {
     } else {
         [self.session finishTasksAndInvalidate];
     }
-}
-
-#pragma mark Create Request
-
-- (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request uploadProgress:(nullable void (^)(NSProgress *uploadProgress)) uploadProgressBlock downloadProgress:(nullable void (^)(NSProgress *downloadProgress)) downloadProgressBlock completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject,  NSError * _Nullable error))completionHandler {
-
-    NSURLSessionDataTask *dataTask = [self.session dataTaskWithRequest:request];
-    [self addDelegateForDataTask:dataTask uploadProgress:uploadProgressBlock downloadProgress:downloadProgressBlock completionHandler:completionHandler];
-    return dataTask;
-}
-
-- (NSURLSessionUploadTask *)uploadTaskWithRequest:(NSURLRequest *)request fromFile:(NSURL *)fileURL progress:(void (^)(NSProgress *uploadProgress)) uploadProgressBlock completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler {
-    NSURLSessionUploadTask *uploadTask = [self.session uploadTaskWithRequest:request fromFile:fileURL];
-    [self addDelegateForUploadTask:uploadTask progress:uploadProgressBlock completionHandler:completionHandler];
-    return uploadTask;
-}
-
-- (NSURLSessionUploadTask *)uploadTaskWithRequest:(NSURLRequest *)request fromData:(NSData *)bodyData progress:(void (^)(NSProgress *uploadProgress)) uploadProgressBlock completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler {
-    NSURLSessionUploadTask *uploadTask = [self.session uploadTaskWithRequest:request fromData:bodyData];
-    [self addDelegateForUploadTask:uploadTask progress:uploadProgressBlock completionHandler:completionHandler];
-    return uploadTask;
-}
-
-- (NSURLSessionUploadTask *)uploadTaskWithStreamedRequest:(NSURLRequest *)request progress:(void (^)(NSProgress *uploadProgress)) uploadProgressBlock completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler {
-    NSURLSessionUploadTask *uploadTask = [self.session uploadTaskWithStreamedRequest:request];
-    [self addDelegateForUploadTask:uploadTask progress:uploadProgressBlock completionHandler:completionHandler];
-    return uploadTask;
-}
-
-- (NSURLSessionDownloadTask *)downloadTaskWithRequest:(NSURLRequest *)request progress:(void (^)(NSProgress *downloadProgress)) downloadProgressBlock destination:(NSURL * (^)(NSURL *targetPath, NSURLResponse *response))destination completionHandler:(void (^)(NSURLResponse *response, NSURL *filePath, NSError *error))completionHandler {
-
-    NSURLSessionDownloadTask *downloadTask = [self.session downloadTaskWithRequest:request];
-    [self addDelegateForDownloadTask:downloadTask progress:downloadProgressBlock destination:destination completionHandler:completionHandler];
-    return downloadTask;
-}
-
-- (NSURLSessionDownloadTask *)downloadTaskWithResumeData:(NSData *)resumeData progress:(void (^)(NSProgress *downloadProgress)) downloadProgressBlock destination:(NSURL * (^)(NSURL *targetPath, NSURLResponse *response))destination completionHandler:(void (^)(NSURLResponse *response, NSURL *filePath, NSError *error))completionHandler {
-    NSURLSessionDownloadTask *downloadTask = [self.session downloadTaskWithResumeData:resumeData];
-    [self addDelegateForDownloadTask:downloadTask progress:downloadProgressBlock destination:destination completionHandler:completionHandler];
-    return downloadTask;
 }
 
 #pragma mark Progress
