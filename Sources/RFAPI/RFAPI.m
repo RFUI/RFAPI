@@ -34,7 +34,6 @@ RFInitializingRootForNSObject
 }
 
 - (void)afterInit {
-    [self.reachabilityManager startMonitoring];
 }
 
 //- (NSString *)debugDescription {
@@ -52,9 +51,14 @@ RFInitializingRootForNSObject
     self._RFAPI_sessionManager = http;
 }
 
+#if !TARGET_OS_WATCH
 - (AFNetworkReachabilityManager *)reachabilityManager {
-    return self.http.reachabilityManager;
+    if (!_reachabilityManager) {
+        _reachabilityManager = [AFNetworkReachabilityManager sharedManager];
+    }
+    return _reachabilityManager;
 }
+#endif
 
 #pragma mark - Request management
 

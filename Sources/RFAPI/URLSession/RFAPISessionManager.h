@@ -37,13 +37,6 @@ http://www.opensource.org/licenses/mit-license.php
  */
 @property (readonly, nonnull) NSURLSession *session;
 
-#if !TARGET_OS_WATCH
-/**
- The network reachability manager. `AFURLSessionManager` uses the `sharedManager` by default.
- */
-@property (null_resettable, nonatomic) AFNetworkReachabilityManager *reachabilityManager;
-#endif
-
 /**
  Default request serializer.
 

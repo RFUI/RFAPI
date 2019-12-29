@@ -100,15 +100,6 @@ static dispatch_group_t url_session_manager_completion_group() {
     return _securityPolicy;
 }
 
-#if !TARGET_OS_WATCH
-- (AFNetworkReachabilityManager *)reachabilityManager {
-    if (!_reachabilityManager) {
-        _reachabilityManager = [AFNetworkReachabilityManager sharedManager];
-    }
-    return _reachabilityManager;
-}
-#endif
-
 - (dispatch_queue_t)processingQueue {
     if (!_processingQueue) {
         _processingQueue = url_session_manager_processing_queue();

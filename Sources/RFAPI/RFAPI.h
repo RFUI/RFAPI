@@ -31,12 +31,12 @@
     RFInitializing
 >
 
-//@property (null_resettable, nonatomic) AFHTTPSessionManager *http;
-
+#if !TARGET_OS_WATCH
 /**
- Defult shared manager
+ The network reachability manager. Default value is the `sharedManager`.
  */
-@property (readonly, nonnull, nonatomic) AFNetworkReachabilityManager *reachabilityManager;
+@property (null_resettable, nonatomic) AFNetworkReachabilityManager *reachabilityManager;
+#endif
 
 #pragma mark - Define
 
