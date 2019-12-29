@@ -19,6 +19,15 @@ http://www.opensource.org/licenses/mit-license.php
 >
 
 /**
+ Creates and returns a manager for a session created with the specified configuration. This is the designated initializer.
+
+ @param configuration The configuration used to create the managed session.
+
+ @return A manager for a newly-created session.
+ */
+- (nonnull instancetype)initWithSessionConfiguration:(nullable NSURLSessionConfiguration *)configuration NS_DESIGNATED_INITIALIZER;
+
+/**
  The managed session.
  */
 @property (readonly, nonnull) NSURLSession *session;
@@ -61,16 +70,21 @@ http://www.opensource.org/licenses/mit-license.php
 @property (readonly, nonnull) NSOperationQueue *operationQueue;
 
 /**
+ The dispatch queue serialize response. Default is a private concurrent queue.
+ */
+@property (null_resettable, nonatomic) dispatch_queue_t processingQueue;
+
+/**
  The dispatch queue for `completionBlock`. If `NULL` (default), the main queue is used.
  */
-@property (nullable, nonatomic) dispatch_queue_t completionQueue;
+@property (null_resettable, nonatomic) dispatch_queue_t completionQueue;
 
 /**
  The dispatch group for `completionBlock`. If `NULL` (default), a private dispatch group is used.
  */
-@property (nullable, nonatomic) dispatch_group_t completionGroup;
+@property (null_unspecified, nonatomic) dispatch_group_t completionGroup;
 
-#pragma mark - Getting Session Tasks
+#pragma mark - Session Tasks
 
 /**
  The data, upload, and download tasks currently run by the managed session.
@@ -91,17 +105,6 @@ http://www.opensource.org/licenses/mit-license.php
  The download tasks currently run by the managed session.
  */
 @property (readonly, nonnull, nonatomic) NSArray <NSURLSessionDownloadTask *> *downloadTasks;
-
-#pragma mark -
-
-/**
- Creates and returns a manager for a session created with the specified configuration. This is the designated initializer.
-
- @param configuration The configuration used to create the managed session.
-
- @return A manager for a newly-created session.
- */
-- (nonnull instancetype)initWithSessionConfiguration:(nullable NSURLSessionConfiguration *)configuration NS_DESIGNATED_INITIALIZER;
 
 /**
  Invalidates the managed session, optionally canceling pending tasks.

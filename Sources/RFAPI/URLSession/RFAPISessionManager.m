@@ -3,6 +3,26 @@
 #import <objc/runtime.h>
 #import "RFAPISessionTask.h"
 
+static dispatch_queue_t url_session_manager_processing_queue() {
+    static dispatch_queue_t af_url_session_manager_processing_queue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        af_url_session_manager_processing_queue = dispatch_queue_create("com.github.RFUI.RFAPI.session.processing", DISPATCH_QUEUE_CONCURRENT);
+    });
+
+    return af_url_session_manager_processing_queue;
+}
+
+static dispatch_group_t url_session_manager_completion_group() {
+    static dispatch_group_t af_url_session_manager_completion_group;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        af_url_session_manager_completion_group = dispatch_group_create();
+    });
+
+    return af_url_session_manager_completion_group;
+}
+
 @interface _RFURLSessionManager ()
 @property NSOperationQueue *operationQueue;
 @property NSURLSession *session;
@@ -35,7 +55,7 @@
     self.mutableTaskDelegatesKeyedByTaskIdentifier = [NSMutableDictionary.alloc initWithCapacity:8];
 
     self.lock = [NSLock.alloc init];
-    self.lock.name = @"com.github.RFUI.RFAPI.session.manager.lock";
+    self.lock.name = @"com.github.RFUI.RFAPI.session.lock";
     self.taskDescriptionForSessionTasks = NSUUID.UUID.UUIDString;
 
     [self.session getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> * dataTasks, NSArray<NSURLSessionUploadTask *> * uploadTasks, NSArray<NSURLSessionDownloadTask *> * downloadTasks) {
@@ -86,6 +106,27 @@
     return _reachabilityManager;
 }
 #endif
+
+- (dispatch_queue_t)processingQueue {
+    if (!_processingQueue) {
+        _processingQueue = url_session_manager_processing_queue();
+    }
+    return _processingQueue;
+}
+
+- (dispatch_queue_t)completionQueue {
+    if (!_completionQueue) {
+        _completionQueue = dispatch_get_main_queue();
+    }
+    return _completionQueue;
+}
+
+- (dispatch_group_t)completionGroup {
+    if (!_completionGroup) {
+        _completionGroup = url_session_manager_completion_group();
+    }
+    return _completionGroup;
+}
 
 #pragma mark Task Delegate
 

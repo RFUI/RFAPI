@@ -2,25 +2,6 @@
 #import "RFAPISessionTask.h"
 #import "RFAPISessionManager.h"
 
-static dispatch_queue_t url_session_manager_processing_queue() {
-    static dispatch_queue_t af_url_session_manager_processing_queue;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        af_url_session_manager_processing_queue = dispatch_queue_create("com.alamofire.networking.session.manager.processing", DISPATCH_QUEUE_CONCURRENT);
-    });
-
-    return af_url_session_manager_processing_queue;
-}
-
-static dispatch_group_t url_session_manager_completion_group() {
-    static dispatch_group_t af_url_session_manager_completion_group;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        af_url_session_manager_completion_group = dispatch_group_create();
-    });
-
-    return af_url_session_manager_completion_group;
-}
 
 @implementation _RFAPISessionTask
 
@@ -90,13 +71,13 @@ static dispatch_group_t url_session_manager_completion_group() {
     }
 
     if (error) {
-        dispatch_group_async(manager.completionGroup ?: url_session_manager_completion_group(), manager.completionQueue ?: dispatch_get_main_queue(), ^{
+        dispatch_group_async(manager.completionGroup, manager.completionQueue, ^{
             if (self.completionHandler) {
                 self.completionHandler(task.response, responseObject, error);
             }
         });
     } else {
-        dispatch_async(url_session_manager_processing_queue(), ^{
+        dispatch_async(manager.processingQueue, ^{
             NSError *serializationError = nil;
             responseObject = [manager.responseSerializer responseObjectForResponse:task.response data:data error:&serializationError];
 
@@ -104,7 +85,7 @@ static dispatch_group_t url_session_manager_completion_group() {
                 responseObject = self.downloadFileURL;
             }
 
-            dispatch_group_async(manager.completionGroup ?: url_session_manager_completion_group(), manager.completionQueue ?: dispatch_get_main_queue(), ^{
+            dispatch_group_async(manager.completionGroup, manager.completionQueue, ^{
                 if (self.completionHandler) {
                     self.completionHandler(task.response, responseObject, serializationError);
                 }
