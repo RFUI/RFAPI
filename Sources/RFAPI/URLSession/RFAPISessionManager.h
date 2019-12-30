@@ -67,21 +67,6 @@ http://www.opensource.org/licenses/mit-license.php
  */
 @property (readonly, nonnull) NSOperationQueue *operationQueue;
 
-/**
- The dispatch queue serialize response. Default is a private concurrent queue.
- */
-@property (null_resettable, nonatomic) dispatch_queue_t processingQueue;
-
-/**
- The dispatch queue for `completionBlock`. If `NULL` (default), the main queue is used.
- */
-@property (null_resettable, nonatomic) dispatch_queue_t completionQueue;
-
-/**
- The dispatch group for `completionBlock`. If `NULL` (default), a private dispatch group is used.
- */
-@property (null_unspecified, nonatomic) dispatch_group_t completionGroup;
-
 #pragma mark - Session Tasks
 
 /**
@@ -111,7 +96,9 @@ http://www.opensource.org/licenses/mit-license.php
  */
 - (void)invalidateSessionCancelingTasks:(BOOL)cancelPendingTasks;
 
-#pragma mark - Running Tasks
+#pragma mark - API Tasks
+
+- (nonnull NSArray<_RFAPISessionTask *> *)allTasks;
 
 - (nullable _RFAPISessionTask *)addSessionTask:(nullable NSURLSessionTask *)sessionTask;
 

@@ -77,35 +77,14 @@
 #pragma mark NSURLSessionTaskDelegate
 
 - (void)URLSession:(__unused NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
-    _RFURLSessionManager *manager = self.manager;
+    RFAPI *manager = self.manager;
 
     NSData *data = self.mutableData;
     if (data) {
         self.mutableData = nil;
     }
 
-    if (error) {
-        dispatch_group_async(manager.completionGroup, manager.completionQueue, ^{
-            if (self.completionHandler) {
-                self.completionHandler(task.response, nil, error);
-            }
-        });
-        return;
-    }
-    dispatch_async(manager.processingQueue, ^{
-        NSError *serializationError = nil;
-        id responseObject = [manager.responseSerializer responseObjectForResponse:task.response data:data error:&serializationError];
-
-        if (self.downloadFileURL) {
-            responseObject = self.downloadFileURL;
-        }
-
-        dispatch_group_async(manager.completionGroup, manager.completionQueue, ^{
-            if (self.completionHandler) {
-                self.completionHandler(task.response, responseObject, serializationError);
-            }
-        });
-    });
+    [manager _RFAPI_handleTaskComplete:self response:task.response data:data error:error];
 }
 
 #pragma mark NSURLSessionDataDelegate

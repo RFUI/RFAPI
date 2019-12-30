@@ -3,26 +3,6 @@
 #import <objc/runtime.h>
 #import "RFAPISessionTask.h"
 
-static dispatch_queue_t url_session_manager_processing_queue() {
-    static dispatch_queue_t af_url_session_manager_processing_queue;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        af_url_session_manager_processing_queue = dispatch_queue_create("com.github.RFUI.RFAPI.session.processing", DISPATCH_QUEUE_CONCURRENT);
-    });
-
-    return af_url_session_manager_processing_queue;
-}
-
-static dispatch_group_t url_session_manager_completion_group() {
-    static dispatch_group_t af_url_session_manager_completion_group;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        af_url_session_manager_completion_group = dispatch_group_create();
-    });
-
-    return af_url_session_manager_completion_group;
-}
-
 @interface _RFURLSessionManager ()
 @property NSOperationQueue *operationQueue;
 @property NSURLSession *session;
@@ -36,6 +16,7 @@ static dispatch_group_t url_session_manager_completion_group() {
 - (instancetype)init {
     return [self initWithSessionConfiguration:nil];
 }
+
 
 - (instancetype)initWithSessionConfiguration:(NSURLSessionConfiguration *)configuration {
     self = [super init];
@@ -100,28 +81,15 @@ static dispatch_group_t url_session_manager_completion_group() {
     return _securityPolicy;
 }
 
-- (dispatch_queue_t)processingQueue {
-    if (!_processingQueue) {
-        _processingQueue = url_session_manager_processing_queue();
-    }
-    return _processingQueue;
-}
-
-- (dispatch_queue_t)completionQueue {
-    if (!_completionQueue) {
-        _completionQueue = dispatch_get_main_queue();
-    }
-    return _completionQueue;
-}
-
-- (dispatch_group_t)completionGroup {
-    if (!_completionGroup) {
-        _completionGroup = url_session_manager_completion_group();
-    }
-    return _completionGroup;
-}
-
 #pragma mark API Task / Delegate
+
+- (NSArray<_RFAPISessionTask *> *)allTasks {
+    NSArray *allTasks = nil;
+    [self.lock lock];
+    allTasks = self.mutableTaskDelegatesKeyedByTaskIdentifier.allValues;
+    [self.lock unlock];
+    return allTasks;
+}
 
 - (_RFAPISessionTask *)delegateForTask:(NSURLSessionTask *)task {
     NSParameterAssert(task);
@@ -155,8 +123,6 @@ static dispatch_group_t url_session_manager_completion_group() {
     if (!sessionTask) return nil;
 
     _RFAPISessionTask *delegate = [[_RFAPISessionTask alloc] initWithTask:sessionTask];
-    delegate.manager = self;
-
     sessionTask.taskDescription = self.taskDescriptionForSessionTasks;
     [self setDelegate:delegate forTask:sessionTask];
     return delegate;

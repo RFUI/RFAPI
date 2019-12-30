@@ -20,32 +20,46 @@ NSString *RFAPILocalizedString(NSString *key, NSString *value) {
     return [NSBundle.mainBundle localizedStringForKey:key value:value table:nil];
 }
 
-@interface RFAPI ()
-@property _RFURLSessionManager *_RFAPI_sessionManager;
-@property (null_resettable, nonatomic) _RFURLSessionManager *http;
-@property (readwrite) RFAPIDefineManager *defineManager;
-@end
+static dispatch_queue_t url_session_manager_processing_queue() {
+    static dispatch_queue_t af_url_session_manager_processing_queue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        af_url_session_manager_processing_queue = dispatch_queue_create("com.github.RFUI.RFAPI.session.processing", DISPATCH_QUEUE_CONCURRENT);
+    });
+
+    return af_url_session_manager_processing_queue;
+}
+
+static dispatch_group_t url_session_manager_completion_group() {
+    static dispatch_group_t af_url_session_manager_completion_group;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        af_url_session_manager_completion_group = dispatch_group_create();
+    });
+
+    return af_url_session_manager_completion_group;
+}
 
 @implementation RFAPI
 RFInitializingRootForNSObject
 
 - (void)onInit {
-    self.defineManager = [RFAPIDefineManager.alloc init];
 }
 
 - (void)afterInit {
 }
 
-//- (NSString *)debugDescription {
-//    return [NSString stringWithFormat:@"<%@: %p, operations: %@>", self.class, (void *)self, self.http.tasks];
-//}
+- (NSString *)debugDescription {
+    return [NSString stringWithFormat:@"<%@: %p, operations: %@>", self.class, (void *)self, self._RFAPI_sessionManager.allTasks];
+}
 
 - (_RFURLSessionManager *)http {
-    if (self._RFAPI_sessionManager) return self._RFAPI_sessionManager;
+    _RFURLSessionManager *http = self._RFAPI_sessionManager;
+    if (http) return http;
     NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
-    _RFURLSessionManager *http = [_RFURLSessionManager.alloc initWithSessionConfiguration:config];
+    http = [_RFURLSessionManager.alloc initWithSessionConfiguration:config];
     self._RFAPI_sessionManager = http;
-    return self._RFAPI_sessionManager;
+    return http;
 }
 - (void)setHttp:(_RFURLSessionManager *)http {
     self._RFAPI_sessionManager = http;
@@ -59,6 +73,34 @@ RFInitializingRootForNSObject
     return _reachabilityManager;
 }
 #endif
+
+- (dispatch_queue_t)processingQueue {
+    if (!_processingQueue) {
+        _processingQueue = url_session_manager_processing_queue();
+    }
+    return _processingQueue;
+}
+
+- (dispatch_queue_t)completionQueue {
+    if (!_completionQueue) {
+        _completionQueue = dispatch_get_main_queue();
+    }
+    return _completionQueue;
+}
+
+- (dispatch_group_t)completionGroup {
+    if (!_completionGroup) {
+        _completionGroup = url_session_manager_completion_group();
+    }
+    return _completionGroup;
+}
+
+- (RFAPIDefineManager *)defineManager {
+    if (!_defineManager) {
+        _defineManager = [RFAPIDefineManager.alloc init];
+    }
+    return _defineManager;
+}
 
 #pragma mark - Request management
 
@@ -78,15 +120,17 @@ RFInitializingRootForNSObject
 
 - (nonnull NSArray<id<RFAPITask>> *)operationsWithIdentifier:(nullable NSString *)identifier {
     @autoreleasepool {
-        return @[];
-//        return [self.operations filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%K.%K.%K == %@", @keypathClassInstance(AFHTTPRequestOperation, userInfo), RFAPIOperationUIkControl, @keypathClassInstance(RFAPIControl, identifier), identifier]];
+        _RFURLSessionManager *http = self._RFAPI_sessionManager;
+        if (!http) return @[];
+        return [http.allTasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%K.%K == %@", @keypathClassInstance(_RFAPISessionTask, control), @keypathClassInstance(RFAPIControl, identifier), identifier]];
     }
 }
 
 - (nonnull NSArray<id<RFAPITask>> *)operationsWithGroupIdentifier:(nullable NSString *)identifier {
     @autoreleasepool {
-        return @[];
-//        return [self.operations filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%K.%K.%K == %@", @keypathClassInstance(AFHTTPRequestOperation, userInfo), RFAPIOperationUIkControl, @keypathClassInstance(RFAPIControl, groupIdentifier), identifier]];
+        _RFURLSessionManager *http = self._RFAPI_sessionManager;
+        if (!http) return @[];
+        return [http.allTasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%K.%K == %@", @keypathClassInstance(_RFAPISessionTask, control), @keypathClassInstance(RFAPIControl, groupIdentifier), identifier]];
     }
 }
 
@@ -166,6 +210,12 @@ RFInitializingRootForNSObject
     // Setup HTTP operation
     NSURLSessionDataTask *dataTask = [self.http.session dataTaskWithRequest:request];
     _RFAPISessionTask *task = [self.http addSessionTask:dataTask];
+    task.manager = self;
+    task.define = define;
+    task.control = controlInfo;
+    task.success = operationSuccess;
+    task.failure = operationFailure;
+
     @weakify(task)
     task.completionHandler = ^(NSURLResponse * _Nullable response, id  _Nullable responseObject, NSError * _Nullable error) {
         @strongify(task)
@@ -188,7 +238,7 @@ RFInitializingRootForNSObject
             [self.networkActivityIndicatorManager showMessage:message];
         });
     }
-    dispatch_async(self.http.processingQueue, ^{
+    dispatch_async(self.processingQueue, ^{
         if (task.isEnd) return;
         [dataTask resume];
     });
@@ -277,25 +327,104 @@ RFInitializingRootForNSObject
     return request;
 }
 
-- (nonnull id)requestOperationWithRequest:(nonnull NSURLRequest *)request define:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo {
-    return nil;
-//    id<RFAPITask>operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-//    operation.responseSerializer = [self.defineManager responseSerializerForDefine:define];
-//    operation.shouldUseCredentialStorage = self.shouldUseCredentialStorage;
-//    operation.credential = self.credential;
-//    operation.securityPolicy = self.securityPolicy;
-//    if (controlInfo) {
-//        operation.userInfo = @{ RFAPIOperationUIkControl : controlInfo };
-//    }
-//    return operation;
-}
-
 #pragma mark - Handel Response
 
 - (dispatch_queue_t)responseProcessingQueue {
     if (_responseProcessingQueue) return _responseProcessingQueue;
     _responseProcessingQueue = dispatch_get_main_queue();
     return _responseProcessingQueue;
+}
+
+- (void)_RFAPI_handleTaskComplete:(_RFAPISessionTask *)task response:(NSURLResponse *)response data:(NSData *)data error:(NSError *)error {
+    dispatch_async(self.processingQueue, ^{
+        if (error) {
+            [self _RFAPI_executeTaskCallback:task failure:error];
+            return;
+        }
+
+        if (task.downloadFileURL) {
+            [self _RFAPI_executeTaskCallback:task success:task.downloadFileURL];
+            return;
+        }
+
+        NSError *serializationError = nil;
+        id responseObject = [self.http.responseSerializer responseObjectForResponse:response data:data error:&serializationError];
+        if (serializationError) {
+            [self _RFAPI_executeTaskCallback:task failure:serializationError];
+            return;
+        }
+
+        if ((!responseObject || responseObject == NSNull.null)
+            && task.define.responseAcceptNull) {
+            [self _RFAPI_executeTaskCallback:task success:nil];
+            return;
+        }
+
+        RFAPIDefineResponseExpectType type = task.define.responseExpectType;
+        switch (type) {
+            case RFAPIDefineResponseExpectDefault: {
+                [self _RFAPI_executeTaskCallback:task success:responseObject];
+                return;
+            }
+            case RFAPIDefineResponseExpectSuccess: {
+                NSError *e = nil;
+                if (![self isSuccessResponse:&responseObject error:&e]) {
+                    [self _RFAPI_executeTaskCallback:task failure:e];
+                }
+                else {
+                    [self _RFAPI_executeTaskCallback:task success:responseObject];
+                }
+                return;
+            }
+            case RFAPIDefineResponseExpectObject:
+            case RFAPIDefineResponseExpectObjects: {
+                NSError *error = nil;
+                id modelObject = [self.modelTransformer transformResponse:(id)responseObject toType:type kind:task.define.responseClass error:&error];
+                if (error) {
+                    [self _RFAPI_executeTaskCallback:task failure:error];
+                }
+                else {
+                    [self _RFAPI_executeTaskCallback:task success:modelObject];
+                }
+                return;
+            }
+            default:
+                NSAssert(false, @"Unexcept response type: %d", type);
+                return;
+        }
+    });
+}
+
+- (void)_RFAPI_executeTaskCallback:(nonnull _RFAPISessionTask *)task success:(nullable id)responseObject {
+    dispatch_group_async(self.completionGroup, self.completionQueue, ^{
+        task.failure = nil;
+        RFAPIRequestSuccessCallback scb = task.success;
+        if (scb) {
+            task.success = nil;
+            scb(task, responseObject);
+        }
+        RFAPIRequestCompletionCallback ccb = task.complation;
+        if (ccb) {
+            task.complation = nil;
+            ccb(task, NO);
+        }
+    });
+}
+
+- (void)_RFAPI_executeTaskCallback:(nonnull _RFAPISessionTask *)task failure:(nonnull NSError *)error {
+    dispatch_group_async(self.completionGroup, self.completionQueue, ^{
+        task.success = nil;
+        RFAPIRequestFailureCallback fcb = task.failure;
+        if (fcb) {
+            task.failure = nil;
+            fcb(task, error);
+        }
+        RFAPIRequestCompletionCallback ccb = task.complation;
+        if (ccb) {
+            task.complation = nil;
+            ccb(task, NO);
+        }
+    });
 }
 
 - (void)processingCompletionWithHTTPOperation:(nullable id<RFAPITask>)op responseObject:(nullable id)responseObject define:(nonnull RFAPIDefine *)define control:(nullable RFAPIControl *)control success:(void (^_Nonnull)(id _Nullable, id _Nullable))operationSuccess failure:(void (^_Nonnull)(id _Nullable, NSError *_Nonnull))operationFailure {

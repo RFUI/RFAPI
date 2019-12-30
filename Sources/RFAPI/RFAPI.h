@@ -26,6 +26,9 @@
 - (void)cancel;
 @end
 
+typedef void(^RFAPIRequestSuccessCallback)(id<RFAPITask> __nonnull task, id __nullable responseObject);
+typedef void(^RFAPIRequestFailureCallback)(id<RFAPITask> __nullable task, NSError *__nonnull error);
+typedef void(^RFAPIRequestCompletionCallback)(id<RFAPITask> __nullable task, BOOL success);
 
 @interface RFAPI : NSObject <
     RFInitializing
@@ -37,6 +40,21 @@
  */
 @property (null_resettable, nonatomic) AFNetworkReachabilityManager *reachabilityManager;
 #endif
+
+/**
+ The dispatch queue serialize response. Default is a private concurrent queue.
+ */
+@property (null_resettable, nonatomic) dispatch_queue_t processingQueue;
+
+/**
+ The dispatch queue for `completionBlock`. If `NULL` (default), the main queue is used.
+ */
+@property (null_resettable, nonatomic) dispatch_queue_t completionQueue;
+
+/**
+ The dispatch group for `completionBlock`. If `NULL` (default), a private dispatch group is used.
+ */
+@property (null_unspecified, nonatomic) dispatch_group_t completionGroup;
 
 #pragma mark - Define
 
@@ -100,7 +118,7 @@
 
 @property (nullable) id<RFAPIModelTransformer> modelTransformer;
 
-// todo: 和 SM 队列合一
+// todo: 和 processingQueue 队列合一?
 /**
  If `NULL` (default), the main queue will be used.
  */
