@@ -132,9 +132,9 @@ typedef void(^RFAPIRequestCompletionCallback)(id<RFAPITask> __nullable task, BOO
 - (void)preprocessingRequestParameters:(NSMutableDictionary *_Nullable *_Nonnull)requestParameters HTTPHeaders:(NSMutableDictionary *_Nullable *_Nonnull)requestHeaders withParameters:(nullable NSDictionary *)parameters define:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo;
 
 /**
- Default implementation execute RFAPIControl’s requestCustomization.
+ The default implementation of this method does nothing.
  */
-- (nullable NSMutableURLRequest *)finalizeSerializedRequest:(nonnull NSMutableURLRequest *)request withDefine:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo;
+- (nullable NSMutableURLRequest *)finalizeSerializedRequest:(nonnull NSMutableURLRequest *)request withDefine:(nonnull RFAPIDefine *)define controlInfo:(nonnull id<RFAPITask>)controlInfo;
 
 /**
  默认实现返回 YES
@@ -161,39 +161,7 @@ typedef void(^RFAPIRequestCompletionCallback)(id<RFAPITask> __nullable task, BOO
 
 extern NSString *_Nonnull const RFAPIRequestArrayParameterKey;
 extern NSString *_Nonnull const RFAPIRequestForceQuryStringParametersKey;
-extern NSString *_Nonnull const RFAPIErrorDomain;
-
-extern NSString *_Nonnull const RFAPIMessageControlKey;
-extern NSString *_Nonnull const RFAPIIdentifierControlKey;
-extern NSString *_Nonnull const RFAPIGroupIdentifierControlKey;
-extern NSString *_Nonnull const RFAPIBackgroundTaskControlKey;
-extern NSString *_Nonnull const RFAPIRequestCustomizationControlKey;
-
-@interface RFAPIControl : NSObject
-/** Activity message.
- 请求开始前，自动进入消息显示队列。结束时自动从队列中清除。
-*/
-@property (nullable) RFNetworkActivityMessage *message;
-
-/// Identifier for request.
-@property (nullable) NSString *identifier;
-
-/// Group identifier for request.
-@property (nullable) NSString *groupIdentifier;
-
-// No implementation
-@property BOOL backgroundTask;
-
-// Ignore cache policy, force current request load from server.
-// No implementation
-@property BOOL forceLoad;
-
-/// Customization URL request object
-@property (nullable) NSMutableURLRequest *_Nullable (^requestCustomization)(NSMutableURLRequest *_Nonnull request);
-
-- (nonnull id)initWithDictionary:(nonnull NSDictionary *)info;
-- (nonnull id)initWithIdentifier:(nonnull NSString *)identifier loadingMessage:(nullable NSString *)message;
-@end
+extern NSErrorDomain _Nonnull const RFAPIErrorDomain;
 
 
 @interface RFHTTPRequestFormData : NSObject

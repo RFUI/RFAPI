@@ -122,7 +122,7 @@ RFInitializingRootForNSObject
     @autoreleasepool {
         _RFURLSessionManager *http = self._RFAPI_sessionManager;
         if (!http) return @[];
-        return [http.allTasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%K.%K == %@", @keypathClassInstance(_RFAPISessionTask, control), @keypathClassInstance(RFAPIControl, identifier), identifier]];
+        return [http.allTasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%K == %@", @keypathClassInstance(_RFAPISessionTask, identifier), identifier]];
     }
 }
 
@@ -130,7 +130,7 @@ RFInitializingRootForNSObject
     @autoreleasepool {
         _RFURLSessionManager *http = self._RFAPI_sessionManager;
         if (!http) return @[];
-        return [http.allTasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%K.%K == %@", @keypathClassInstance(_RFAPISessionTask, control), @keypathClassInstance(RFAPIControl, groupIdentifier), identifier]];
+        return [http.allTasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%K == %@", @keypathClassInstance(_RFAPISessionTask, groupIdentifier), identifier]];
     }
 }
 
@@ -164,7 +164,8 @@ RFInitializingRootForNSObject
 
     // Request object get ready.
     // Build operation block.
-    RFNetworkActivityMessage *message = controlInfo.message;
+    // todo: restore message
+    RFNetworkActivityMessage *message = nil;
     void (^operationCompletion)(id) = ^(id<RFAPITask>blockOp) {
         dispatch_async_on_main(^{
             NSString *mid = message.identifier;
@@ -259,13 +260,13 @@ RFInitializingRootForNSObject
         return nil;\
     }
 
-- (nullable NSMutableURLRequest *)URLRequestWithDefine:(nonnull RFAPIDefine *)define parameters:(nullable NSDictionary *)parameters formData:(nullable NSArray *)RFFormData controlInfo:(nullable RFAPIControl *)controlInfo error:(NSError *_Nullable __autoreleasing *_Nullable)error {
+- (nullable NSMutableURLRequest *)URLRequestWithDefine:(nonnull RFAPIDefine *)define parameters:(nullable NSDictionary *)parameters formData:(nullable NSArray *)RFFormData controlInfo:(nullable id)null error:(NSError *_Nullable __autoreleasing *_Nullable)error {
     NSParameterAssert(define);
 
     // Preprocessing arguments
     NSMutableDictionary *requestParameters = [NSMutableDictionary.alloc initWithCapacity:16];
     NSMutableDictionary *requestHeaders = [NSMutableDictionary.alloc initWithCapacity:4];
-    [self preprocessingRequestParameters:&requestParameters HTTPHeaders:&requestHeaders withParameters:(NSDictionary *)parameters define:define controlInfo:controlInfo];
+    [self preprocessingRequestParameters:&requestParameters HTTPHeaders:&requestHeaders withParameters:(NSDictionary *)parameters define:define controlInfo:nil];
 
     // Creat URL
     NSError __autoreleasing *e = nil;
@@ -299,7 +300,7 @@ RFInitializingRootForNSObject
     }];
 
     // Finalization
-    r = [self finalizeSerializedRequest:r withDefine:define controlInfo:controlInfo];
+    r = [self finalizeSerializedRequest:r withDefine:define controlInfo:nil];
     return r;
 }
 
@@ -320,10 +321,7 @@ RFInitializingRootForNSObject
     }
 }
 
-- (nullable NSMutableURLRequest *)finalizeSerializedRequest:(nonnull NSMutableURLRequest *)request withDefine:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo {
-    if (controlInfo.requestCustomization) {
-        return controlInfo.requestCustomization(request);
-    }
+- (NSMutableURLRequest *)finalizeSerializedRequest:(NSMutableURLRequest *)request withDefine:(RFAPIDefine *)define controlInfo:(id<RFAPITask>)controlInfo {
     return request;
 }
 
@@ -475,43 +473,6 @@ RFInitializingRootForNSObject
 
 - (BOOL)isSuccessResponse:(id _Nullable __strong *_Nonnull)responseObjectRef error:(NSError *_Nullable __autoreleasing *_Nullable)error {
     return YES;
-}
-
-@end
-
-
-#pragma mark - RFAPIControl
-NSString *const RFAPIMessageControlKey = @"_RFAPIMessageControl";
-NSString *const RFAPIIdentifierControlKey = @"_RFAPIIdentifierControl";
-NSString *const RFAPIGroupIdentifierControlKey = @"_RFAPIGroupIdentifierControl";
-NSString *const RFAPIBackgroundTaskControlKey = @"_RFAPIBackgroundTaskControl";
-NSString *const RFAPIRequestCustomizationControlKey = @"_RFAPIRequestCustomizationControl";
-
-@implementation RFAPIControl
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"<%@: %p, identifier = %@, groupIdentifier = %@>", self.class, (void *)self, self.identifier, self.groupIdentifier];
-}
-
-- (nonnull id)initWithDictionary:(nonnull NSDictionary *)info {
-    self = [super init];
-    if (self) {
-        _message = info[RFAPIMessageControlKey];
-        _identifier = info[RFAPIIdentifierControlKey];
-        _groupIdentifier = info[RFAPIGroupIdentifierControlKey];
-        _backgroundTask = [info[RFAPIBackgroundTaskControlKey] boolValue];
-        _requestCustomization = info[RFAPIRequestCustomizationControlKey];
-    }
-    return self;
-}
-
-- (nonnull id)initWithIdentifier:(nonnull NSString *)identifier loadingMessage:(nullable NSString *)message {
-    self = [super init];
-    if (self) {
-        _identifier = identifier;
-        _message = [[RFNetworkActivityMessage alloc] initWithIdentifier:identifier message:message status:RFNetworkActivityStatusLoading];
-    }
-    return self;
 }
 
 @end
