@@ -53,15 +53,20 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    RFDAPITestRequestObject *requestDefine = self.items[indexPath.row];
+    RFDAPITestRequestObject *request = self.items[indexPath.row];
     @weakify(self)
-    [RFDTestAPI requestWithName:requestDefine.APIName parameters:nil viewController:self forceLoad:NO loadingMessage:requestDefine.message modal:requestDefine.modal success:^(id<RFAPITask>operation, id responseObject) {
-        @strongify(self)
-        [self displayResponse:responseObject error:nil];
-    } failure:^(id<RFAPITask>operation, NSError *error) {
-        @strongify(self)
-        [self displayResponse:nil error:error];
-    } completion:nil];
+    [RFDTestAPI.sharedInstance requestWithName:request.APIName context:^(__kindof RFAPIRequestConext *c) {
+        c.loadMessage = request.message;
+        c.loadMessageShownModal = request.modal;
+        c.success = ^(id<RFAPITask>  _Nonnull task, id  _Nullable responseObject) {
+            @strongify(self)
+            [self displayResponse:responseObject error:nil];
+        };
+        c.failure = ^(id<RFAPITask>  _Nullable task, NSError * _Nonnull error) {
+            @strongify(self)
+            [self displayResponse:nil error:error];
+        };
+    }];
 }
 
 - (void)displayResponse:(id)responseObject error:(NSError *)error {

@@ -6,8 +6,6 @@
 #import <RFMessageManager/RFSVProgressMessageManager.h>
 #import <RFMessageManager/RFNetworkActivityMessage.h>
 
-@interface RFDTestAPI ()
-@end
 
 @implementation RFDTestAPI
 
@@ -30,18 +28,6 @@
     dm.defaultResponseSerializer = [AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments];
     self.networkActivityIndicatorManager = [RFSVProgressMessageManager new];
     self.modelTransformer = RFAPIJSONModelTransformer.new;
-}
-
-+ (id<RFAPITask>)requestWithName:(NSString *)APIName parameters:(NSDictionary *)parameters viewController:(UIViewController *)viewController forceLoad:(BOOL)forceLoad loadingMessage:(NSString *)message modal:(BOOL)modal success:(void (^)(id<RFAPITask>, id))success failure:(void (^)(id<RFAPITask>operation, NSError *error))failure completion:(void (^)(id<RFAPITask>))completion {
-    RFAPIControl *cn = [[RFAPIControl alloc] init];
-    if (message) {
-        cn.message = [[RFNetworkActivityMessage alloc] initWithIdentifier:APIName message:message status:RFNetworkActivityStatusLoading];
-        cn.message.modal = modal;
-    }
-    cn.identifier = APIName;
-    cn.groupIdentifier = viewController.APIGroupIdentifier;
-    cn.forceLoad = forceLoad;
-    return [self.sharedInstance requestWithName:APIName parameters:parameters controlInfo:cn success:success failure:failure completion:completion];
 }
 
 @end

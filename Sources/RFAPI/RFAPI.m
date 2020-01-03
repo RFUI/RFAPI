@@ -11,8 +11,7 @@
 #import <RFMessageManager/RFMessageManager+RFDisplay.h>
 #import <RFKit/NSFileManager+RFKit.h>
 
-RFDefineConstString(RFAPIErrorDomain);
-static NSString *RFAPIOperationUIkControl = @"RFAPIOperationUIkControl";
+NSErrorDomain const RFAPIErrorDomain = @"RFAPIErrorDomain";
 NSString *const RFAPIRequestArrayParameterKey = @"_RFArray_";
 NSString *const RFAPIRequestForceQuryStringParametersKey = @"RFAPIRequestForceQuryStringParametersKey";
 
@@ -136,106 +135,66 @@ RFInitializingRootForNSObject
 
 #pragma mark - Request
 
-#define RFAPICompletionCallback_(BLOCK, ...)\
-    if (BLOCK) {\
-        BLOCK(__VA_ARGS__);\
-    }
-
-- (nullable id<RFAPITask>)requestWithName:(nonnull NSString *)APIName parameters:(NSDictionary *)parameters formData:(nullable NSArray<RFHTTPRequestFormData *> *)arrayContainsFormDataObj controlInfo:(nullable RFAPIControl *)controlInfo uploadProgress:(void (^_Nullable)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))progress success:(void (^_Nullable )(id<RFAPITask>_Nullable operation, id _Nullable responseObject))success failure:(void (^_Nullable)(id<RFAPITask>_Nullable operation, NSError *_Nonnull error))failure completion:(void (^_Nullable)(id<RFAPITask>_Nullable operation))completion {
+- (id<RFAPITask>)requestWithName:(NSString *)APIName context:(NS_NOESCAPE void (^)(__kindof RFAPIRequestConext * _Nonnull))contextBlock {
     NSParameterAssert(APIName);
     RFAPIDefine *define = [self.defineManager defineForName:APIName];
+    if (!define.name) {
+        define.name = APIName;
+    }
     RFAssert(define, @"Can not find an API with name: %@.", APIName)
     if (!define) return nil;
+    return [self requestWithDefine:define context:contextBlock];
+}
 
-    NSError __autoreleasing *e = nil;
-    NSMutableURLRequest *request = [self URLRequestWithDefine:define parameters:parameters formData:arrayContainsFormDataObj controlInfo:controlInfo error:&e];
+- (id<RFAPITask>)requestWithDefine:(RFAPIDefine *)APIDefine context:(NS_NOESCAPE void (^)(__kindof RFAPIRequestConext * _Nonnull))contextBlock {
+    __kindof RFAPIRequestConext *context = [(self.requestConextClass?: RFAPIRequestConext.class) new];
+    if (contextBlock) {
+        contextBlock(context);
+    }
+    NSString *identifier = context.identifier;
+    if (!identifier) {
+        identifier = APIDefine.name;
+        RFAssert(identifier, @"Context identifier and define name both are nil.")
+        context.identifier = identifier;
+    }
+    if (!context.activityMessage && context.loadMessage) {
+        RFNetworkActivityMessage *m = [[RFNetworkActivityMessage alloc] initWithIdentifier:identifier message:context.loadMessage status:RFNetworkActivityStatusLoading];
+        m.modal = context.loadMessageShownModal;
+        context.activityMessage = m;
+    }
+    // todo: merge default define
+
+    NSError *e = nil;
+    NSMutableURLRequest *request = [self URLRequestWithDefine:APIDefine context:context error:&e];
     if (!request) {
         RFAPILogError_(@"无法创建请求: %@", e)
-        NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:@{
-            NSLocalizedDescriptionKey : @"内部错误，无法创建请求",
-            NSLocalizedFailureReasonErrorKey : @"很可能是应用 bug",
-            NSLocalizedRecoverySuggestionErrorKey : @"请再试一次，如果依旧请尝试重启应用。给您带来不便，敬请谅解"
-        }];
-
-        RFAPICompletionCallback_(failure, nil, error)
-        RFAPICompletionCallback_(completion, nil)
+        NSMutableDictionary *eInfo = [NSMutableDictionary.alloc initWithCapacity:4];
+        eInfo[NSLocalizedDescriptionKey] = @"内部错误，无法创建请求";
+        eInfo[NSLocalizedFailureReasonErrorKey] = @"很可能是应用 bug";
+        eInfo[NSLocalizedRecoverySuggestionErrorKey] = @"请再试一次，如果依旧请尝试重启应用。给您带来不便，敬请谅解";
+        if (e) {
+            eInfo[NSUnderlyingErrorKey] = e;
+        }
+        NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:eInfo];
+        [self _RFAPI_executeContext:context failure:error];
         return nil;
     }
+    if (context.requestCustomization) {
+        request = context.requestCustomization(request);
+        NSAssert(request, @"requestCustomization must not return nil.");
+    }
 
-    // Request object get ready.
-    // Build operation block.
-    // todo: restore message
-    RFNetworkActivityMessage *message = nil;
-    void (^operationCompletion)(id) = ^(id<RFAPITask>blockOp) {
-        dispatch_async_on_main(^{
-            NSString *mid = message.identifier;
-            if (mid) {
-                [self.networkActivityIndicatorManager hideMessage:message];
-            }
-
-            if (completion) {
-                completion(blockOp);
-            }
-        });
-    };
-
-    void (^operationSuccess)(id, id) = ^(id<RFAPITask>blockOp, id blockResponse) {
-        dispatch_async_on_main(^{
-            if (success) {
-                success(blockOp, blockResponse);
-            }
-            operationCompletion(blockOp);
-        });
-    };
-
-    void (^operationFailure)(id, NSError*) = ^(id<RFAPITask>blockOp, NSError *blockError) {
-        dispatch_async_on_main(^{
-            if (blockError.code == NSURLErrorCancelled && blockError.domain == NSURLErrorDomain) {
-                dout_info(@"A HTTP operation cancelled: %@", blockOp)
-                operationCompletion(blockOp);
-                return;
-            }
-
-            if ([self generalHandlerForError:blockError withDefine:define controlInfo:controlInfo requestOperation:blockOp operationFailureCallback:failure]) {
-                if (failure) {
-                    failure(blockOp, blockError);
-                }
-                else {
-                    [self.networkActivityIndicatorManager alertError:blockError title:nil fallbackMessage:@"Request Failed"];
-                }
-            }
-            operationCompletion(blockOp);
-        });
-    };
-
-    // Setup HTTP operation
     NSURLSessionDataTask *dataTask = [self.http.session dataTaskWithRequest:request];
     _RFAPISessionTask *task = [self.http addSessionTask:dataTask];
     task.manager = self;
-    task.define = define;
-    task.control = controlInfo;
-    task.success = operationSuccess;
-    task.failure = operationFailure;
-
-    @weakify(task)
-    task.completionHandler = ^(NSURLResponse * _Nullable response, id  _Nullable responseObject, NSError * _Nullable error) {
-        @strongify(task)
-        if (error) {
-            operationFailure(dataTask, error);
-            return;
-        }
-        @autoreleasepool {
-            // todo: responseProcessingQueue
-            // todo: control info
-            //            dout_debug(@"HTTP request operation(%p) with info: %@ completed.", (void *)dataTask, [op valueForKeyPath:@"userInfo.RFAPIOperationUIkControl"])
-
-            [self processingCompletionWithHTTPOperation:task responseObject:responseObject define:define control:nil success:operationSuccess failure:operationFailure];
-        }
-    };
+    task.define = APIDefine;
+    [self transferContext:context toTask:task];
 
     // Start request
+    RFNetworkActivityMessage *message = task.activityMessage;
     if (message) {
-        dispatch_sync_on_main(^{
+        dispatch_async_on_main(^{
+            if (task.isEnd) return;
             [self.networkActivityIndicatorManager showMessage:message];
         });
     }
@@ -246,8 +205,15 @@ RFInitializingRootForNSObject
     return task;
 }
 
-- (id<RFAPITask>)requestWithName:(nonnull NSString *)APIName parameters:(NSDictionary *)parameters controlInfo:(RFAPIControl *)controlInfo success:(void (^)(id<RFAPITask>, id))success failure:(void (^)(id<RFAPITask>, NSError *))failure completion:(void (^)(id<RFAPITask>))completion {
-    return [self requestWithName:APIName parameters:parameters formData:nil controlInfo:controlInfo uploadProgress:nil success:success failure:failure completion:completion];
+- (void)transferContext:(RFAPIRequestConext *)context toTask:(_RFAPISessionTask *)task {
+    task.identifier = context.identifier ?: task.define.name;
+    task.groupIdentifier = context.groupIdentifier;
+    task.activityMessage = context.activityMessage;
+    task.uploadProgressBlock = context.downloadProgress;
+    task.downloadProgressBlock = context.downloadProgress;
+    task.success = context.success;
+    task.failure = context.failure;
+    task.complation = context.complation;
 }
 
 #pragma mark - Build Request
@@ -260,13 +226,15 @@ RFInitializingRootForNSObject
         return nil;\
     }
 
-- (nullable NSMutableURLRequest *)URLRequestWithDefine:(nonnull RFAPIDefine *)define parameters:(nullable NSDictionary *)parameters formData:(nullable NSArray *)RFFormData controlInfo:(nullable id)null error:(NSError *_Nullable __autoreleasing *_Nullable)error {
+- (nullable NSMutableURLRequest *)URLRequestWithDefine:(RFAPIDefine *)define context:(RFAPIRequestConext *)context error:(NSError *_Nullable __autoreleasing *)error {
     NSParameterAssert(define);
+    NSParameterAssert(context);
+    NSParameterAssert(error);
 
     // Preprocessing arguments
     NSMutableDictionary *requestParameters = [NSMutableDictionary.alloc initWithCapacity:16];
     NSMutableDictionary *requestHeaders = [NSMutableDictionary.alloc initWithCapacity:4];
-    [self preprocessingRequestParameters:&requestParameters HTTPHeaders:&requestHeaders withParameters:(NSDictionary *)parameters define:define controlInfo:nil];
+    [self preprocessingRequestParameters:&requestParameters HTTPHeaders:&requestHeaders withParameters:context.parameters define:define context:context];
 
     // Creat URL
     NSError __autoreleasing *e = nil;
@@ -276,18 +244,12 @@ RFInitializingRootForNSObject
     // Creat URLRequest
     NSMutableURLRequest *r;
     AFHTTPRequestSerializer *s = [self.defineManager requestSerializerForDefine:define];
-    if (RFFormData.count) {
+    if (context.formData) {
         NSString *urlString = url.absoluteString;
-        r = [s multipartFormRequestWithMethod:define.method ?: @"GET" URLString:urlString parameters:requestParameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-            for (RFHTTPRequestFormData *file in RFFormData) {
-                NSError __autoreleasing *f_e = nil;
-                [file buildFormData:formData error:&f_e];
-                if (f_e) dout_error(@"%@", f_e)
-            }
-        } error:&e];
+        r = [s multipartFormRequestWithMethod:define.method ?: @"POST" URLString:urlString parameters:requestParameters constructingBodyWithBlock:context.formData error:&e];
     }
     else {
-        r = [NSMutableURLRequest.alloc initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:40];
+        r = [NSMutableURLRequest.alloc initWithURL:url];
         [r setHTTPMethod:define.method ?: @"GET"];
         NSArray *arrayParameter = requestParameters[RFAPIRequestArrayParameterKey];
         r = [[s requestBySerializingRequest:r withParameters:arrayParameter?: requestParameters error:&e] mutableCopy];
@@ -304,7 +266,7 @@ RFInitializingRootForNSObject
     return r;
 }
 
-- (void)preprocessingRequestParameters:(NSMutableDictionary *_Nullable *_Nonnull)requestParameters HTTPHeaders:(NSMutableDictionary *_Nullable *_Nonnull)requestHeaders withParameters:(nullable NSDictionary *)parameters define:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo {
+- (void)preprocessingRequestParameters:(NSMutableDictionary *_Nullable *_Nonnull)requestParameters HTTPHeaders:(NSMutableDictionary *_Nullable *_Nonnull)requestHeaders withParameters:(nullable NSDictionary *)parameters define:(nonnull RFAPIDefine *)define context:(nonnull RFAPIRequestConext *)context {
     BOOL needsAuthorization = define.needsAuthorization;
 
     [*requestParameters addEntriesFromDictionary:define.defaultParameters];
@@ -316,6 +278,7 @@ RFInitializingRootForNSObject
     }
 
     [*requestHeaders addEntriesFromDictionary:define.HTTPRequestHeaders];
+    [*requestHeaders addEntriesFromDictionary:context.HTTPHeaders];
     if (needsAuthorization) {
         [*requestHeaders addEntriesFromDictionary:self.defineManager.authorizationHeader];
     }
@@ -401,22 +364,45 @@ RFInitializingRootForNSObject
             task.success = nil;
             scb(task, responseObject);
         }
+        RFNetworkActivityMessage *message = task.activityMessage;
+        dispatch_sync_on_main(^{
+            [self.networkActivityIndicatorManager hideMessage:message];
+        });
         RFAPIRequestCompletionCallback ccb = task.complation;
         if (ccb) {
             task.complation = nil;
-            ccb(task, NO);
+            ccb(task, YES);
         }
     });
 }
 
 - (void)_RFAPI_executeTaskCallback:(nonnull _RFAPISessionTask *)task failure:(nonnull NSError *)error {
+    BOOL shouldContinue = [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
+
     dispatch_group_async(self.completionGroup, self.completionQueue, ^{
         task.success = nil;
-        RFAPIRequestFailureCallback fcb = task.failure;
-        if (fcb) {
-            task.failure = nil;
-            fcb(task, error);
+
+        if (shouldContinue) {
+            BOOL isCancel = (error.code == NSURLErrorCancelled && [error.domain isEqualToString:NSURLErrorDomain]);
+
+            RFAPIRequestFailureCallback fcb = task.failure;
+            if (fcb) {
+                if (!isCancel) {
+                    fcb(task, error);
+                }
+            }
+            else {
+                dispatch_sync_on_main(^{
+                    [self.networkActivityIndicatorManager alertError:error title:nil fallbackMessage:@"Request Failed"];
+                });
+            }
         }
+        task.failure = nil;
+
+        RFNetworkActivityMessage *message = task.activityMessage;
+        dispatch_sync_on_main(^{
+            [self.networkActivityIndicatorManager hideMessage:message];
+        });
         RFAPIRequestCompletionCallback ccb = task.complation;
         if (ccb) {
             task.complation = nil;
@@ -425,49 +411,20 @@ RFInitializingRootForNSObject
     });
 }
 
-- (void)processingCompletionWithHTTPOperation:(nullable id<RFAPITask>)op responseObject:(nullable id)responseObject define:(nonnull RFAPIDefine *)define control:(nullable RFAPIControl *)control success:(void (^_Nonnull)(id _Nullable, id _Nullable))operationSuccess failure:(void (^_Nonnull)(id _Nullable, NSError *_Nonnull))operationFailure {
-
-    if ((!responseObject || responseObject == NSNull.null)
-        && define.responseAcceptNull) {
-        operationSuccess(op, nil);
-        return;
-    }
-
-    RFAPIDefineResponseExpectType type = define.responseExpectType;
-    switch (type) {
-        case RFAPIDefineResponseExpectDefault: {
-            operationSuccess(op, responseObject);
-            return;
+- (void)_RFAPI_executeContext:(nonnull RFAPIRequestConext *)context failure:(nonnull NSError *)error {
+    dispatch_group_async(self.completionGroup, self.completionQueue, ^{
+        RFAPIRequestFailureCallback fcb = context.failure;
+        if (fcb) {
+            fcb(nil, error);
         }
-        case RFAPIDefineResponseExpectSuccess: {
-            NSError *error = nil;
-            if (![self isSuccessResponse:&responseObject error:&error]) {
-                operationFailure(op, error);
-            }
-            else {
-                operationSuccess(op, responseObject);
-            }
-            return;
+        RFAPIRequestCompletionCallback ccb = context.complation;
+        if (ccb) {
+            ccb(nil, NO);
         }
-        case RFAPIDefineResponseExpectObject:
-        case RFAPIDefineResponseExpectObjects: {
-            NSError *error = nil;
-            id modelObject = [self.modelTransformer transformResponse:(id)responseObject toType:type kind:define.responseClass error:&error];
-            if (error) {
-                operationFailure(op, error);
-            }
-            else {
-                operationSuccess(op, modelObject);
-            }
-            return;
-        }
-        default:
-            NSAssert(false, @"Unexcept response type: %d", type);
-            return;
-    }
+    });
 }
 
-- (BOOL)generalHandlerForError:(nonnull NSError *)error withDefine:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo requestOperation:(nullable id<RFAPITask>)operation operationFailureCallback:(void (^_Nullable)(id<RFAPITask> _Nullable, NSError *_Nonnull))operationFailureCallback {
+- (BOOL)generalHandlerForError:(NSError *)error withDefine:(RFAPIDefine *)define task:(id<RFAPITask>)task failureCallback:(RFAPIRequestFailureCallback)failure {
     return YES;
 }
 
@@ -477,75 +434,7 @@ RFInitializingRootForNSObject
 
 @end
 
-#pragma mark - RFHTTPRequestFormData
 
-typedef NS_ENUM(short, RFHTTPRequestFormDataSourceType) {
-    RFHTTPRequestFormDataSourceTypeURL = 0,
-    RFHTTPRequestFormDataSourceTypeStream,
-    RFHTTPRequestFormDataSourceTypeData
-};
-
-@interface RFHTTPRequestFormData ()
-@property RFHTTPRequestFormDataSourceType type;
-@end
-
-@implementation RFHTTPRequestFormData
-
-+ (nonnull instancetype)formDataWithFileURL:(nonnull NSURL *)fileURL name:(nonnull NSString *)name {
-    NSParameterAssert(fileURL);
-    NSParameterAssert(name);
-    RFHTTPRequestFormData *this = [RFHTTPRequestFormData new];
-    this.fileURL = fileURL;
-    this.name = name;
-    this.type = RFHTTPRequestFormDataSourceTypeURL;
-    return this;
-}
-
-+ (nonnull instancetype)formDataWithData:(nonnull NSData *)data name:(nonnull NSString *)name {
-    NSParameterAssert(data);
-    NSParameterAssert(name);
-    RFHTTPRequestFormData *this = [RFHTTPRequestFormData new];
-    this.data = data;
-    this.name = name;
-    this.type = RFHTTPRequestFormDataSourceTypeData;
-    return this;
-}
-
-+ (nonnull instancetype)formDataWithData:(nonnull NSData *)data name:(nonnull NSString *)name fileName:(nullable NSString *)fileName mimeType:(nullable NSString *)mimeType {
-    NSParameterAssert(data);
-    NSParameterAssert(name);
-    RFHTTPRequestFormData *this = [RFHTTPRequestFormData new];
-    this.data = data;
-    this.name = name;
-    this.fileName = fileName;
-    this.mimeType = mimeType;
-    this.type = RFHTTPRequestFormDataSourceTypeData;
-    return this;
-}
-
-- (void)buildFormData:(nonnull id<AFMultipartFormData>)formData error:(NSError *_Nullable __autoreleasing *_Nullable)error {
-    switch (self.type) {
-        case RFHTTPRequestFormDataSourceTypeURL: {
-            NSURL *fileURL = self.fileURL;
-            [formData appendPartWithFileURL:fileURL name:self.name error:error];
-            break;
-        }
-        case RFHTTPRequestFormDataSourceTypeData: {
-            NSData *data = self.data;
-            if (self.fileName
-                && self.mimeType) {
-                [formData appendPartWithFileData:data name:self.name fileName:(NSString *)self.fileName mimeType:(NSString *)self.mimeType];
-            }
-            else {
-                [formData appendPartWithFormData:data name:self.name];
-            }
-            break;
-        }
-        case RFHTTPRequestFormDataSourceTypeStream:
-            // todo
-        default:
-            break;
-    }
-}
+@implementation RFAPIRequestConext
 
 @end

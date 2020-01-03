@@ -64,12 +64,12 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
    if (object == self.downloadProgress) {
         if (self.downloadProgressBlock) {
-            self.downloadProgressBlock(object);
+            self.downloadProgressBlock(self, object);
         }
     }
     else if (object == self.uploadProgress) {
         if (self.uploadProgressBlock) {
-            self.uploadProgressBlock(object);
+            self.uploadProgressBlock(self, object);
         }
     }
 }

@@ -14,18 +14,23 @@
 #import "RFAPIDefineManager.h"
 
 @class AFNetworkReachabilityManager;
-@class AFHTTPSessionManager, AFSecurityPolicy;
+@class AFSecurityPolicy;
 @protocol AFMultipartFormData;
 
-@class RFMessageManager, RFNetworkActivityMessage;
-@class RFAPIControl, RFHTTPRequestFormData;
+@class RFMessageManager;
+@class RFHTTPRequestFormData;
 @protocol RFAPIModelTransformer;
+@class RFNetworkActivityMessage;
+
+@class RFAPIRequestConext;
 
 @protocol RFAPITask
 @required
+@property (readonly, nonnull) RFAPIDefine *define;
 - (void)cancel;
 @end
 
+typedef void(^RFAPIRequestProgressBlock)(id<RFAPITask> __nonnull task, NSProgress *__nonnull progress);
 typedef void(^RFAPIRequestSuccessCallback)(id<RFAPITask> __nonnull task, id __nullable responseObject);
 typedef void(^RFAPIRequestFailureCallback)(id<RFAPITask> __nullable task, NSError *__nonnull error);
 typedef void(^RFAPIRequestCompletionCallback)(id<RFAPITask> __nullable task, BOOL success);
@@ -54,7 +59,7 @@ typedef void(^RFAPIRequestCompletionCallback)(id<RFAPITask> __nullable task, BOO
 /**
  The dispatch group for `completionBlock`. If `NULL` (default), a private dispatch group is used.
  */
-@property (null_unspecified, nonatomic) dispatch_group_t completionGroup;
+@property (null_resettable, nonatomic) dispatch_group_t completionGroup;
 
 #pragma mark - Define
 
@@ -74,45 +79,12 @@ typedef void(^RFAPIRequestCompletionCallback)(id<RFAPITask> __nullable task, BOO
 
 #pragma mark - Request
 
-// 如果传一个特殊请求，直接创建一个 AFHTTPRequestOperation 并加进来也许更合适
+@property (nullable) Class requestConextClass;
 
-/**
- Creat and send a HTTP request.
 
- @discussion 当请求取消时，success 和 failure 都不会被调用，只有 completion 会被调用。请求从缓存读取时，几个 block 回调中的 operation 参数会为空。
+- (nullable id<RFAPITask>)requestWithName:(nonnull NSString *)APIName context:(NS_NOESCAPE void (^__nullable)(__kindof RFAPIRequestConext *__nonnull))contextBlock;
 
- @param APIName     接口名
- @param parameters  请求的参数
- @param controlInfo 控制接口行为的结构体
- @param success     请求成功回调的 block，可为空
- @param failure     请求失败回调的 block，可为空。为空时将用默认的方法显示错误信息
- @param completion  请求完成回掉的 block，必定会被调用（即使请求创建失败），会在 success 和 failure 回调后执行。被设计用来执行通用的清理。可为空。
- */
-- (nullable id<RFAPITask>)requestWithName:(nonnull NSString *)APIName
-     parameters:(nullable NSDictionary *)parameters
-    controlInfo:(nullable RFAPIControl *)controlInfo
-        success:(void (^_Nullable)(id<RFAPITask>_Nullable operation, id _Nullable responseObject))success
-        failure:(void (^_Nullable)(id<RFAPITask>_Nullable operation, NSError *_Nonnull error))failure
-     completion:(void (^_Nullable)(id<RFAPITask>_Nullable operation))completion;
-
-/**
- 上传文件
-
- @param arrayContainsFormDataObj 包含 RFHTTPRequestFormData 对象的数组
- */
-- (nullable id<RFAPITask>)requestWithName:(nonnull NSString *)APIName
-     parameters:(nullable NSDictionary *)parameters
-       formData:(nullable NSArray<RFHTTPRequestFormData *> *)arrayContainsFormDataObj
-    controlInfo:(nullable RFAPIControl *)controlInfo
- uploadProgress:(void (^_Nullable)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-        success:(void (^_Nullable)(id<RFAPITask>_Nullable operation, id _Nullable responseObject))success
-        failure:(void (^_Nullable)(id<RFAPITask>_Nullable operation, NSError *_Nonnull error))failure
-     completion:(void (^_Nullable)(id<RFAPITask>_Nullable operation))completion;
-
-/**
- Creat a mutable URLRequest with special info.
- */
-- (nullable NSMutableURLRequest *)URLRequestWithDefine:(nonnull RFAPIDefine *)define parameters:(nullable NSDictionary *)parameters formData:(nullable NSArray *)RFFormData controlInfo:(nullable RFAPIControl *)controlInfo error:(NSError *_Nullable __autoreleasing *_Nullable)error;
+- (nullable id<RFAPITask>)requestWithDefine:(nonnull RFAPIDefine *)APIDefine context:(NS_NOESCAPE void (^__nullable)(__kindof RFAPIRequestConext *__nonnull))contextBlock;
 
 #pragma mark - Response
 
@@ -129,7 +101,7 @@ typedef void(^RFAPIRequestCompletionCallback)(id<RFAPITask> __nullable task, BOO
 /**
  Default implementation first add parameters from APIDefine then add parameters from define manager.
  */
-- (void)preprocessingRequestParameters:(NSMutableDictionary *_Nullable *_Nonnull)requestParameters HTTPHeaders:(NSMutableDictionary *_Nullable *_Nonnull)requestHeaders withParameters:(nullable NSDictionary *)parameters define:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo;
+- (void)preprocessingRequestParameters:(NSMutableDictionary *_Nullable *_Nonnull)requestParameters HTTPHeaders:(NSMutableDictionary *_Nullable *_Nonnull)requestHeaders withParameters:(nullable NSDictionary *)parameters define:(nonnull RFAPIDefine *)define controlInfo:(nullable id)controlInfo;
 
 /**
  The default implementation of this method does nothing.
@@ -143,7 +115,7 @@ typedef void(^RFAPIRequestCompletionCallback)(id<RFAPITask> __nullable task, BOO
 
  @return 返回 YES 将继续错误的处理继续交由请求的回调处理，NO 处理结束
  */
-- (BOOL)generalHandlerForError:(nonnull NSError *)error withDefine:(nonnull RFAPIDefine *)define controlInfo:(nullable RFAPIControl *)controlInfo requestOperation:(nullable id<RFAPITask>)operation operationFailureCallback:(void (^_Nullable)(id<RFAPITask>_Nullable, NSError *_Nonnull))operationFailureCallback;
+- (BOOL)generalHandlerForError:(nonnull NSError *)error withDefine:(nonnull RFAPIDefine *)define task:(nonnull id<RFAPITask>)task failureCallback:(nullable RFAPIRequestFailureCallback)failure;
 
 /**
  判断响应是否是成功的结果
@@ -159,38 +131,53 @@ typedef void(^RFAPIRequestCompletionCallback)(id<RFAPITask> __nullable task, BOO
 
 @end
 
-extern NSString *_Nonnull const RFAPIRequestArrayParameterKey;
-extern NSString *_Nonnull const RFAPIRequestForceQuryStringParametersKey;
-extern NSErrorDomain _Nonnull const RFAPIErrorDomain;
 
+FOUNDATION_EXTERN NSString *_Nonnull const RFAPIRequestArrayParameterKey;
+FOUNDATION_EXTERN NSString *_Nonnull const RFAPIRequestForceQuryStringParametersKey;
+FOUNDATION_EXTERN NSErrorDomain _Nonnull const RFAPIErrorDomain;
 
-@interface RFHTTPRequestFormData : NSObject
-/// The name to be associated with the specified data. This property must be set.
-@property (nonnull, copy) NSString *name;
+@interface RFAPIRequestConext : NSObject
 
-// No implementation
-@property (nullable, copy) NSString *fileName;
+/// The parameters to be encoded.
+@property (nullable) NSDictionary<NSString *, id> *parameters;
 
-// No implementation
-@property (nullable, copy) NSString *mimeType;
+/// Use this block to appends data to the HTTP body.
+@property (nullable) void (^formData)(id <AFMultipartFormData> __nonnull);
 
-/// The URL corresponding to the form content
-@property (nullable, copy) NSURL *fileURL;
+/// A dictionary of additional headers to send with requests.
+@property (nullable) NSDictionary *HTTPHeaders;
 
-// No implementation
-@property (nullable, strong) NSInputStream *inputStream;
+/// Customization URL request object
+@property (nullable) NSMutableURLRequest *__nonnull (^requestCustomization)(NSMutableURLRequest *__nonnull request);
 
-/// The data to be encoded and appended to the form data.
-@property (nullable, strong) NSData *data;
+/// Identifier for request. If `nil`, the api name will be used.
+@property (nullable) NSString *identifier;
 
-/**
- @param fileURL The URL corresponding to the file whose content will be appended to the form. This parameter must not be `nil`.
- @param name The name to be associated with the specified data. This parameter must not be `nil`.
- */
-+ (nonnull instancetype)formDataWithFileURL:(nonnull NSURL *)fileURL name:(nonnull NSString *)name;
+/// Group identifier for request.
+@property (nullable) NSString *groupIdentifier;
 
-+ (nonnull instancetype)formDataWithData:(nonnull NSData *)data name:(nonnull NSString *)name;
-+ (nonnull instancetype)formDataWithData:(nonnull NSData *)data name:(nonnull NSString *)name fileName:(nullable NSString *)fileName mimeType:(nullable NSString *)mimeType;
+/// An activity message to be displayed durning the request executing.
+@property (nullable) RFNetworkActivityMessage *activityMessage;
 
-- (void)buildFormData:(nonnull id<AFMultipartFormData>)formData error:(NSError *_Nullable __autoreleasing *_Nullable)error;
+@property (nullable) NSString *loadMessage;
+@property BOOL loadMessageShownModal;
+
+/// A block object to be executed when the upload progress is updated.
+/// Note this block is called on the session queue, not the main queue.
+@property (nullable) RFAPIRequestProgressBlock uploadProgress;
+
+/// A block object to be executed when the download progress is updated.
+/// Note this block is called on the session queue, not the main queue.
+@property (nullable) RFAPIRequestProgressBlock downloadProgress;
+
+/// A block object to be executed when the request finishes successfully.
+@property (nullable) RFAPIRequestSuccessCallback success;
+
+/// A block object to be executed when the request finishes unsuccessfully.
+@property (nullable) RFAPIRequestFailureCallback failure;
+
+/// A block object to be executed when the request is complated.
+@property (nullable) RFAPIRequestCompletionCallback complation;
+// todo: end callback and complate handler
+
 @end

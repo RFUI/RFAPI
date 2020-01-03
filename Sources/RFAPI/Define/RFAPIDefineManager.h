@@ -34,8 +34,10 @@
 
 #pragma mark - RFAPI Support
 
+/// Default is `AFHTTPRequestSerializer`.
 @property (null_resettable, nonatomic) id<AFURLRequestSerialization> defaultRequestSerializer;
 
+/// Default is `AFJSONResponseSerializer`.
 @property (null_resettable, nonatomic) id<AFURLResponseSerialization> defaultResponseSerializer;
 
 - (nullable NSURL *)requestURLForDefine:(nonnull RFAPIDefine *)define parameters:(nullable NSMutableDictionary *)parameters error:(NSError *__nullable __autoreleasing *__nullable)error;
