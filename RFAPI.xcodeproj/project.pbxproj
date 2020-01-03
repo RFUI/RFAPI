@@ -142,8 +142,6 @@
 				D54183CE206B685100DD25CE /* Info.plist */,
 				D54183CB206B685100DD25CE /* LaunchScreen.storyboard */,
 				D5418404206CD45100DD25CE /* Main.storyboard */,
-				D5418407206CD45400DD25CE /* RFDTestEntity.h */,
-				D54183FE206CD44F00DD25CE /* RFDTestEntity.m */,
 				D55ADAF423BF4AFB00AD6DB2 /* TestAPI.swift */,
 				D5418405206CD45300DD25CE /* TestAPIDefine.plist */,
 				D5091B1623BF2E3B00E52FF3 /* TestViewController.swift */,
@@ -154,6 +152,7 @@
 		D54183D2206B801E00DD25CE /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				D55ADAF623BF4D1D00AD6DB2 /* Models */,
 				D54183D3206B806200DD25CE /* OCBridging-Header.h */,
 				D54183D4206BB68400DD25CE /* RFUI-Config.xcconfig */,
 			);
@@ -201,6 +200,15 @@
 				D54183F2206BDCFF00DD25CE /* Info.plist */,
 			);
 			path = macOS;
+			sourceTree = "<group>";
+		};
+		D55ADAF623BF4D1D00AD6DB2 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				D5418407206CD45400DD25CE /* RFDTestEntity.h */,
+				D54183FE206CD44F00DD25CE /* RFDTestEntity.m */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

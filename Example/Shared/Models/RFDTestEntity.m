@@ -1,6 +1,6 @@
 
 #import "RFDTestEntity.h"
-#import "RFRuntime.h"
+#import <RFKit/RFRuntime.h>
 
 @implementation RFDTestEntity
 

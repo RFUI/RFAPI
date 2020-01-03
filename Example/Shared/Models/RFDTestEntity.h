@@ -9,9 +9,6 @@
 #import "JSONModel.h"
 
 @interface RFDTestEntity : JSONModel
-@property (assign, nonatomic) int uid;
-@property (strong, nonatomic) NSString *name;
-@end
-
-@protocol RFDTestEntity <NSObject>
+@property int uid;
+@property NSString *name;
 @end
