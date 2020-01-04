@@ -123,13 +123,13 @@
 
 - (id<AFURLRequestSerialization>)defaultRequestSerializer {
     if (!_defaultRequestSerializer) {
-        _defaultRequestSerializer = [AFHTTPRequestSerializer serializer];
+        _defaultRequestSerializer = [AFJSONRequestSerializer serializer];
     }
     return _defaultRequestSerializer;
 }
 - (id<AFURLResponseSerialization>)defaultResponseSerializer {
     if (!_defaultResponseSerializer) {
-        _defaultResponseSerializer = [AFJSONResponseSerializer serializer];
+        _defaultResponseSerializer = [AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments];
     }
     return _defaultResponseSerializer;
 }
