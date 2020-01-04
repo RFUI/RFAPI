@@ -68,7 +68,7 @@ class TestViewController: UIViewController,
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let request = items[indexPath.row]
-        API.request(withName: request.APIName, context: { c in
+        API.request(name: request.APIName) { c in
             c.loadMessage = request.message
             c.loadMessageShownModal = request.modal
             c.success = { [weak self] _, responseObject in
@@ -77,7 +77,7 @@ class TestViewController: UIViewController,
             c.failure = { [weak self] _, error in
                 self?.display(error: error)
             }
-        })
+        }
     }
 
     func display(response: Any?) {

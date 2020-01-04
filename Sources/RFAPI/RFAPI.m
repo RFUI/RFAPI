@@ -19,24 +19,22 @@ NSString *RFAPILocalizedString(NSString *key, NSString *value) {
     return [NSBundle.mainBundle localizedStringForKey:key value:value table:nil];
 }
 
-static dispatch_queue_t url_session_manager_processing_queue() {
-    static dispatch_queue_t af_url_session_manager_processing_queue;
+static dispatch_queue_t api_default_processing_queue() {
+    static dispatch_queue_t queue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        af_url_session_manager_processing_queue = dispatch_queue_create("com.github.RFUI.RFAPI.session.processing", DISPATCH_QUEUE_CONCURRENT);
+        queue = dispatch_queue_create("com.github.RFUI.RFAPI.session.processing", DISPATCH_QUEUE_CONCURRENT);
     });
-
-    return af_url_session_manager_processing_queue;
+    return queue;
 }
 
-static dispatch_group_t url_session_manager_completion_group() {
-    static dispatch_group_t af_url_session_manager_completion_group;
+static dispatch_group_t api_default_completion_group() {
+    static dispatch_group_t group;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        af_url_session_manager_completion_group = dispatch_group_create();
+        group = dispatch_group_create();
     });
-
-    return af_url_session_manager_completion_group;
+    return group;
 }
 
 @implementation RFAPI
@@ -75,7 +73,7 @@ RFInitializingRootForNSObject
 
 - (dispatch_queue_t)processingQueue {
     if (!_processingQueue) {
-        _processingQueue = url_session_manager_processing_queue();
+        _processingQueue = api_default_processing_queue();
     }
     return _processingQueue;
 }
@@ -89,7 +87,7 @@ RFInitializingRootForNSObject
 
 - (dispatch_group_t)completionGroup {
     if (!_completionGroup) {
-        _completionGroup = url_session_manager_completion_group();
+        _completionGroup = api_default_completion_group();
     }
     return _completionGroup;
 }
@@ -179,10 +177,6 @@ RFInitializingRootForNSObject
         [self _RFAPI_executeContext:context failure:error];
         return nil;
     }
-    if (context.requestCustomization) {
-        request = context.requestCustomization(request);
-        NSAssert(request, @"requestCustomization must not return nil.");
-    }
 
     NSURLSessionDataTask *dataTask = [self.http.session dataTaskWithRequest:request];
     _RFAPISessionTask *task = [self.http addSessionTask:dataTask];
@@ -262,29 +256,43 @@ RFInitializingRootForNSObject
     }];
 
     // Finalization
-    r = [self finalizeSerializedRequest:r withDefine:define controlInfo:nil];
+    r = [self finalizeSerializedRequest:r withDefine:define context:context];
     return r;
 }
 
-- (void)preprocessingRequestParameters:(NSMutableDictionary *_Nullable *_Nonnull)requestParameters HTTPHeaders:(NSMutableDictionary *_Nullable *_Nonnull)requestHeaders withParameters:(nullable NSDictionary *)parameters define:(nonnull RFAPIDefine *)define context:(nonnull RFAPIRequestConext *)context {
+- (void)preprocessingRequestParameters:(NSMutableDictionary * _Nullable __strong *)requestParameters HTTPHeaders:(NSMutableDictionary * _Nullable __strong *)requestHeaders withParameters:(NSDictionary *)parameters define:(RFAPIDefine *)define context:(RFAPIRequestConext *)context {
     BOOL needsAuthorization = define.needsAuthorization;
-
-    [*requestParameters addEntriesFromDictionary:define.defaultParameters];
-    if (needsAuthorization) {
-        [*requestParameters addEntriesFromDictionary:self.defineManager.authorizationParameters];
+    NSDictionary *entries = nil;
+    if ((entries = define.defaultParameters)) {
+        [*requestParameters addEntriesFromDictionary:entries];
     }
-    if (parameters) {
-        [*requestParameters addEntriesFromDictionary:(NSDictionary *)parameters];
+    if (needsAuthorization) {
+        if ((entries = self.defineManager.authorizationParameters)) {
+            [*requestParameters addEntriesFromDictionary:entries];
+        }
+    }
+    if ((entries = parameters)) {
+        [*requestParameters addEntriesFromDictionary:entries];
     }
 
-    [*requestHeaders addEntriesFromDictionary:define.HTTPRequestHeaders];
-    [*requestHeaders addEntriesFromDictionary:context.HTTPHeaders];
+    if ((entries = define.HTTPRequestHeaders)) {
+        [*requestHeaders addEntriesFromDictionary:entries];
+    }
     if (needsAuthorization) {
-        [*requestHeaders addEntriesFromDictionary:self.defineManager.authorizationHeader];
+        if ((entries = self.defineManager.authorizationHeader)) {
+            [*requestHeaders addEntriesFromDictionary:entries];
+        }
+    }
+    if ((entries = context.HTTPHeaders)) {
+        [*requestHeaders addEntriesFromDictionary:entries];
     }
 }
 
-- (NSMutableURLRequest *)finalizeSerializedRequest:(NSMutableURLRequest *)request withDefine:(RFAPIDefine *)define controlInfo:(id<RFAPITask>)controlInfo {
+- (NSMutableURLRequest *)finalizeSerializedRequest:(NSMutableURLRequest *)request withDefine:(RFAPIDefine *)define context:(nonnull RFAPIRequestConext *)context {
+    if (context.requestCustomization) {
+        request = context.requestCustomization(request);
+        NSAssert(request, @"requestCustomization must not return nil.");
+    }
     return request;
 }
 

@@ -1,7 +1,7 @@
 /*
  RFAPI
 
- Copyright © 2014-2016, 2018-2019 BB9z
+ Copyright © 2014-2016, 2018-2020 BB9z
  https://github.com/RFUI/RFAPI
  
  The MIT License (MIT)
@@ -75,16 +75,18 @@ typedef void(^RFAPIRequestCompletionCallback)(id<RFAPITask> __nullable task, BOO
 
 #pragma mark - Activity Indicator
 
+#if !TARGET_OS_WATCH
 @property (nullable) __kindof RFMessageManager *networkActivityIndicatorManager;
+#endif
 
 #pragma mark - Request
 
 @property (nullable) Class requestConextClass;
 
 
-- (nullable id<RFAPITask>)requestWithName:(nonnull NSString *)APIName context:(NS_NOESCAPE void (^__nullable)(__kindof RFAPIRequestConext *__nonnull))contextBlock;
+- (nullable id<RFAPITask>)requestWithName:(nonnull NSString *)APIName context:(NS_NOESCAPE void (^__nullable)(__kindof RFAPIRequestConext *__nonnull))contextBlock NS_SWIFT_NAME(request(name:context:));
 
-- (nullable id<RFAPITask>)requestWithDefine:(nonnull RFAPIDefine *)APIDefine context:(NS_NOESCAPE void (^__nullable)(__kindof RFAPIRequestConext *__nonnull))contextBlock;
+- (nullable id<RFAPITask>)requestWithDefine:(nonnull RFAPIDefine *)APIDefine context:(NS_NOESCAPE void (^__nullable)(__kindof RFAPIRequestConext *__nonnull))contextBlock NS_SWIFT_NAME(request(define:context:));
 
 #pragma mark - Response
 
@@ -101,21 +103,22 @@ typedef void(^RFAPIRequestCompletionCallback)(id<RFAPITask> __nullable task, BOO
 /**
  Default implementation first add parameters from APIDefine then add parameters from define manager.
  */
-- (void)preprocessingRequestParameters:(NSMutableDictionary *_Nullable *_Nonnull)requestParameters HTTPHeaders:(NSMutableDictionary *_Nullable *_Nonnull)requestHeaders withParameters:(nullable NSDictionary *)parameters define:(nonnull RFAPIDefine *)define controlInfo:(nullable id)controlInfo;
+- (void)preprocessingRequestParameters:(NSMutableDictionary *__nullable __strong *__nonnull)parametersRef HTTPHeaders:(NSMutableDictionary *__nullable __strong *__nonnull)httpHeadersRef withParameters:(nullable NSDictionary *)parameters define:(nonnull RFAPIDefine *)define context:(nonnull RFAPIRequestConext *)context NS_SWIFT_NAME(preprocessingRequest(parametersRef:httpHeadersRef:parameters:define:context:));
+
 
 /**
- The default implementation of this method does nothing.
+ The default implementation apply `requestCustomization` of the request context.
  */
-- (nullable NSMutableURLRequest *)finalizeSerializedRequest:(nonnull NSMutableURLRequest *)request withDefine:(nonnull RFAPIDefine *)define controlInfo:(nonnull id<RFAPITask>)controlInfo;
+- (nonnull NSMutableURLRequest *)finalizeSerializedRequest:(nonnull NSMutableURLRequest *)request withDefine:(nonnull RFAPIDefine *)define context:(nonnull RFAPIRequestConext *)context NS_SWIFT_NAME(finalizeSerializedRequest(_:define:context:));
 
 /**
  默认实现返回 YES
  
- This method is called on the main queue.
+ This method is called on the processing queue.
 
  @return 返回 YES 将继续错误的处理继续交由请求的回调处理，NO 处理结束
  */
-- (BOOL)generalHandlerForError:(nonnull NSError *)error withDefine:(nonnull RFAPIDefine *)define task:(nonnull id<RFAPITask>)task failureCallback:(nullable RFAPIRequestFailureCallback)failure;
+- (BOOL)generalHandlerForError:(nonnull NSError *)error withDefine:(nonnull RFAPIDefine *)define task:(nonnull id<RFAPITask>)task failureCallback:(nullable RFAPIRequestFailureCallback)failure NS_SWIFT_NAME(generalHandlerForError(_:define:task:failure:));
 
 /**
  判断响应是否是成功的结果
@@ -127,7 +130,7 @@ typedef void(^RFAPIRequestCompletionCallback)(id<RFAPITask> __nullable task, BOO
  @param responseObjectRef 可以用来修改返回值
  @param error 可选的错误信息
  */
-- (BOOL)isSuccessResponse:(id _Nullable __strong *_Nonnull)responseObjectRef error:(NSError *_Nullable __autoreleasing *_Nullable)error;
+- (BOOL)isSuccessResponse:(id _Nullable __strong *_Nonnull)responseObjectRef error:(NSError *_Nullable __autoreleasing *_Nullable)error NS_SWIFT_NOTHROW;
 
 @end
 
