@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0920"
+   LastUpgradeVersion = "1130"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -17,7 +17,7 @@
                BlueprintIdentifier = "D54183BE206B685000DD25CE"
                BuildableName = "Example-iOS.app"
                BlueprintName = "Example-iOS"
-               ReferencedContainer = "container:RFMessageManager.xcodeproj">
+               ReferencedContainer = "container:RFAPI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -26,38 +26,14 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      language = ""
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D54183D8206BBA7B00DD25CE"
-               BuildableName = "Test-iOS.xctest"
-               BlueprintName = "Test-iOS"
-               ReferencedContainer = "container:RFAPI.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D54183BE206B685000DD25CE"
-            BuildableName = "Example-iOS.app"
-            BlueprintName = "Example-iOS"
-            ReferencedContainer = "container:RFAPI.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      language = ""
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
@@ -74,8 +50,6 @@
             ReferencedContainer = "container:RFAPI.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -90,7 +64,7 @@
             BlueprintIdentifier = "D54183BE206B685000DD25CE"
             BuildableName = "Example-iOS.app"
             BlueprintName = "Example-iOS"
-            ReferencedContainer = "container:RFMessageManager.xcodeproj">
+            ReferencedContainer = "container:RFAPI.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

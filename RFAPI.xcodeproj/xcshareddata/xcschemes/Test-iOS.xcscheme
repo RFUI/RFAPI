@@ -16,9 +16,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D55ADB0623C06C3B00AD6DB2"
-               BuildableName = "Test-macOS.xctest"
-               BlueprintName = "Test-macOS"
+               BlueprintIdentifier = "D55ADAFA23C06B7E00AD6DB2"
+               BuildableName = "Test-iOS.xctest"
+               BlueprintName = "Test-iOS"
                ReferencedContainer = "container:RFAPI.xcodeproj">
             </BuildableReference>
          </TestableReference>
