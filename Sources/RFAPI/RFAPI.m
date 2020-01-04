@@ -208,6 +208,7 @@ RFInitializingRootForNSObject
     task.success = context.success;
     task.failure = context.failure;
     task.complation = context.complation;
+    task.userInfo = context.userInfo;
 }
 
 #pragma mark - Build Request

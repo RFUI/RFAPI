@@ -27,6 +27,9 @@
 @protocol RFAPITask
 @required
 @property (readonly, nonnull) RFAPIDefine *define;
+
+/// This property is the dictionary pass through the request context.
+@property (nullable) NSDictionary *userInfo;
 - (void)cancel;
 @end
 
@@ -142,6 +145,7 @@ FOUNDATION_EXTERN NSErrorDomain _Nonnull const RFAPIErrorDomain;
 @interface RFAPIRequestConext : NSObject
 
 /// The parameters to be encoded.
+/// If you want to send an array parameters, set `RFAPIRequestArrayParameterKey` key with the array.
 @property (nullable) NSDictionary<NSString *, id> *parameters;
 
 /// Use this block to appends data to the HTTP body.
@@ -182,5 +186,7 @@ FOUNDATION_EXTERN NSErrorDomain _Nonnull const RFAPIErrorDomain;
 /// A block object to be executed when the request is complated.
 @property (nullable) RFAPIRequestCompletionCallback complation;
 // todo: end callback and complate handler
+
+@property (nullable) NSDictionary *userInfo;
 
 @end
