@@ -8,11 +8,11 @@ Pod::Spec.new do |s|
   s.author           = { 'BB9z' => 'bb9z@me.com' }
   s.source           = {
     :git => 'https://github.com/RFUI/RFAPI.git',
-    :branch => 'develop'
+    :tag => s.version.to_s
   }
 
   s.requires_arc = true
-  s.osx.deployment_target = '10.9'
+  s.osx.deployment_target = '10.10'
   s.ios.deployment_target = '8.0'
   s.tvos.deployment_target = '9.0'
   # s.watchos.deployment_target = '2.0'
