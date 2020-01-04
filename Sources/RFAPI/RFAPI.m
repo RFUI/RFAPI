@@ -163,7 +163,7 @@ RFInitializingRootForNSObject
     // todo: merge default define
 
     NSError *e = nil;
-    NSMutableURLRequest *request = [self URLRequestWithDefine:APIDefine context:context error:&e];
+    NSMutableURLRequest *request = [self _RFAPI_makeURLRequestWithDefine:APIDefine context:context error:&e];
     if (!request) {
         RFAPILogError_(@"无法创建请求: %@", e)
         NSMutableDictionary *eInfo = [NSMutableDictionary.alloc initWithCapacity:4];
@@ -213,52 +213,46 @@ RFInitializingRootForNSObject
 
 #pragma mark - Build Request
 
-#define RFAPIMakeRequestError_(CONDITION)\
-    if (CONDITION) {\
-        if (error) {\
-            *error = e;\
-        }\
-        return nil;\
-    }
-
-- (nullable NSMutableURLRequest *)URLRequestWithDefine:(RFAPIDefine *)define context:(RFAPIRequestConext *)context error:(NSError *_Nullable __autoreleasing *)error {
+- (nullable NSMutableURLRequest *)_RFAPI_makeURLRequestWithDefine:(RFAPIDefine *)define context:(RFAPIRequestConext *)context error:(NSError *_Nullable __autoreleasing *)error {
     NSParameterAssert(define);
     NSParameterAssert(context);
     NSParameterAssert(error);
 
     // Preprocessing arguments
-    NSMutableDictionary *requestParameters = [NSMutableDictionary.alloc initWithCapacity:16];
-    NSMutableDictionary *requestHeaders = [NSMutableDictionary.alloc initWithCapacity:4];
-    [self preprocessingRequestParameters:&requestParameters HTTPHeaders:&requestHeaders withParameters:context.parameters define:define context:context];
+    NSMutableDictionary *parameters = [NSMutableDictionary.alloc initWithCapacity:16];
+    NSMutableDictionary *headers = [NSMutableDictionary.alloc initWithCapacity:4];
+    [self preprocessingRequestParameters:&parameters HTTPHeaders:&headers withParameters:context.parameters define:define context:context];
 
     // Creat URL
-    NSError __autoreleasing *e = nil;
-    NSURL *url = [self.defineManager requestURLForDefine:define parameters:requestParameters error:&e];
-    RFAPIMakeRequestError_(!url)
+    NSURL *url = [self.defineManager requestURLForDefine:define parameters:parameters error:error];
+    if (!url) return nil;
 
     // Creat URLRequest
-    NSMutableURLRequest *r;
-    AFHTTPRequestSerializer *s = [self.defineManager requestSerializerForDefine:define];
+    NSMutableURLRequest *mutableRequest = nil;
+
+    id<AFURLRequestSerialization> serializer = [self.defineManager requestSerializerForDefine:define];
     if (context.formData) {
+        NSAssert([serializer respondsToSelector:@selector(multipartFormRequestWithMethod:URLString:parameters:constructingBodyWithBlock:error:)], @"For a request needs post form data, the serializer should be an AFHTTPRequestSerializer or response to multipartFormRequestWithMethod:URLString:parameters:constructingBodyWithBlock:error:.");
         NSString *urlString = url.absoluteString;
-        r = [s multipartFormRequestWithMethod:define.method ?: @"POST" URLString:urlString parameters:requestParameters constructingBodyWithBlock:context.formData error:&e];
+        AFHTTPRequestSerializer *hs = serializer;
+        mutableRequest = [hs multipartFormRequestWithMethod:define.method ?: @"POST" URLString:urlString parameters:parameters constructingBodyWithBlock:context.formData error:error];
     }
     else {
-        r = [NSMutableURLRequest.alloc initWithURL:url];
-        [r setHTTPMethod:define.method ?: @"GET"];
-        NSArray *arrayParameter = requestParameters[RFAPIRequestArrayParameterKey];
-        r = [[s requestBySerializingRequest:r withParameters:arrayParameter?: requestParameters error:&e] mutableCopy];
+        mutableRequest = [NSMutableURLRequest.alloc initWithURL:url];
+        [mutableRequest setHTTPMethod:define.method ?: @"GET"];
+        NSArray *arrayParameter = parameters[RFAPIRequestArrayParameterKey];
+        mutableRequest = [[serializer requestBySerializingRequest:mutableRequest withParameters:arrayParameter?: parameters error:error] mutableCopy];
     }
-    RFAPIMakeRequestError_(!r)
+    if (!mutableRequest) return nil;
 
     // Set header
-    [requestHeaders enumerateKeysAndObjectsUsingBlock:^(id field, id value, BOOL *__unused stop) {
-        [r setValue:value forHTTPHeaderField:field];
+    [headers enumerateKeysAndObjectsUsingBlock:^(id field, id value, BOOL *_) {
+        [mutableRequest setValue:value forHTTPHeaderField:field];
     }];
 
     // Finalization
-    r = [self finalizeSerializedRequest:r withDefine:define context:context];
-    return r;
+    mutableRequest = [self finalizeSerializedRequest:mutableRequest withDefine:define context:context];
+    return mutableRequest;
 }
 
 - (void)preprocessingRequestParameters:(NSMutableDictionary * _Nullable __strong *)requestParameters HTTPHeaders:(NSMutableDictionary * _Nullable __strong *)requestHeaders withParameters:(NSDictionary *)parameters define:(RFAPIDefine *)define context:(RFAPIRequestConext *)context {
