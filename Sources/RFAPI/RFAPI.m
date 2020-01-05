@@ -208,6 +208,7 @@ RFInitializingRootForNSObject
     task.success = context.success;
     task.failure = context.failure;
     task.complation = context.complation;
+    task.combinedComplation = context.combinedComplation;
     task.userInfo = context.userInfo;
 }
 
@@ -371,10 +372,15 @@ RFInitializingRootForNSObject
         dispatch_sync_on_main(^{
             [self.networkActivityIndicatorManager hideMessage:message];
         });
-        RFAPIRequestCompletionCallback ccb = task.complation;
+        RFAPIRequestFinishedCallback ccb = task.complation;
         if (ccb) {
             task.complation = nil;
             ccb(task, YES);
+        }
+        RFAPIRequestCombinedCompletionCallback cbcb = task.combinedComplation;
+        if (cbcb) {
+            task.combinedComplation = nil;
+            cbcb(task, responseObject, nil);
         }
     });
 }
@@ -406,10 +412,15 @@ RFInitializingRootForNSObject
         dispatch_sync_on_main(^{
             [self.networkActivityIndicatorManager hideMessage:message];
         });
-        RFAPIRequestCompletionCallback ccb = task.complation;
+        RFAPIRequestFinishedCallback ccb = task.complation;
         if (ccb) {
             task.complation = nil;
             ccb(task, NO);
+        }
+        RFAPIRequestCombinedCompletionCallback cbcb = task.combinedComplation;
+        if (cbcb) {
+            task.combinedComplation = nil;
+            cbcb(task, nil, error);
         }
     });
 }
@@ -420,9 +431,13 @@ RFInitializingRootForNSObject
         if (fcb) {
             fcb(nil, error);
         }
-        RFAPIRequestCompletionCallback ccb = context.complation;
+        RFAPIRequestFinishedCallback ccb = context.complation;
         if (ccb) {
             ccb(nil, NO);
+        }
+        RFAPIRequestCombinedCompletionCallback cbcb = context.combinedComplation;
+        if (cbcb) {
+            cbcb(nil, nil, error);
         }
     });
 }

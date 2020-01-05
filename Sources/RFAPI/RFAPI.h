@@ -36,8 +36,12 @@
 typedef void(^RFAPIRequestProgressBlock)(id<RFAPITask> __nonnull task, NSProgress *__nonnull progress);
 typedef void(^RFAPIRequestSuccessCallback)(id<RFAPITask> __nonnull task, id __nullable responseObject);
 typedef void(^RFAPIRequestFailureCallback)(id<RFAPITask> __nullable task, NSError *__nonnull error);
-typedef void(^RFAPIRequestCompletionCallback)(id<RFAPITask> __nullable task, BOOL success);
+typedef void(^RFAPIRequestFinishedCallback)(id<RFAPITask> __nullable task, BOOL success);
+typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable task, id __nullable responseObject, NSError *__nullable error);
 
+/**
+ Full-featured URL session wrapper designed for API requests.
+ */
 @interface RFAPI : NSObject <
     RFInitializing
 >
@@ -184,8 +188,10 @@ FOUNDATION_EXTERN NSErrorDomain _Nonnull const RFAPIErrorDomain;
 @property (nullable) RFAPIRequestFailureCallback failure;
 
 /// A block object to be executed when the request is complated.
-@property (nullable) RFAPIRequestCompletionCallback complation;
-// todo: end callback and complate handler
+@property (nullable) RFAPIRequestFinishedCallback complation;
+
+/// A block object to be executed when the request is complated.
+@property (nullable) RFAPIRequestCombinedCompletionCallback combinedComplation;
 
 @property (nullable) NSDictionary *userInfo;
 

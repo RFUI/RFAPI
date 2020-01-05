@@ -55,7 +55,8 @@ typedef void(^RFAPITaskComplation)(id __nullable responseObject, NSURLResponse *
 
 @property (nullable) RFAPIRequestSuccessCallback success;
 @property (nullable) RFAPIRequestFailureCallback failure;
-@property (nullable) RFAPIRequestCompletionCallback complation;
+@property (nullable) RFAPIRequestFinishedCallback complation;
+@property (nullable) RFAPIRequestCombinedCompletionCallback combinedComplation;
 
 @property (copy, nullable) NSURL *downloadFileURL;
 @property (nullable) NSURL *__nullable (^downloadTaskDidFinishDownloading)(NSURLSession *__nonnull session, NSURLSessionDownloadTask *__nonnull downloadTask, NSURL *__nonnull location);
