@@ -30,6 +30,7 @@ Pod::Spec.new do |s|
     'Sources/RFAPI/RFAPI.h',
     'Sources/RFAPI/Define/*.h',
     'Sources/RFAPI/ModelTransformer/*.h',
+    'Sources/RFAPI/Compatible/*.h',
   ]
 
   s.pod_target_xcconfig = {
