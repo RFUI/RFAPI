@@ -60,20 +60,6 @@
 
 #pragma mark Resettable propertys
 
-- (AFHTTPRequestSerializer<AFURLRequestSerialization> *)requestSerializer {
-    if (!_requestSerializer) {
-        _requestSerializer = [AFJSONRequestSerializer.alloc init];
-    }
-    return _requestSerializer;
-}
-
-- (AFHTTPResponseSerializer<AFURLResponseSerialization> *)responseSerializer {
-    if (!_responseSerializer) {
-        _responseSerializer = [AFJSONResponseSerializer.alloc init];
-    }
-    return _responseSerializer;
-}
-
 - (AFSecurityPolicy *)securityPolicy {
     if (!_securityPolicy) {
         _securityPolicy = [AFSecurityPolicy defaultPolicy];

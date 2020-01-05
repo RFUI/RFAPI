@@ -12,8 +12,8 @@
 #import <RFKit/NSFileManager+RFKit.h>
 
 NSErrorDomain const RFAPIErrorDomain = @"RFAPIErrorDomain";
-NSString *const RFAPIRequestArrayParameterKey = @"_RFArray_";
-NSString *const RFAPIRequestForceQuryStringParametersKey = @"RFAPIRequestForceQuryStringParametersKey";
+NSString *const RFAPIRequestArrayParameterKey = @"_RFParmArray_";
+NSString *const RFAPIRequestForceQuryStringParametersKey = @"_RFParmForceQuryString_";
 
 NSString *RFAPILocalizedString(NSString *key, NSString *value) {
     return [NSBundle.mainBundle localizedStringForKey:key value:value table:nil];
@@ -313,7 +313,8 @@ RFInitializingRootForNSObject
         }
 
         NSError *serializationError = nil;
-        id responseObject = [self.http.responseSerializer responseObjectForResponse:response data:data error:&serializationError];
+        id<AFURLResponseSerialization> serializer = [self.defineManager responseSerializerForDefine:task.define];
+        id responseObject = [serializer responseObjectForResponse:response data:data error:&serializationError];
         if (serializationError) {
             [self _RFAPI_executeTaskCallback:task failure:serializationError];
             return;
@@ -446,7 +447,7 @@ RFInitializingRootForNSObject
     return YES;
 }
 
-- (BOOL)isSuccessResponse:(id _Nullable __strong *_Nonnull)responseObjectRef error:(NSError *_Nullable __autoreleasing *_Nullable)error {
+- (BOOL)isSuccessResponse:(id  _Nullable __strong *)responseObjectRef error:(NSError * _Nullable __strong *)error {
     return YES;
 }
 

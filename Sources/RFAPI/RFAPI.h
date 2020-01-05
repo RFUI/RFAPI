@@ -30,6 +30,8 @@
 
 /// This property is the dictionary pass through the request context.
 @property (nullable) NSDictionary *userInfo;
+
+/// Cancels the task.
 - (void)cancel;
 @end
 
@@ -45,6 +47,8 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
 @interface RFAPI : NSObject <
     RFInitializing
 >
+
+// todo: session config
 
 #if !TARGET_OS_WATCH
 /**
@@ -68,23 +72,21 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
  */
 @property (null_resettable, nonatomic) dispatch_group_t completionGroup;
 
-#pragma mark - Define
+#pragma mark -
 
 @property (readonly, nonnull) RFAPIDefineManager *defineManager;
-
-#pragma mark - Request management
-
-- (nonnull NSArray<id> *)operationsWithIdentifier:(nullable NSString *)identifier;
-- (nonnull NSArray<id> *)operationsWithGroupIdentifier:(nullable NSString *)identifier;
-
-- (void)cancelOperationWithIdentifier:(nullable NSString *)identifier;
-- (void)cancelOperationsWithGroupIdentifier:(nullable NSString *)identifier;
-
-#pragma mark - Activity Indicator
 
 #if !TARGET_OS_WATCH
 @property (nullable) __kindof RFMessageManager *networkActivityIndicatorManager;
 #endif
+
+#pragma mark - Request management
+
+- (nonnull NSArray<id<RFAPITask>> *)operationsWithIdentifier:(nullable NSString *)identifier;
+- (nonnull NSArray<id<RFAPITask>> *)operationsWithGroupIdentifier:(nullable NSString *)identifier;
+
+- (void)cancelOperationWithIdentifier:(nullable NSString *)identifier;
+- (void)cancelOperationsWithGroupIdentifier:(nullable NSString *)identifier;
 
 #pragma mark - Request
 
@@ -121,7 +123,7 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
 /**
  默认实现返回 YES
  
- This method is called on the processing queue.
+ This method is called on the processingQueue.
 
  @return 返回 YES 将继续错误的处理继续交由请求的回调处理，NO 处理结束
  */
@@ -132,19 +134,19 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
  
  Default implementation just return YES.
  
- This method is called on responseProcessingQueue.
+ This method is called on the processingQueue.
  
  @param responseObjectRef 可以用来修改返回值
  @param error 可选的错误信息
  */
-- (BOOL)isSuccessResponse:(id _Nullable __strong *_Nonnull)responseObjectRef error:(NSError *_Nullable __autoreleasing *_Nullable)error NS_SWIFT_NOTHROW;
+- (BOOL)isSuccessResponse:(id __nullable __strong *__nonnull)responseObjectRef error:(NSError *__nullable __strong *__nonnull)error NS_SWIFT_NOTHROW;
 
 @end
 
 
-FOUNDATION_EXTERN NSString *_Nonnull const RFAPIRequestArrayParameterKey;
-FOUNDATION_EXTERN NSString *_Nonnull const RFAPIRequestForceQuryStringParametersKey;
-FOUNDATION_EXTERN NSErrorDomain _Nonnull const RFAPIErrorDomain;
+FOUNDATION_EXTERN NSString *__nonnull const RFAPIRequestArrayParameterKey;
+FOUNDATION_EXTERN NSString *__nonnull const RFAPIRequestForceQuryStringParametersKey;
+FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 
 @interface RFAPIRequestConext : NSObject
 

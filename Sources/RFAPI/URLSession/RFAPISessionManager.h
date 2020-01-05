@@ -37,20 +37,6 @@ http://www.opensource.org/licenses/mit-license.php
  */
 @property (readonly, nonnull) NSURLSession *session;
 
-/**
- Default request serializer.
-
- Default value is an `AFJSONRequestSerializer`.
- */
-@property (null_resettable, nonatomic) __kindof AFHTTPRequestSerializer <AFURLRequestSerialization> *requestSerializer;
-
-/**
- Default response serializer.
-
- Default value is an `AFJSONResponseSerializer`.
- */
-@property (null_resettable, nonatomic) __kindof AFHTTPResponseSerializer <AFURLResponseSerialization> *responseSerializer;
-
 ///-------------------------------
 /// @name Managing Security Policy
 ///-------------------------------
