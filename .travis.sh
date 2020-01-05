@@ -45,7 +45,26 @@ XC_TestMac() {
 
 # Run watchOS test
 XC_TestWatch() {
-    xcodebuild build -workspace "$RFWorkspace" -scheme Target-watchOS ONLY_ACTIVE_ARCH=NO | xcpretty
+    xcodebuild build -workspace "$RFWorkspace" -scheme "Target-watchOS" ONLY_ACTIVE_ARCH=NO | xcpretty
+}
+
+# Run tests on iOS Simulator.
+# The destinations are the first and last available destination that are automatically detected.
+# $1 scheme
+XC_TestAutoIOS() {
+    logInfo "Detecting destinations..."
+    destList=$(xcodebuild -showdestinations -workspace "$RFWorkspace" -scheme "$1" | grep "iOS Simulator")
+    destCount=$(echo "$destList" | wc -l)
+    destFirst=$(echo "$destList" | head -1)
+    destLast=$(echo "$destList" | tail -2 | head -1)
+    destFirstID=$(echo "$destFirst" | awk 'match($0,/id\:[0-9A-F-]+/){ print substr($0,RSTART+3,RLENGTH-3) }')
+    destLastID=$(echo "$destLast" | awk 'match($0,/id\:[0-9A-F-]+/){ print substr($0,RSTART+3,RLENGTH-3) }')
+
+    logWarning "Test on simulator (id: $destFirstID)."
+    XC_Test "$1" "platform=iOS Simulator,id=$destFirstID"
+
+    logWarning "Test on simulator (id: $destLastID)."
+    XC_Test "$1" "platform=iOS Simulator,id=$destLastID"
 }
 
 STAGE_SETUP() {
@@ -72,8 +91,7 @@ STAGE_MAIN() {
     elif [ "$RFCI_TASK" = "Xcode10" ]; then
         pod install
         XC_TestMac
-        XC_Test "Test-iOS" "platform=iOS Simulator,name=iPhone XS Max,OS=12.0"
-        XC_Test "Test-iOS" "platform=iOS Simulator,name=iPhone 5,OS=9.0"
+        XC_TestAutoIOS "Test-iOS"
     else
         logError "Unexpected CI task: $RFCI_TASK"
     fi
