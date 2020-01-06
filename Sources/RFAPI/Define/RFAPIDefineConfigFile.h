@@ -2,7 +2,7 @@
  RFAPIDefineConfigFile
  RFAPI
  
- Copyright © 2014, 2018-2019 BB9z
+ Copyright © 2014, 2018-2020 BB9z
  https://github.com/RFUI/RFAPI
  
  The MIT License (MIT)

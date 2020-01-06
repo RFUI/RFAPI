@@ -1,5 +1,5 @@
 
-#import "RFAPIDefine.h"
+#import "RFAPIPrivate.h"
 
 @implementation RFAPIDefine
 
@@ -59,6 +59,50 @@
     }
 }
 
+#pragma mark - Wrapper Properties
+
+- (BOOL)needsAuthorization {
+    return self.needsAuthorizationValue.boolValue;
+}
+- (void)setNeedsAuthorization:(BOOL)needsAuthorization {
+    self.needsAuthorizationValue = @(needsAuthorization);
+}
+
+- (RFAPIDefineCachePolicy)cachePolicy {
+    return self.cachePolicyValue.shortValue;
+}
+- (void)setCachePolicy:(RFAPIDefineCachePolicy)cachePolicy {
+    self.cachePolicyValue = @(cachePolicy);
+}
+
+- (NSTimeInterval)expire {
+    return self.cacheExpireValue.doubleValue;
+}
+- (void)setExpire:(NSTimeInterval)expire {
+    self.cacheExpireValue = @(expire);
+}
+
+- (RFAPIDefineOfflinePolicy)offlinePolicy {
+    return self.offlinePolicyValue.shortValue;
+}
+- (void)setOfflinePolicy:(RFAPIDefineOfflinePolicy)offlinePolicy {
+    self.offlinePolicyValue = @(offlinePolicy);
+}
+
+- (RFAPIDefineResponseExpectType)responseExpectType {
+    return self.responseExpectTypeValue.shortValue;
+}
+- (void)setResponseExpectType:(RFAPIDefineResponseExpectType)responseExpectType {
+    self.responseExpectTypeValue = @(responseExpectType);
+}
+
+- (BOOL)responseAcceptNull {
+    return self.responseAcceptNullValue.boolValue;
+}
+- (void)setResponseAcceptNull:(BOOL)responseAcceptNull {
+    self.responseAcceptNullValue = @(responseAcceptNull);
+}
+
 #pragma mark - NSecureCoding
 
 + (BOOL)supportsSecureCoding {
@@ -78,15 +122,15 @@
     self.method = [decoder decodeObjectOfClass:[NSString class] forKey:@keypath(self, method)];
     self.HTTPRequestHeaders = [decoder decodeObjectOfClass:[NSDictionary class] forKey:@keypath(self, HTTPRequestHeaders)];
     self.defaultParameters = [decoder decodeObjectOfClass:[NSDictionary class] forKey:@keypath(self, defaultParameters)];
-    self.needsAuthorization = [(NSNumber *)[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, needsAuthorization)] boolValue];
+    self.needsAuthorizationValue = [decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, needsAuthorization)];
     self.requestSerializerClass = NSClassFromString((id)[decoder decodeObjectOfClass:[NSString class] forKey:@keypath(self, requestSerializerClass)]);
-    self.cachePolicy = [(NSNumber *)[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, cachePolicy)] shortValue];
-    self.expire = [(NSNumber *)[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, expire)] doubleValue];
-    self.offlinePolicy = [(NSNumber *)[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, offlinePolicy)] shortValue];
+    self.cachePolicyValue = [decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, cachePolicy)];
+    self.cacheExpireValue = [decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, expire)];
+    self.offlinePolicyValue = [decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, offlinePolicy)];
     self.responseSerializerClass = NSClassFromString((id)[decoder decodeObjectOfClass:[NSString class] forKey:@keypath(self, responseSerializerClass)]);
-    self.responseExpectType = [(NSNumber *)[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, responseExpectType)] shortValue];
-    self.responseAcceptNull = [(NSNumber *)[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, responseExpectType)] boolValue];
-    self.responseClass = NSClassFromString((id)[decoder decodeObjectOfClass:[NSString class] forKey:@keypath(self, responseClass)]);
+    self.responseExpectTypeValue = [decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, responseExpectType)];
+    self.responseAcceptNullValue = [decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, responseExpectType)];
+    self.responseClass = [decoder decodeObjectOfClass:[NSString class] forKey:@keypath(self, responseClass)];
     self.userInfo = [decoder decodeObjectOfClass:[NSDictionary class] forKey:@keypath(self, userInfo)];
     self.notes = [decoder decodeObjectOfClass:[NSString class] forKey:@keypath(self, notes)];
 
@@ -101,12 +145,13 @@
     [aCoder encodeObject:self.method forKey:@keypath(self, method)];
     [aCoder encodeObject:self.HTTPRequestHeaders forKey:@keypath(self, HTTPRequestHeaders)];
     [aCoder encodeObject:self.defaultParameters forKey:@keypath(self, defaultParameters)];
-    [aCoder encodeObject:@(self.needsAuthorization) forKey:@keypath(self, needsAuthorization)];
-    [aCoder encodeObject:@(self.cachePolicy) forKey:@keypath(self, cachePolicy)];
-    [aCoder encodeObject:@(self.expire) forKey:@keypath(self, expire)];
-    [aCoder encodeObject:@(self.offlinePolicy) forKey:@keypath(self, offlinePolicy)];
-    [aCoder encodeObject:@(self.responseExpectType) forKey:@keypath(self, responseExpectType)];
-    [aCoder encodeObject:@(self.responseAcceptNull) forKey:@keypath(self, responseAcceptNull)];
+    [aCoder encodeObject:self.needsAuthorizationValue forKey:@keypath(self, needsAuthorization)];
+    [aCoder encodeObject:self.cachePolicyValue forKey:@keypath(self, cachePolicy)];
+    [aCoder encodeObject:self.cacheExpireValue forKey:@keypath(self, expire)];
+    [aCoder encodeObject:self.offlinePolicyValue forKey:@keypath(self, offlinePolicy)];
+    [aCoder encodeObject:self.responseExpectTypeValue forKey:@keypath(self, responseExpectType)];
+    [aCoder encodeObject:self.responseClass forKey:@keypath(self, responseClass)];
+    [aCoder encodeObject:self.responseAcceptNullValue forKey:@keypath(self, responseAcceptNull)];
     [aCoder encodeObject:self.userInfo forKey:@keypath(self, userInfo)];
     [aCoder encodeObject:self.notes forKey:@keypath(self, notes)];
 
@@ -118,10 +163,6 @@
     aClass = self.responseSerializerClass;
     if (aClass) {
         [aCoder encodeObject:NSStringFromClass(aClass) forKey:@keypath(self, responseSerializerClass)];
-    }
-    aClass = self.responseClass;
-    if (aClass) {
-        [aCoder encodeObject:NSStringFromClass(aClass) forKey:@keypath(self, responseClass)];
     }
 }
 
@@ -139,16 +180,16 @@
     clone.HTTPRequestHeaders = self.HTTPRequestHeaders;
 
     clone.defaultParameters = self.defaultParameters;
-    clone.needsAuthorization = self.needsAuthorization;
+    clone.needsAuthorizationValue = self.needsAuthorizationValue;
     clone.requestSerializerClass = self.requestSerializerClass;
 
-    clone.cachePolicy = self.cachePolicy;
-    clone.expire = self.expire;
-    clone.offlinePolicy = self.offlinePolicy;
+    clone.cachePolicyValue = self.cachePolicyValue;
+    clone.cacheExpireValue = self.cacheExpireValue;
+    clone.offlinePolicyValue = self.offlinePolicyValue;
 
     clone.responseSerializerClass = self.responseSerializerClass;
-    clone.responseExpectType = self.responseExpectType;
-    clone.responseAcceptNull = self.responseAcceptNull;
+    clone.responseExpectTypeValue = self.responseExpectTypeValue;
+    clone.responseAcceptNullValue = self.responseAcceptNullValue;
     clone.responseClass = self.responseClass;
 
     clone.userInfo = self.userInfo;

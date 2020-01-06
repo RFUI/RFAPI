@@ -5,7 +5,8 @@
 
 @implementation RFAPIJSONModelTransformer
 
-- (id)transformResponse:(id)response toType:(RFAPIDefineResponseExpectType)type kind:(Class)modelClass error:(NSError * _Nullable __autoreleasing *)error {
+- (id)transformResponse:(id)response toType:(RFAPIDefineResponseExpectType)type kind:(NSString *)modelKind error:(NSError * _Nullable __autoreleasing *)error {
+    Class modelClass = NSClassFromString(modelKind);
     switch (type) {
         case RFAPIDefineResponseExpectObject: {
             NSDictionary *responseObject = response;

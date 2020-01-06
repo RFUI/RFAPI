@@ -2,7 +2,7 @@
  RFAPIDefine
  RFAPI
  
- Copyright © 2014, 2018-2019 BB9z
+ Copyright © 2014, 2018-2020 BB9z
  https://github.com/RFUI/RFAPI
  
  The MIT License (MIT)
@@ -42,7 +42,7 @@ typedef NSString * RFAPIName NS_EXTENSIBLE_STRING_ENUM;
 @property (copy, nullable) NSDictionary *defaultParameters;
 
 /// If send authorization HTTP header or parameters
-@property BOOL needsAuthorization;
+@property (nonatomic) BOOL needsAuthorization;
 
 /// AFURLRequestSerialization class
 @property (nullable) Class requestSerializerClass;
@@ -57,18 +57,18 @@ typedef NS_ENUM(short, RFAPIDefineCachePolicy) {
     RFAPICachePolicyNoCache = 5         /// 无缓存，总是请求新数据
 };
 /// @warning unimplemented
-@property RFAPIDefineCachePolicy cachePolicy;
+@property (nonatomic) RFAPIDefineCachePolicy cachePolicy;
 
 /// Gives the date/time after which the cache is considered stale
 /// @warning unimplemented
-@property NSTimeInterval expire;
+@property (nonatomic) NSTimeInterval expire;
 
 typedef NS_ENUM(short, RFAPIDefineOfflinePolicy) {
     RFAPIOfflinePolicyDefault = 0,       /// 不特殊处理
     RFAPIOfflinePolicyLoadCache = 1      /// 返回缓存数据
 };
 /// @warning unimplemented
-@property RFAPIDefineOfflinePolicy offlinePolicy;
+@property (nonatomic) RFAPIDefineOfflinePolicy offlinePolicy;
 
 #pragma mark - Response
 
@@ -81,13 +81,13 @@ typedef NS_ENUM(short, RFAPIDefineResponseExpectType) {
     RFAPIDefineResponseExpectObjects = 3,   /// Expect an array of objects
 };
 ///
-@property RFAPIDefineResponseExpectType responseExpectType;
+@property (nonatomic) RFAPIDefineResponseExpectType responseExpectType;
 
 /// Accept null response
-@property BOOL responseAcceptNull;
+@property (nonatomic) BOOL responseAcceptNull;
 
-/// Expect JSONModel class
-@property (nullable) Class responseClass;
+/// Expect class name
+@property (nullable) NSString *responseClass;
 
 #pragma mark - 
 

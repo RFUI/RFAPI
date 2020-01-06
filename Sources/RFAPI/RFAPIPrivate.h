@@ -32,3 +32,13 @@ extern NSString *__nonnull RFAPILocalizedString(NSString *__nonnull key, NSStrin
 - (void)_RFAPI_handleTaskComplete:(nonnull _RFAPISessionTask *)task response:(nullable NSURLResponse *)response data:(nullable NSData *)data  error:(nullable NSError *)error;
 
 @end
+
+
+@interface RFAPIDefine ()
+@property (nullable) NSNumber *needsAuthorizationValue;
+@property (nullable) NSNumber *cachePolicyValue;
+@property (nullable) NSNumber *cacheExpireValue;
+@property (nullable) NSNumber *offlinePolicyValue;
+@property (nullable) NSNumber *responseExpectTypeValue;
+@property (nullable) NSNumber *responseAcceptNullValue;
+@end

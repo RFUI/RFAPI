@@ -36,6 +36,12 @@ static inline NSString *_ruleStrKey(NSDictionary *rule, RFAPIDefineKey key) {
     return v;
 }
 
+static inline NSNumber *_ruleNumberKey(NSDictionary *rule, RFAPIDefineKey key) {
+    NSNumber *v = rule[key];
+    if (![v isKindOfClass:NSNumber.class]) return nil;
+    return v;
+}
+
 static inline NSDictionary *_ruleDicKey(NSDictionary *rule, RFAPIDefineKey key) {
     NSDictionary *v = rule[key];
     if (![v isKindOfClass:NSDictionary.class]) return nil;
@@ -46,25 +52,7 @@ static inline NSDictionary *_ruleDicKey(NSDictionary *rule, RFAPIDefineKey key) 
     NSParameterAssert(name);
     NSParameterAssert(rule);
     self = [self init];
-
     self.name = name;
-
-    id value;
-
-#define RFAPIDefineConfigFileValue_(KEY)\
-    value = nil;\
-    if ((value = rule[KEY]))
-
-#define RFAPIDefineConfigFileClassProperty_(PROPERTY, KEY)\
-    RFAPIDefineConfigFileValue_(KEY) {\
-    Class aClass = NSClassFromString(value);\
-    if (aClass) {\
-    self.PROPERTY = aClass;\
-    }\
-    else {\
-    dout_warning(@"Can not get class from name: %@", value);\
-    }\
-    }
 
     NSString *baseURLString = _ruleStrKey(rule, RFAPIDefineBaseKey);
     if (baseURLString) {
@@ -77,25 +65,20 @@ static inline NSDictionary *_ruleDicKey(NSDictionary *rule, RFAPIDefineKey key) 
     self.HTTPRequestHeaders = _ruleDicKey(rule, RFAPIDefineHeadersKey);
     self.defaultParameters = _ruleDicKey(rule, RFAPIDefineParametersKey);
 
-    RFAPIDefineConfigFileValue_(RFAPIDefineAuthorizationKey) {
-        self.needsAuthorization = [(NSNumber *)value boolValue];
-    }
-    RFAPIDefineConfigFileClassProperty_(requestSerializerClass, RFAPIDefineRequestSerializerKey)
+    self.needsAuthorizationValue = _ruleNumberKey(rule, RFAPIDefineAuthorizationKey);
+    self.requestSerializerClass = _ruleStrKey(rule, RFAPIDefineRequestSerializerKey);
 
-    RFAPIDefineConfigFileValue_(RFAPIDefineResponseTypeKey) {
-        self.responseExpectType = [(NSNumber *)value intValue];
-    }
-    RFAPIDefineConfigFileValue_(RFAPIDefineResponseAcceptNullKey) {
-        self.responseAcceptNull = [(NSNumber *)value boolValue];
-    }
-    RFAPIDefineConfigFileClassProperty_(responseSerializerClass, RFAPIDefineResponseSerializerKey)
+    self.cachePolicyValue = _ruleNumberKey(rule, RFAPIDefineCachePolicyKey);
+    self.cacheExpireValue = _ruleNumberKey(rule, RFAPIDefineExpireKey);
+    self.offlinePolicyValue = _ruleNumberKey(rule, RFAPIDefineResponseTypeKey);
+    self.responseExpectTypeValue = _ruleNumberKey(rule, RFAPIDefineResponseTypeKey);
+    self.responseAcceptNullValue = _ruleNumberKey(rule, RFAPIDefineResponseAcceptNullKey);
+    self.responseSerializerClass = _ruleStrKey(rule, RFAPIDefineResponseSerializerKey);
+    self.responseClass = _ruleStrKey(rule, RFAPIDefineResponseClassKey);
 
-    RFAPIDefineConfigFileClassProperty_(responseClass, RFAPIDefineResponseClassKey)
     self.userInfo = _ruleDicKey(rule, RFAPIDefineUserInfoKey);
     self.notes = _ruleStrKey(rule, RFAPIDefineNotesKey);
 
-#undef RFAPIDefineConfigFileValue_
-#undef RFAPIDefineConfigFileClassProperty_
     return self;
 }
 
