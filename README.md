@@ -6,13 +6,14 @@
 
 <base href="//github.com/RFUI/RFAPI/blob/develop/" />
 
-v1 requires AFNetworking v2 and leaves here for legacy. RFAPI v2 will support AFNetworking v3.
+RFAPI is a full-featured URL session wrapper designed for API requests. It's easy to use and powerfull.
 
-[RFAPI v2 Migration Guide](Documents/migration_guide_v2.md)
+[RFAPI v2 Migration Guide](Documents/migration_guide_v2.md). The `v1` branch contains RFAPI v1 for legacy use, which requires AFNetworking v2.
 
 ## CocoaPods Install
 
 ```ruby
+
 pod 'RFAPI'
 ```
 

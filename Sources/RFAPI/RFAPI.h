@@ -156,7 +156,7 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
  @param responseObjectRef 可以用来修改返回值
  @param error 可选的错误信息
  */
-- (BOOL)isSuccessResponse:(id __nullable __strong *__nonnull)responseObjectRef error:(NSError *__nullable __strong *__nonnull)error NS_SWIFT_NOTHROW;
+- (BOOL)isSuccessResponse:(id __nullable __strong *__nonnull)responseObjectRef error:(NSError *__nullable __autoreleasing *__nonnull)error NS_SWIFT_NOTHROW;
 
 @end
 
