@@ -1,6 +1,5 @@
 
 #import "RFAPIDefine.h"
-#import "dout.h"
 
 @implementation RFAPIDefine
 
@@ -44,7 +43,7 @@
             baseURL = [baseURL URLByAppendingPathComponent:@""];
         }
 
-        _baseURL = baseURL;
+        _baseURL = baseURL.copy;
     }
 }
 
@@ -53,8 +52,7 @@
         _method = nil;
         return;
     }
-
-    RFAssert(method.length, @"Method can not be empty string.");
+    NSAssert(method.length, @"Method can not be empty string.");
 
     if (_method != method) {
         _method = [method uppercaseString];
@@ -80,14 +78,14 @@
     self.method = [decoder decodeObjectOfClass:[NSString class] forKey:@keypath(self, method)];
     self.HTTPRequestHeaders = [decoder decodeObjectOfClass:[NSDictionary class] forKey:@keypath(self, HTTPRequestHeaders)];
     self.defaultParameters = [decoder decodeObjectOfClass:[NSDictionary class] forKey:@keypath(self, defaultParameters)];
-    self.needsAuthorization = [[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, needsAuthorization)] boolValue];
+    self.needsAuthorization = [(NSNumber *)[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, needsAuthorization)] boolValue];
     self.requestSerializerClass = NSClassFromString((id)[decoder decodeObjectOfClass:[NSString class] forKey:@keypath(self, requestSerializerClass)]);
-    self.cachePolicy = [[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, cachePolicy)] shortValue];
-    self.expire = [[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, expire)] doubleValue];
-    self.offlinePolicy = [[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, offlinePolicy)] shortValue];
+    self.cachePolicy = [(NSNumber *)[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, cachePolicy)] shortValue];
+    self.expire = [(NSNumber *)[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, expire)] doubleValue];
+    self.offlinePolicy = [(NSNumber *)[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, offlinePolicy)] shortValue];
     self.responseSerializerClass = NSClassFromString((id)[decoder decodeObjectOfClass:[NSString class] forKey:@keypath(self, responseSerializerClass)]);
-    self.responseExpectType = [[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, responseExpectType)] shortValue];
-    self.responseAcceptNull = [[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, responseExpectType)] boolValue];
+    self.responseExpectType = [(NSNumber *)[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, responseExpectType)] shortValue];
+    self.responseAcceptNull = [(NSNumber *)[decoder decodeObjectOfClass:[NSNumber class] forKey:@keypath(self, responseExpectType)] boolValue];
     self.responseClass = NSClassFromString((id)[decoder decodeObjectOfClass:[NSString class] forKey:@keypath(self, responseClass)]);
     self.userInfo = [decoder decodeObjectOfClass:[NSDictionary class] forKey:@keypath(self, userInfo)];
     self.notes = [decoder decodeObjectOfClass:[NSString class] forKey:@keypath(self, notes)];
@@ -104,18 +102,28 @@
     [aCoder encodeObject:self.HTTPRequestHeaders forKey:@keypath(self, HTTPRequestHeaders)];
     [aCoder encodeObject:self.defaultParameters forKey:@keypath(self, defaultParameters)];
     [aCoder encodeObject:@(self.needsAuthorization) forKey:@keypath(self, needsAuthorization)];
-    [aCoder encodeObject:NSStringFromClass(self.requestSerializerClass) forKey:@keypath(self, requestSerializerClass)];
     [aCoder encodeObject:@(self.cachePolicy) forKey:@keypath(self, cachePolicy)];
     [aCoder encodeObject:@(self.expire) forKey:@keypath(self, expire)];
     [aCoder encodeObject:@(self.offlinePolicy) forKey:@keypath(self, offlinePolicy)];
-    [aCoder encodeObject:NSStringFromClass(self.responseSerializerClass) forKey:@keypath(self, responseSerializerClass)];
     [aCoder encodeObject:@(self.responseExpectType) forKey:@keypath(self, responseExpectType)];
     [aCoder encodeObject:@(self.responseAcceptNull) forKey:@keypath(self, responseAcceptNull)];
-    [aCoder encodeObject:NSStringFromClass(self.responseClass) forKey:@keypath(self, responseClass)];
     [aCoder encodeObject:self.userInfo forKey:@keypath(self, userInfo)];
     [aCoder encodeObject:self.notes forKey:@keypath(self, notes)];
-}
 
+    Class aClass;
+    aClass = self.requestSerializerClass;
+    if (aClass) {
+        [aCoder encodeObject:NSStringFromClass(aClass) forKey:@keypath(self, requestSerializerClass)];
+    }
+    aClass = self.responseSerializerClass;
+    if (aClass) {
+        [aCoder encodeObject:NSStringFromClass(aClass) forKey:@keypath(self, responseSerializerClass)];
+    }
+    aClass = self.responseClass;
+    if (aClass) {
+        [aCoder encodeObject:NSStringFromClass(aClass) forKey:@keypath(self, responseClass)];
+    }
+}
 
 #pragma mark - NSCopying
 

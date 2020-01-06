@@ -1,48 +1,51 @@
-/*!
+/*
  RFAPIDefine
  RFAPI
  
- Copyright (c) 2014, 2018 BB9z
+ Copyright © 2014, 2018-2019 BB9z
  https://github.com/RFUI/RFAPI
  
  The MIT License (MIT)
  http://www.opensource.org/licenses/mit-license.php
  */
 #import <RFKit/RFRuntime.h>
-#import "RFAPIDefineConfigFileKeys.h"
+
+typedef NSString * RFAPIName NS_EXTENSIBLE_STRING_ENUM;
+
+// todo: Default define
 
 @interface RFAPIDefine : NSObject <
     NSCopying,
     NSSecureCoding
 >
 /// Used to get a deine from a RFAPIDefineManager
-@property (copy, nonatomic) NSString *name;
+@property (copy, nullable) RFAPIName name;
 
 /// HTTP base URL
-@property (copy, nonatomic) NSURL *baseURL;
+@property (copy, nullable, nonatomic) NSURL *baseURL;
 
 ///
-@property (copy, nonatomic) NSString *pathPrefix;
+@property (copy, nullable) NSString *pathPrefix;
 
 ///
-@property (copy, nonatomic) NSString *path;
+@property (copy, nullable) NSString *path;
 
 /// HTTP Method
-@property (copy, nonatomic) NSString *method;
+@property (copy, nullable, nonatomic) NSString *method;
 
 #pragma mark - Request
 
 /// HTTP headers to append
-@property (copy, nonatomic) NSDictionary *HTTPRequestHeaders;
+@property (copy, nullable) NSDictionary *HTTPRequestHeaders;
 
 /// Default HTTP request parameters
-@property (copy, nonatomic) NSDictionary *defaultParameters;
+@property (copy, nullable) NSDictionary *defaultParameters;
 
 /// If send authorization HTTP header or parameters
-@property (nonatomic) BOOL needsAuthorization;
+@property BOOL needsAuthorization;
 
 /// AFURLRequestSerialization class
-@property (strong, nonatomic) Class requestSerializerClass;
+@property (nullable) Class requestSerializerClass;
 
 #pragma mark - Cache
 
@@ -53,20 +56,23 @@ typedef NS_ENUM(short, RFAPIDefineCachePolicy) {
     RFAPICachePolicyExpire = 3,         /// 一段时间内不再请求
     RFAPICachePolicyNoCache = 5         /// 无缓存，总是请求新数据
 };
-@property (nonatomic) RFAPIDefineCachePolicy cachePolicy;
+/// @warning unimplemented
+@property RFAPIDefineCachePolicy cachePolicy;
 
 /// Gives the date/time after which the cache is considered stale
-@property (nonatomic) NSTimeInterval expire;
+/// @warning unimplemented
+@property NSTimeInterval expire;
 
 typedef NS_ENUM(short, RFAPIDefineOfflinePolicy) {
     RFAPIOfflinePolicyDefault = 0,       /// 不特殊处理
     RFAPIOfflinePolicyLoadCache = 1      /// 返回缓存数据
 };
-@property (nonatomic) RFAPIDefineOfflinePolicy offlinePolicy;
+/// @warning unimplemented
+@property RFAPIDefineOfflinePolicy offlinePolicy;
 
 #pragma mark - Response
 
-@property (strong, nonatomic) Class responseSerializerClass;
+@property (nullable) Class responseSerializerClass;
 
 typedef NS_ENUM(short, RFAPIDefineResponseExpectType) {
     RFAPIDefineResponseExpectDefault = 0,   /// 不特殊处理
@@ -75,19 +81,19 @@ typedef NS_ENUM(short, RFAPIDefineResponseExpectType) {
     RFAPIDefineResponseExpectObjects = 3,   /// Expect an array of objects
 };
 ///
-@property (nonatomic) RFAPIDefineResponseExpectType responseExpectType;
+@property RFAPIDefineResponseExpectType responseExpectType;
 
 /// Accept null response
-@property (nonatomic) BOOL responseAcceptNull;
+@property BOOL responseAcceptNull;
 
 /// Expect JSONModel class
-@property (strong, nonatomic) Class responseClass;
+@property (nullable) Class responseClass;
 
 #pragma mark - 
 
 /// User info
-@property (copy, nonatomic) NSDictionary *userInfo;
+@property (copy, nullable) NSDictionary *userInfo;
 
 /// Comment
-@property (copy, nonatomic) NSString *notes;
+@property (copy, nullable) NSString *notes;
 @end
