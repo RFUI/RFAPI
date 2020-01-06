@@ -26,7 +26,24 @@
 
 @protocol RFAPITask
 @required
+
+/// API define object of current request.
 @property (readonly, nonnull) RFAPIDefine *define;
+
+/// The original request object passed when the task was created.
+@property (readonly, copy, nullable, nonatomic) NSURLRequest *currentRequest;
+
+/// The original request object passed when the task was created.
+@property (readonly, copy, nullable, nonatomic) NSURLRequest *originalRequest;
+
+/// The server’s response to the currently active request.
+@property (readonly, copy, nullable, nonatomic) NSURLResponse *response;
+
+/// Serialized response object from server response.
+@property (nullable) id responseObject;
+
+/// An error object that indicates why the task failed.
+@property (nullable) NSError *error;
 
 /// This property is the dictionary pass through the request context.
 @property (nullable) NSDictionary *userInfo;
@@ -150,8 +167,12 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 
 @interface RFAPIRequestConext : NSObject
 
-/// The parameters to be encoded.
-/// If you want to send an array parameters, set `RFAPIRequestArrayParameterKey` key with the array.
+/**
+ The parameters to be encoded.
+
+ If you want to send an array parameters, set `RFAPIRequestArrayParameterKey` key with the array.
+ If you want some parameters sent throgh qury string of the URL, set `RFAPIRequestForceQuryStringParametersKey` with a dictionary contains these parameters.
+ */
 @property (nullable) NSDictionary<NSString *, id> *parameters;
 
 /// Use this block to appends data to the HTTP body.

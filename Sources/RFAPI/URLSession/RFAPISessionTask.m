@@ -44,6 +44,22 @@
     [self.uploadProgress removeObserver:self forKeyPath:NSStringFromSelector(@selector(fractionCompleted))];
 }
 
+#pragma mark -
+
+- (NSURLRequest *)currentRequest {
+    return self.task.currentRequest;
+}
+
+- (NSURLRequest *)originalRequest {
+    return self.task.originalRequest;
+}
+
+- (NSURLResponse *)response {
+    return self.task.response;
+}
+
+#pragma mark -
+
 - (BOOL)isEnd {
     switch (self.task.state) {
         case NSURLSessionTaskStateRunning:

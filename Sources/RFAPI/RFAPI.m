@@ -315,6 +315,7 @@ RFInitializingRootForNSObject
         NSError *serializationError = nil;
         id<AFURLResponseSerialization> serializer = [self.defineManager responseSerializerForDefine:task.define];
         id responseObject = [serializer responseObjectForResponse:response data:data error:&serializationError];
+        task.responseObject = responseObject;
         if (serializationError) {
             [self _RFAPI_executeTaskCallback:task failure:serializationError];
             return;
@@ -322,7 +323,7 @@ RFInitializingRootForNSObject
 
         if ((!responseObject || responseObject == NSNull.null)
             && task.define.responseAcceptNull) {
-            [self _RFAPI_executeTaskCallback:task success:nil];
+            [self _RFAPI_executeTaskCallback:task success:responseObject];
             return;
         }
 
@@ -362,6 +363,7 @@ RFInitializingRootForNSObject
 }
 
 - (void)_RFAPI_executeTaskCallback:(nonnull _RFAPISessionTask *)task success:(nullable id)responseObject {
+    task.responseObject = responseObject;
     dispatch_group_async(self.completionGroup, self.completionQueue, ^{
         task.failure = nil;
         RFAPIRequestSuccessCallback scb = task.success;
@@ -387,6 +389,7 @@ RFInitializingRootForNSObject
 }
 
 - (void)_RFAPI_executeTaskCallback:(nonnull _RFAPISessionTask *)task failure:(nonnull NSError *)error {
+    task.error = error;
     BOOL shouldContinue = [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
 
     dispatch_group_async(self.completionGroup, self.completionQueue, ^{

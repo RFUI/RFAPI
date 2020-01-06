@@ -41,6 +41,10 @@ typedef void(^RFAPITaskComplation)(id __nullable responseObject, NSURLResponse *
 
 #pragma mark - States
 
+@property (readonly, copy, nullable, nonatomic) NSURLRequest *currentRequest;
+@property (readonly, copy, nullable, nonatomic) NSURLRequest *originalRequest;
+@property (readonly, copy, nullable, nonatomic) NSURLResponse *response;
+
 /// 
 @property (readonly, nonatomic) BOOL isEnd;
 
