@@ -36,17 +36,6 @@
             self.userInfo, self.notes];
 }
 
-- (void)setBaseURL:(NSURL *)baseURL {
-    if (_baseURL != baseURL) {
-        // Ensure terminal slash for baseURL path, so that NSURL +URLWithString:relativeToURL: works as expected
-        if (baseURL.path.length && ![baseURL.absoluteString hasSuffix:@"/"]) {
-            baseURL = [baseURL URLByAppendingPathComponent:@""];
-        }
-
-        _baseURL = baseURL.copy;
-    }
-}
-
 - (void)setMethod:(NSString *)method {
     if (!method) {
         _method = nil;
@@ -101,6 +90,37 @@
 }
 - (void)setResponseAcceptNull:(BOOL)responseAcceptNull {
     self.responseAcceptNullValue = @(responseAcceptNull);
+}
+
+#pragma mark -
+
+- (RFAPIDefine *)newDefineMergedDefault:(RFAPIDefine *)defaultDefine {
+    RFAPIDefine *ret = defaultDefine.copy;
+#define _transf(INDEX, CONTEXT, PROPERTY) \
+    if (self.PROPERTY) ret.PROPERTY = self.PROPERTY;
+
+#define _transf_properties(...) \
+    metamacro_foreach_cxt(_transf, , , __VA_ARGS__)
+
+    _transf_properties(name,
+                       baseURL,
+                       pathPrefix,
+                       path,
+                       method,
+                       HTTPRequestHeaders,
+                       defaultParameters,
+                       needsAuthorizationValue,
+                       requestSerializerClass,
+                       userInfo,
+                       notes)
+    _transf_properties(responseSerializerClass,
+                       responseExpectTypeValue,
+                       responseAcceptNullValue,
+                       responseClass)
+    _transf_properties(cachePolicyValue,
+                       cacheExpireValue,
+                       offlinePolicyValue)
+    return ret;
 }
 
 #pragma mark - NSecureCoding

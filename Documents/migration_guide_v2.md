@@ -10,7 +10,7 @@ v1 到 v2 几乎全部重写，内部变化很大，但是实际项目需要调�
 
 `RFAPI` 的父类由 `NSOperationQueue` 变为 `NSObject`。如果之前用到了 NSOperationQueue 的方法，只能都移除了。`maxConcurrentOperationCount` 可以改用 NSURLSessionConfiguration 的 `HTTPMaximumConnectionsPerHost` 属性设置。
 
-请求方法返回的请求对象类型从 `AFHTTPRequestOperation` 变为 `RFAPITask`。
+请求方法返回的请求对象类型从 `AFHTTPRequestOperation` 变为 `RFAPITask`，暴露的属性有减少。
 
 `RFAPIControl` 被移除，取而代之的类是 `RFAPIRequestConext`，必须修改的地方并不多：
 
@@ -22,7 +22,7 @@ v1 到 v2 几乎全部重写，内部变化很大，但是实际项目需要调�
 
 ## Define 和 DefineManager
 
-// todo
+`RFAPIDefine` 的 `responseClass` 类型由 class 改为 string，其他在外部看来没有变化。
 
 ## 请求创建
 

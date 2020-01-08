@@ -14,6 +14,9 @@ typedef NSString * RFAPIName NS_EXTENSIBLE_STRING_ENUM;
 
 // todo: Default define
 
+/**
+ A define object is used to describe all aspects of an API: what the URL is, how to send the request sent, how to handle the response, and so on.
+ */
 @interface RFAPIDefine : NSObject <
     NSCopying,
     NSSecureCoding
@@ -21,8 +24,13 @@ typedef NSString * RFAPIName NS_EXTENSIBLE_STRING_ENUM;
 /// Used to get a deine from a RFAPIDefineManager
 @property (copy, nullable) RFAPIName name;
 
-/// HTTP base URL
-@property (copy, nullable, nonatomic) NSURL *baseURL;
+/**
+ HTTP base URL
+
+ If there are other paths behind the host, a terminal slash should added at the end of the url.
+ E.g: "http://example.com/base" is equal to "http://example.com", the correct one is "http://example.com/base/".
+ */
+@property (copy, nullable) NSURL *baseURL;
 
 ///
 @property (copy, nullable) NSString *pathPrefix;
@@ -87,6 +95,7 @@ typedef NS_ENUM(short, RFAPIDefineResponseExpectType) {
 @property (nonatomic) BOOL responseAcceptNull;
 
 /// Expect class name
+/// The model transformer uses this property to create special kind of model instances.
 @property (nullable) NSString *responseClass;
 
 #pragma mark - 
@@ -96,4 +105,7 @@ typedef NS_ENUM(short, RFAPIDefineResponseExpectType) {
 
 /// Comment
 @property (copy, nullable) NSString *notes;
+
+- (nonnull RFAPIDefine *)newDefineMergedDefault:(nonnull RFAPIDefine *)defaultDefine;
+
 @end
