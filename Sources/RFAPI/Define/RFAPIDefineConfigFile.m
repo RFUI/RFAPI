@@ -66,14 +66,21 @@ static inline NSDictionary *_ruleDicKey(NSDictionary *rule, RFAPIDefineKey key) 
     self.defaultParameters = _ruleDicKey(rule, RFAPIDefineParametersKey);
 
     self.needsAuthorizationValue = _ruleNumberKey(rule, RFAPIDefineAuthorizationKey);
-    self.requestSerializerClass = _ruleStrKey(rule, RFAPIDefineRequestSerializerKey);
-
+    NSString *class = _ruleStrKey(rule, RFAPIDefineRequestSerializerKey);
+    if (class) {
+        self.requestSerializerClass = NSClassFromString(class);
+        NSAssert(self.requestSerializerClass, @"Can not create requestSerializerClass from name: %@", class);
+    }
+    class = _ruleStrKey(rule, RFAPIDefineResponseSerializerKey);
+    if (class) {
+        self.responseSerializerClass = NSClassFromString(class);
+        NSAssert(self.responseSerializerClass, @"Can not create responseSerializerClass from name: %@", class);
+    }
     self.cachePolicyValue = _ruleNumberKey(rule, RFAPIDefineCachePolicyKey);
     self.cacheExpireValue = _ruleNumberKey(rule, RFAPIDefineExpireKey);
     self.offlinePolicyValue = _ruleNumberKey(rule, RFAPIDefineResponseTypeKey);
     self.responseExpectTypeValue = _ruleNumberKey(rule, RFAPIDefineResponseTypeKey);
     self.responseAcceptNullValue = _ruleNumberKey(rule, RFAPIDefineResponseAcceptNullKey);
-    self.responseSerializerClass = _ruleStrKey(rule, RFAPIDefineResponseSerializerKey);
     self.responseClass = _ruleStrKey(rule, RFAPIDefineResponseClassKey);
 
     self.userInfo = _ruleDicKey(rule, RFAPIDefineUserInfoKey);
@@ -93,11 +100,11 @@ static inline NSDictionary *_ruleDicKey(NSDictionary *rule, RFAPIDefineKey key) 
     NSMutableDictionary<RFAPIName, RFAPIDefineRawConfig> *prules = [NSMutableDictionary.alloc initWithCapacity:64];
     __block NSInteger ruleCount = 0;
     [rules enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSDictionary<NSString *,id> *obj, BOOL *stop) {
-#if DEBUG
+#if RFDEBUG
         NSAssert([obj isKindOfClass:NSDictionary.class], @"All items in define configuration should be dictionaries. Current: %@", obj);
 #endif
         if ([key hasPrefix:@"@"]) {
-#if DEBUG
+#if RFDEBUG
             for (RFAPIDefineRawConfig item in obj.allValues) {
                 NSAssert([item isKindOfClass:NSDictionary.class], @"Items that begin with the @ character are treated as group. All items in a group should be dictionaries. Current: %@", item);
             }
