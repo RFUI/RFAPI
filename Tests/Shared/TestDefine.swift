@@ -78,7 +78,7 @@ class TestDefine: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: fileURL.path))
         let dataV2 = try! NSKeyedArchiver.archivedData(withRootObject: define, requiringSecureCoding: true)
         XCTAssert(dataV2.count > 100)
-        try! dataV2.write(to: fileURL, options: .noFileProtection)
+        try! dataV2.write(to: fileURL, options: [])
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
 
         let defineV2: RFAPIDefine = try! NSKeyedUnarchiver.unarchivedObject(ofClass: RFAPIDefine.self, from: dataV2)!

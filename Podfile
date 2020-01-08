@@ -17,6 +17,6 @@ target 'Test-iOS' do
 end
 
 target 'Test-macOS' do
-    platform :osx, '10.10'
+    platform :osx, '10.13'
     pod 'RFAPI', :path => '.'
 end
