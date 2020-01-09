@@ -167,10 +167,12 @@ RFInitializingRootForNSObject
         m.modal = context.loadMessageShownModal;
         context.activityMessage = m;
     }
-    // todo: merge default define
+
+    RFAPIDefine *defaultDefine = self.defineManager.defaultDefine;
+    RFAPIDefine *define = defaultDefine ? [APIDefine newDefineMergedDefault:defaultDefine] : APIDefine;
 
     NSError *e = nil;
-    NSMutableURLRequest *request = [self _RFAPI_makeURLRequestWithDefine:APIDefine context:context error:&e];
+    NSMutableURLRequest *request = [self _RFAPI_makeURLRequestWithDefine:define context:context error:&e];
     if (!request) {
         RFAPILogError_(@"无法创建请求: %@", e)
         NSMutableDictionary *eInfo = [NSMutableDictionary.alloc initWithCapacity:4];
@@ -188,7 +190,7 @@ RFInitializingRootForNSObject
     NSURLSessionDataTask *dataTask = [self.http.session dataTaskWithRequest:request];
     _RFAPISessionTask *task = [self.http addSessionTask:dataTask];
     task.manager = self;
-    task.define = APIDefine;
+    task.define = define;
     [self transferContext:context toTask:task];
 
     // Start request

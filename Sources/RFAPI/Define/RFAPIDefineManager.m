@@ -3,9 +3,9 @@
 #import "RFAPIPrivate.h"
 #import "RFAPIDefineConfigFile.h"
 #import "NSDictionary+RFKit.h"
+#import <AFNetworking/AFURLRequestSerialization.h>
+#import <AFNetworking/AFURLResponseSerialization.h>
 
-#import "AFURLRequestSerialization.h"
-#import "AFURLResponseSerialization.h"
 
 @interface RFAPIDefineManager ()
 @property (nonnull) NSMutableDictionary<RFAPIName, RFAPIDefine *> *_defines;
@@ -42,7 +42,9 @@
 
 @dynamic defines;
 - (NSArray<RFAPIDefine *> *)defines {
-    return self._defines.allValues;
+    @synchronized(self) {
+        return self._defines.allValues;
+    }
 }
 - (void)setDefines:(NSArray<RFAPIDefine *> *)defines {
     @synchronized(self) {
@@ -85,11 +87,8 @@
         }
     }
     
-    NSURL *url;
-    if ([path hasPrefix:@"http://"] || [path hasPrefix:@"https://"]) {
-        url = [NSURL URLWithString:path];
-    }
-    else {
+    NSURL *url = [NSURL URLWithString:path];
+    if (!url.scheme.length) {
         NSString *URLString = define.pathPrefix? [define.pathPrefix stringByAppendingString:path] : path;
         url = [NSURL URLWithString:URLString relativeToURL:define.baseURL];
     }
@@ -105,11 +104,11 @@
         }
         return nil;
     }
-    
-    if (parameters[RFAPIRequestForceQuryStringParametersKey]) {
-        NSDictionary *forceQuryStringParameters = parameters[RFAPIRequestForceQuryStringParametersKey];
+
+    NSDictionary *forceQuryStringParameters = parameters[RFAPIRequestForceQuryStringParametersKey];
+    if (forceQuryStringParameters) {
         [parameters removeObjectForKey:RFAPIRequestForceQuryStringParametersKey];
-        NSMutableArray *queryStringPair = [NSMutableArray array];
+        NSMutableArray *queryStringPair = [NSMutableArray.alloc initWithCapacity:forceQuryStringParameters.count];
         for (NSString *key in forceQuryStringParameters.allKeys) {
             [queryStringPair addObject:[NSString stringWithFormat:@"%@=%@", key, forceQuryStringParameters[key]]];
         }

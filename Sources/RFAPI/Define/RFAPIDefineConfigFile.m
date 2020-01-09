@@ -123,11 +123,11 @@ static inline NSDictionary *_ruleDicKey(NSDictionary *rule, RFAPIDefineKey key) 
     NSMutableArray<RFAPIDefine *> *defines = [NSMutableArray.alloc initWithCapacity:prules.count];
     RFAPIDefineRawConfig defaultRule = prules[RFAPIDefineDefaultKey];
     [prules enumerateKeysAndObjectsUsingBlock:^(RFAPIName  _Nonnull key, RFAPIDefineRawConfig  _Nonnull obj, BOOL * _Nonnull stop) {
-        NSMutableDictionary<RFAPIDefineKey, id> *rule = [NSMutableDictionary.alloc initWithDictionary:defaultRule];
-        [rule addEntriesFromDictionary:obj];
-        [defines addObject:[RFAPIDefine.alloc initWithRule:rule name:key]];
+        [defines addObject:[RFAPIDefine.alloc initWithRule:obj name:key]];
     }];
-
+    if (defaultRule) {
+        self.defaultDefine = [RFAPIDefine.alloc initWithRule:defaultRule name:RFAPIDefineDefaultKey];
+    }
     self.defines = defines;
 }
 

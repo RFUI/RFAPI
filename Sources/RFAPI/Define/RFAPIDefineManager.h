@@ -21,28 +21,43 @@
  
  You cannot get default rule with this method.
 
+ The return value is not copied. If you modify the return value, the instance in the define manager is also modified.
+
  @return A define object with it's name.
  */
 - (nullable RFAPIDefine *)defineForName:(nonnull RFAPIName)defineName;
 
-@property (null_resettable, nonatomic) NSArray<RFAPIDefine *> *defines;
+@property (nullable) RFAPIDefine *defaultDefine;
 
-#pragma mark - Authorization values
+/**
+ getter get defines in the define manager.
 
+ setter update defines in the define manager. Passing `nil` has no effect.
+ */
+@property (copy, null_resettable, nonatomic) NSArray<RFAPIDefine *> *defines;
+
+#pragma mark - Authorization
+
+/// Additional HTTP headers sent with APIs that requires authorization.
 @property (readonly, nonnull) NSMutableDictionary<NSString *, NSString *> *authorizationHeader;
+
+/// Additional parameters sent with APIs that requires authorization.
 @property (readonly, nonnull) NSMutableDictionary<NSString *, id> *authorizationParameters;
 
-#pragma mark - RFAPI Support
+#pragma mark - Request
 
 /// Default is `AFJSONRequestSerializer`.
 @property (null_resettable, nonatomic) id<AFURLRequestSerialization> defaultRequestSerializer;
 
-/// Default is a `AFJSONResponseSerializer` with allow fragments option.
-@property (null_resettable, nonatomic) id<AFURLResponseSerialization> defaultResponseSerializer;
+- (nonnull id<AFURLRequestSerialization>)requestSerializerForDefine:(nullable RFAPIDefine *)define;
 
 - (nullable NSURL *)requestURLForDefine:(nonnull RFAPIDefine *)define parameters:(nullable NSMutableDictionary *)parameters error:(NSError *__nullable __autoreleasing *__nullable)error;
 
-- (nonnull id<AFURLRequestSerialization>)requestSerializerForDefine:(nullable RFAPIDefine *)define;
+#pragma mark Response
+
+/// Default is a `AFJSONResponseSerializer` with allow fragments option.
+@property (null_resettable, nonatomic) id<AFURLResponseSerialization> defaultResponseSerializer;
+
 - (nonnull id<AFURLResponseSerialization>)responseSerializerForDefine:(nullable RFAPIDefine *)define;
 
 @end
