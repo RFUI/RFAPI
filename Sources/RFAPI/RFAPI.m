@@ -50,22 +50,25 @@ RFInitializingRootForNSObject
     return [NSString stringWithFormat:@"<%@: %p, operations: %@>", self.class, (void *)self, self._RFAPI_sessionManager.allTasks];
 }
 
+- (NSURLSessionConfiguration *)sessionConfiguration {
+    return self._RFAPI_sessionManager.session.configuration ?: _sessionConfiguration;
+}
+
 - (_RFURLSessionManager *)http {
     _RFURLSessionManager *http = self._RFAPI_sessionManager;
     if (http) return http;
-    NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
+    NSURLSessionConfiguration *config = self.sessionConfiguration ?: NSURLSessionConfiguration.defaultSessionConfiguration;
     http = [_RFURLSessionManager.alloc initWithSessionConfiguration:config];
+    http.master = self;
     self._RFAPI_sessionManager = http;
     return http;
-}
-- (void)setHttp:(_RFURLSessionManager *)http {
-    self._RFAPI_sessionManager = http;
 }
 
 #if !TARGET_OS_WATCH
 - (AFNetworkReachabilityManager *)reachabilityManager {
     if (!_reachabilityManager) {
-        _reachabilityManager = [AFNetworkReachabilityManager sharedManager];
+        NSString *host = self.baseURL.host;
+        _reachabilityManager = (host.length) ? [AFNetworkReachabilityManager managerForDomain:host] : [AFNetworkReachabilityManager sharedManager];
     }
     return _reachabilityManager;
 }
@@ -170,6 +173,9 @@ RFInitializingRootForNSObject
 
     RFAPIDefine *defaultDefine = self.defineManager.defaultDefine;
     RFAPIDefine *define = defaultDefine ? [APIDefine newDefineMergedDefault:defaultDefine] : APIDefine;
+    if (!define.baseURL && self.baseURL) {
+        define.baseURL = self.baseURL;
+    }
 
     NSError *e = nil;
     NSMutableURLRequest *request = [self _RFAPI_makeURLRequestWithDefine:define context:context error:&e];
@@ -459,7 +465,7 @@ RFInitializingRootForNSObject
     return YES;
 }
 
-- (BOOL)isSuccessResponse:(id  _Nullable __strong *)responseObjectRef error:(NSError * _Nullable __strong *)error {
+- (BOOL)isSuccessResponse:(id  _Nullable __strong *)responseObjectRef error:(NSError * _Nullable __autoreleasing *)error {
     return YES;
 }
 

@@ -26,7 +26,7 @@ extern NSString *__nonnull RFAPILocalizedString(NSString *__nonnull key, NSStrin
 
 @interface RFAPI ()
 @property (nullable) _RFURLSessionManager *_RFAPI_sessionManager;
-@property (null_resettable, nonatomic) _RFURLSessionManager *http;
+@property (readonly, nonnull, nonatomic) _RFURLSessionManager *http;
 @property (null_resettable, nonatomic) RFAPIDefineManager *defineManager;
 
 - (void)_RFAPI_handleTaskComplete:(nonnull _RFAPISessionTask *)task response:(nullable NSURLResponse *)response data:(nullable NSData *)data  error:(nullable NSError *)error;

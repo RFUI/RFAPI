@@ -62,7 +62,20 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
     RFInitializing
 >
 
-// todo: session config
+#pragma mark Configurations before use
+
+/**
+ Used for reachabilityManager creation.
+ Or when define does not have a baseURL when making a request.
+ */
+@property (nullable) NSURL *baseURL;
+
+/**
+ Used for url session creation. If the session object has been created, setting this property has no effect.
+ */
+@property (nullable, nonatomic) NSURLSessionConfiguration *sessionConfiguration;
+
+#pragma mark -
 
 #if !TARGET_OS_WATCH
 /**
