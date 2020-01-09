@@ -99,6 +99,13 @@ RFInitializingRootForNSObject
     return _defineManager;
 }
 
+- (AFSecurityPolicy *)securityPolicy {
+    if (!_securityPolicy) {
+        _securityPolicy = [AFSecurityPolicy defaultPolicy];
+    }
+    return _securityPolicy;
+}
+
 #pragma mark - Request management
 
 - (void)cancelOperationWithIdentifier:(nullable NSString *)identifier {

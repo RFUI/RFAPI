@@ -15,14 +15,11 @@
 
 @class AFNetworkReachabilityManager;
 @class AFSecurityPolicy;
-@protocol AFMultipartFormData;
-
-@class RFMessageManager;
-@class RFHTTPRequestFormData;
-@protocol RFAPIModelTransformer;
-@class RFNetworkActivityMessage;
-
 @class RFAPIRequestConext;
+@class RFMessageManager;
+@class RFNetworkActivityMessage;
+@protocol AFMultipartFormData;
+@protocol RFAPIModelTransformer;
 
 @protocol RFAPITask
 @required
@@ -80,12 +77,12 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
 @property (null_resettable, nonatomic) dispatch_queue_t processingQueue;
 
 /**
- The dispatch queue for `completionBlock`. If `NULL` (default), the main queue is used.
+ The dispatch queue for `completionBlock`. Default value is the main queue.
  */
 @property (null_resettable, nonatomic) dispatch_queue_t completionQueue;
 
 /**
- The dispatch group for `completionBlock`. If `NULL` (default), a private dispatch group is used.
+ The dispatch group for `completionBlock`. Default is a private dispatch group.
  */
 @property (null_resettable, nonatomic) dispatch_group_t completionGroup;
 
@@ -96,6 +93,13 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
 #if !TARGET_OS_WATCH
 @property (nullable) __kindof RFMessageManager *networkActivityIndicatorManager;
 #endif
+
+/**
+ The security policy used by created session to evaluate server trust for secure connections.
+
+ Default is the `defaultPolicy`.
+ */
+@property (nullable, nonatomic) AFSecurityPolicy *securityPolicy;
 
 #pragma mark - Request management
 

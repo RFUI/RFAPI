@@ -13,7 +13,7 @@ http://www.opensource.org/licenses/mit-license.php
 
 @class AFHTTPRequestSerializer;
 @class AFHTTPResponseSerializer;
-
+@class RFAPI;
 @class _RFAPISessionTask;
 
 @interface _RFURLSessionManager : NSObject <
@@ -22,6 +22,8 @@ http://www.opensource.org/licenses/mit-license.php
     NSURLSessionDataDelegate,
     NSURLSessionDownloadDelegate
 >
+
+@property (weak, nullable) RFAPI *master;
 
 /**
  Creates and returns a manager for a session created with the specified configuration. This is the designated initializer.
@@ -36,15 +38,6 @@ http://www.opensource.org/licenses/mit-license.php
  The managed session.
  */
 @property (readonly, nonnull) NSURLSession *session;
-
-///-------------------------------
-/// @name Managing Security Policy
-///-------------------------------
-
-/**
- The security policy used by created session to evaluate server trust for secure connections. `AFURLSessionManager` uses the `defaultPolicy` unless otherwise specified.
- */
-@property (null_resettable, nonatomic) AFSecurityPolicy *securityPolicy;
 
 #pragma mark - Queue
 

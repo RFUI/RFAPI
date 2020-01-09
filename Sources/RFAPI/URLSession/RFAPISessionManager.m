@@ -17,7 +17,6 @@
     return [self initWithSessionConfiguration:nil];
 }
 
-
 - (instancetype)initWithSessionConfiguration:(NSURLSessionConfiguration *)configuration {
     self = [super init];
     if (!self) {
@@ -56,15 +55,6 @@
     }];
 
     return self;
-}
-
-#pragma mark Resettable propertys
-
-- (AFSecurityPolicy *)securityPolicy {
-    if (!_securityPolicy) {
-        _securityPolicy = [AFSecurityPolicy defaultPolicy];
-    }
-    return _securityPolicy;
 }
 
 #pragma mark API Task / Delegate
@@ -208,7 +198,7 @@
     }
     else if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
         SecTrustRef trust = challenge.protectionSpace.serverTrust;
-        if ([self.securityPolicy evaluateServerTrust:trust forDomain:challenge.protectionSpace.host]) {
+        if ([self.master.securityPolicy evaluateServerTrust:trust forDomain:challenge.protectionSpace.host]) {
             credential = [NSURLCredential credentialForTrust:trust];
             if (credential) {
                 disposition = NSURLSessionAuthChallengeUseCredential;
@@ -247,7 +237,7 @@
     }
     else if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
         SecTrustRef trust = challenge.protectionSpace.serverTrust;
-        if ([self.securityPolicy evaluateServerTrust:trust forDomain:challenge.protectionSpace.host]) {
+        if ([self.master.securityPolicy evaluateServerTrust:trust forDomain:challenge.protectionSpace.host]) {
             disposition = NSURLSessionAuthChallengeUseCredential;
             credential = [NSURLCredential credentialForTrust:trust];
         } else {
