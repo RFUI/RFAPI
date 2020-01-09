@@ -46,12 +46,17 @@ NS_ASSUME_NONNULL_END
 
 @interface RFAPIDefine (RFConfigFile)
 
-// todo: debug mode
+/**
+ 
+ */
 - (nonnull instancetype)initWithRule:(nonnull NSDictionary<RFAPIDefineKey, id> *)rule name:(nonnull NSString *)name;
 @end
 
 @interface RFAPIDefineManager (RFConfigFile)
 
+/**
+
+ */
 - (void)setDefinesWithRulesInfo:(nonnull NSDictionary<NSString *, NSDictionary<NSString *, id> *> *)rules;
 
 @end

@@ -18,8 +18,8 @@
 		D541840C206CD45400DD25CE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D5418404206CD45100DD25CE /* Main.storyboard */; };
 		D541840D206CD45400DD25CE /* TestAPIDefine.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5418405206CD45300DD25CE /* TestAPIDefine.plist */; };
 		D55ADAF523BF4AFB00AD6DB2 /* TestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55ADAF423BF4AFB00AD6DB2 /* TestAPI.swift */; };
-		D55ADB0F23C06C6600AD6DB2 /* Test_DefineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54183FB206CD13000DD25CE /* Test_DefineManager.swift */; };
-		D55ADB1023C06C6700AD6DB2 /* Test_DefineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54183FB206CD13000DD25CE /* Test_DefineManager.swift */; };
+		D55ADB0F23C06C6600AD6DB2 /* TestDefineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54183FB206CD13000DD25CE /* TestDefineManager.swift */; };
+		D55ADB1023C06C6700AD6DB2 /* TestDefineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54183FB206CD13000DD25CE /* TestDefineManager.swift */; };
 		D5D61FF623C42A5300B26C33 /* TestDefine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D61FF523C42A5300B26C33 /* TestDefine.swift */; };
 		D5D61FF723C42A5300B26C33 /* TestDefine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D61FF523C42A5300B26C33 /* TestDefine.swift */; };
 		D5D61FFC23C5E19800B26C33 /* archived_define_v1.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */; };
@@ -46,7 +46,7 @@
 		D54183D4206BB68400DD25CE /* RFUI-Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "RFUI-Config.xcconfig"; sourceTree = "<group>"; };
 		D54183DD206BBA7B00DD25CE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D54183F2206BDCFF00DD25CE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D54183FB206CD13000DD25CE /* Test_DefineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test_DefineManager.swift; sourceTree = "<group>"; };
+		D54183FB206CD13000DD25CE /* TestDefineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDefineManager.swift; sourceTree = "<group>"; };
 		D54183FE206CD44F00DD25CE /* RFDTestEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RFDTestEntity.m; sourceTree = "<group>"; };
 		D5418404206CD45100DD25CE /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		D5418405206CD45300DD25CE /* TestAPIDefine.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TestAPIDefine.plist; sourceTree = "<group>"; };
@@ -54,6 +54,7 @@
 		D55ADAF423BF4AFB00AD6DB2 /* TestAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAPI.swift; sourceTree = "<group>"; };
 		D55ADAFB23C06B7E00AD6DB2 /* Test-iOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Test-iOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D55ADB0723C06C3B00AD6DB2 /* Test-macOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Test-macOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D57C353A23C6EDAC000B6A3C /* Example-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Example-iOS.entitlements"; sourceTree = "<group>"; };
 		D5D61FF523C42A5300B26C33 /* TestDefine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDefine.swift; sourceTree = "<group>"; };
 		D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = archived_define_v1.plist; sourceTree = "<group>"; };
 		DFF2285EDB18B106627B701F /* Pods-Example-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Example-iOS/Pods-Example-iOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -152,6 +153,7 @@
 		D54183D2206B801E00DD25CE /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				D57C353A23C6EDAC000B6A3C /* Example-iOS.entitlements */,
 				D55ADAF623BF4D1D00AD6DB2 /* Models */,
 				D54183D3206B806200DD25CE /* OCBridging-Header.h */,
 				D54183D4206BB68400DD25CE /* RFUI-Config.xcconfig */,
@@ -171,8 +173,8 @@
 			isa = PBXGroup;
 			children = (
 				D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */,
-				D54183FB206CD13000DD25CE /* Test_DefineManager.swift */,
 				D5D61FF523C42A5300B26C33 /* TestDefine.swift */,
+				D54183FB206CD13000DD25CE /* TestDefineManager.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -225,7 +227,6 @@
 				D54183BC206B685000DD25CE /* Frameworks */,
 				D54183BD206B685000DD25CE /* Resources */,
 				1BE6B9BD42EC469EF3D16439 /* [CP] Copy Pods Resources */,
-				E8F5763BDA19B2266A0BF548 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -428,26 +429,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E8F5763BDA19B2266A0BF548 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Example-iOS/Pods-Example-iOS-frameworks.sh",
-				"${PODS_ROOT}/PBFlex/Carthage/Build/iOS/FLEX.framework",
-				"${PODS_ROOT}/PBFlex/Carthage/Build/iOS/FLEX.framework.dSYM",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FLEX.framework",
-				"${DWARF_DSYM_FOLDER_PATH}/FLEX.framework.dSYM",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Example-iOS/Pods-Example-iOS-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -466,8 +447,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D55ADB0F23C06C6600AD6DB2 /* Test_DefineManager.swift in Sources */,
 				D5D61FF623C42A5300B26C33 /* TestDefine.swift in Sources */,
+				D55ADB0F23C06C6600AD6DB2 /* TestDefineManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -475,8 +456,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D55ADB1023C06C6700AD6DB2 /* Test_DefineManager.swift in Sources */,
 				D5D61FF723C42A5300B26C33 /* TestDefine.swift in Sources */,
+				D55ADB1023C06C6700AD6DB2 /* TestDefineManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -541,8 +522,11 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "Example/Shared/Example-iOS.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -568,6 +552,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.RFUI.RFAPI.Example-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -606,8 +591,11 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "Example/Shared/Example-iOS.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -626,6 +614,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.RFUI.RFAPI.Example-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -666,6 +655,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -734,6 +724,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";

@@ -9,7 +9,6 @@
 #import <AFNetworking/AFURLResponseSerialization.h>
 #import <AFNetworking/AFNetworkReachabilityManager.h>
 #import <RFMessageManager/RFMessageManager+RFDisplay.h>
-#import <RFKit/NSFileManager+RFKit.h>
 
 NSErrorDomain const RFAPIErrorDomain = @"RFAPIErrorDomain";
 NSString *const RFAPIRequestArrayParameterKey = @"_RFParmArray_";

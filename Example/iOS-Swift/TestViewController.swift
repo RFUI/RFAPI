@@ -81,8 +81,17 @@ class TestViewController: UIViewController,
     }
 
     func display(response: Any?) {
-        responseTextView.text = response.debugDescription
-        responseTextView.textColor = .darkText
+        if let rsp = response {
+            responseTextView.text = (rsp as AnyObject).debugDescription
+        }
+        else {
+            responseTextView.text = "<No Response>"
+        }
+        if #available(iOS 13.0, *) {
+            responseTextView.textColor = .label
+        } else {
+            responseTextView.textColor = .darkText
+        }
     }
     func display(error: Error) {
         responseTextView.text = (error as NSError).debugDescription

@@ -7,7 +7,7 @@ target 'Example-iOS' do
     
     pod 'RFMessageManager', :subspecs => ['SVProgressHUD'], :git => 'https://github.com/RFUI/RFMessageManager.git', :branch => 'develop'
     pod 'RFAPI', :path => '.'
-    pod 'PBFlex', :configurations => ['Debug']
+#    pod 'PBFlex', :configurations => ['Debug']
 end
 
 target 'Test-iOS' do

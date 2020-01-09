@@ -20,8 +20,6 @@ Pod::Spec.new do |s|
   s.dependency 'JSONModel'
   s.dependency 'AFNetworking/NSURLSession', '~> 3.0'
   s.dependency 'RFKit/Runtime', '> 1.7'
-  s.dependency 'RFKit/Category/NSDictionary'
-  s.dependency 'RFKit/Category/NSFileManager'
   s.dependency 'RFInitializing', '>= 1.1'
   s.dependency 'RFMessageManager/Manager', '>= 0.5'
   s.dependency 'RFMessageManager/RFNetworkActivityMessage'

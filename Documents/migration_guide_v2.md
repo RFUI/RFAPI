@@ -24,6 +24,10 @@ v1 到 v2 几乎全部重写，内部变化很大，但是实际项目需要调�
 
 `RFAPIDefine` 的 `responseClass` 类型由 class 改为 string，其他在外部看来没有变化。
 
+`RFAPIDefineManager` 现在直接使用 define 对象，不再使用字典作为存储。`defaultRule` 更名为 `defaultDefine`，修改立即生效，无需再手动调用 `setNeedsUpdateDefaultRule` 方法。之前对 define 字段进行修改的方法被移除，直接对 define 对象进行修改即可。`setDefinesWithRulesInfo:` 现在支持分组。
+
+在 DEBUG 环境（准确的说是 RFDEBUG 为真且 NSAssert 启用）下编译的 RFAPI，在 define 处理时会进行一些额外检查，帮助你正确使用，Release 环境这些检查不会执行。
+
 ## 请求创建
 
 v1 请求有两个方法，正常请求和表单上传请求，正常请求有兼容实现，可无需修改（但是推荐改成新的方法）。
