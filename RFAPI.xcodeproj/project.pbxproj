@@ -20,6 +20,10 @@
 		D55ADAF523BF4AFB00AD6DB2 /* TestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55ADAF423BF4AFB00AD6DB2 /* TestAPI.swift */; };
 		D55ADB0F23C06C6600AD6DB2 /* TestDefineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54183FB206CD13000DD25CE /* TestDefineManager.swift */; };
 		D55ADB1023C06C6700AD6DB2 /* TestDefineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54183FB206CD13000DD25CE /* TestDefineManager.swift */; };
+		D57C353D23C70F76000B6A3C /* test_defines.plist in Resources */ = {isa = PBXBuildFile; fileRef = D57C353B23C70A56000B6A3C /* test_defines.plist */; };
+		D57C353E23C70F76000B6A3C /* test_defines.plist in Resources */ = {isa = PBXBuildFile; fileRef = D57C353B23C70A56000B6A3C /* test_defines.plist */; };
+		D57C354623C7193C000B6A3C /* RTHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = D57C354523C7193C000B6A3C /* RTHelper.m */; };
+		D57C354723C7193C000B6A3C /* RTHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = D57C354523C7193C000B6A3C /* RTHelper.m */; };
 		D5D61FF623C42A5300B26C33 /* TestDefine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D61FF523C42A5300B26C33 /* TestDefine.swift */; };
 		D5D61FF723C42A5300B26C33 /* TestDefine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D61FF523C42A5300B26C33 /* TestDefine.swift */; };
 		D5D61FFC23C5E19800B26C33 /* archived_define_v1.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */; };
@@ -55,6 +59,10 @@
 		D55ADAFB23C06B7E00AD6DB2 /* Test-iOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Test-iOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D55ADB0723C06C3B00AD6DB2 /* Test-macOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Test-macOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D57C353A23C6EDAC000B6A3C /* Example-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Example-iOS.entitlements"; sourceTree = "<group>"; };
+		D57C353B23C70A56000B6A3C /* test_defines.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = test_defines.plist; sourceTree = "<group>"; };
+		D57C354423C7193B000B6A3C /* RTHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTHelper.h; sourceTree = "<group>"; };
+		D57C354523C7193C000B6A3C /* RTHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTHelper.m; sourceTree = "<group>"; };
+		D57C354823C7196B000B6A3C /* TestsBridgingHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestsBridgingHeader.h; sourceTree = "<group>"; };
 		D5D61FF523C42A5300B26C33 /* TestDefine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDefine.swift; sourceTree = "<group>"; };
 		D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = archived_define_v1.plist; sourceTree = "<group>"; };
 		DFF2285EDB18B106627B701F /* Pods-Example-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Example-iOS/Pods-Example-iOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -153,8 +161,8 @@
 		D54183D2206B801E00DD25CE /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				D57C353A23C6EDAC000B6A3C /* Example-iOS.entitlements */,
 				D55ADAF623BF4D1D00AD6DB2 /* Models */,
+				D57C353A23C6EDAC000B6A3C /* Example-iOS.entitlements */,
 				D54183D3206B806200DD25CE /* OCBridging-Header.h */,
 				D54183D4206BB68400DD25CE /* RFUI-Config.xcconfig */,
 			);
@@ -173,8 +181,12 @@
 			isa = PBXGroup;
 			children = (
 				D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */,
+				D57C354423C7193B000B6A3C /* RTHelper.h */,
+				D57C354523C7193C000B6A3C /* RTHelper.m */,
+				D57C353B23C70A56000B6A3C /* test_defines.plist */,
 				D5D61FF523C42A5300B26C33 /* TestDefine.swift */,
 				D54183FB206CD13000DD25CE /* TestDefineManager.swift */,
+				D57C354823C7196B000B6A3C /* TestsBridgingHeader.h */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -290,10 +302,12 @@
 					};
 					D55ADAFA23C06B7E00AD6DB2 = {
 						CreatedOnToolsVersion = 11.3;
+						LastSwiftMigration = 1130;
 						ProvisioningStyle = Automatic;
 					};
 					D55ADB0623C06C3B00AD6DB2 = {
 						CreatedOnToolsVersion = 11.3;
+						LastSwiftMigration = 1130;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -335,6 +349,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D5D61FFC23C5E19800B26C33 /* archived_define_v1.plist in Resources */,
+				D57C353D23C70F76000B6A3C /* test_defines.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -343,6 +358,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D5D61FFD23C5E19800B26C33 /* archived_define_v1.plist in Resources */,
+				D57C353E23C70F76000B6A3C /* test_defines.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,6 +463,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D57C354623C7193C000B6A3C /* RTHelper.m in Sources */,
 				D5D61FF623C42A5300B26C33 /* TestDefine.swift in Sources */,
 				D55ADB0F23C06C6600AD6DB2 /* TestDefineManager.swift in Sources */,
 			);
@@ -456,6 +473,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D57C354723C7193C000B6A3C /* RTHelper.m in Sources */,
 				D5D61FF723C42A5300B26C33 /* TestDefine.swift in Sources */,
 				D55ADB1023C06C6700AD6DB2 /* TestDefineManager.swift in Sources */,
 			);
@@ -685,6 +703,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = Tests/Shared/TestsBridgingHeader.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -746,6 +765,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.RFUI.RFAPI.Test-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = Tests/Shared/TestsBridgingHeader.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -816,6 +836,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = Tests/Shared/TestsBridgingHeader.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 			};
@@ -876,6 +897,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.RFUI.RFAPI.Test-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = Tests/Shared/TestsBridgingHeader.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.2;
 			};

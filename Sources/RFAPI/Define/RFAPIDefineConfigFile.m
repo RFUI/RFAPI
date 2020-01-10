@@ -78,7 +78,7 @@ static inline NSDictionary *_ruleDicKey(NSDictionary *rule, RFAPIDefineKey key) 
     }
     self.cachePolicyValue = _ruleNumberKey(rule, RFAPIDefineCachePolicyKey);
     self.cacheExpireValue = _ruleNumberKey(rule, RFAPIDefineExpireKey);
-    self.offlinePolicyValue = _ruleNumberKey(rule, RFAPIDefineResponseTypeKey);
+    self.offlinePolicyValue = _ruleNumberKey(rule, RFAPIDefineOfflinePolicyKey);
     self.responseExpectTypeValue = _ruleNumberKey(rule, RFAPIDefineResponseTypeKey);
     self.responseAcceptNullValue = _ruleNumberKey(rule, RFAPIDefineResponseAcceptNullKey);
     self.responseClass = _ruleStrKey(rule, RFAPIDefineResponseClassKey);

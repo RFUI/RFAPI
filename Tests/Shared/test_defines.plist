@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>DEFAULT</key>
+	<dict>
+		<key>Authorization</key>
+		<false/>
+	</dict>
+	<key>AllProperties</key>
+	<dict>
+		<key>Base</key>
+		<string>http://example.com</string>
+		<key>Path Prefix</key>
+		<string>api/v2/</string>
+		<key>Path</key>
+		<string>do</string>
+		<key>Method</key>
+		<string>PUT</string>
+		<key>Headers</key>
+		<dict>
+			<key>xxx-foo</key>
+			<string>bar</string>
+		</dict>
+		<key>Parameters</key>
+		<dict>
+			<key>query</key>
+			<string>text</string>
+		</dict>
+		<key>Authorization</key>
+		<true/>
+		<key>Serializer</key>
+		<string>AFHTTPRequestSerializer</string>
+		<key>Cache Policy</key>
+		<integer>3</integer>
+		<key>Expire</key>
+		<integer>300</integer>
+		<key>Offline Policy</key>
+		<integer>1</integer>
+		<key>Response Serializer</key>
+		<string>AFHTTPResponseSerializer</string>
+		<key>Response Type</key>
+		<integer>2</integer>
+		<key>Response Accept Null</key>
+		<true/>
+		<key>Response Class</key>
+		<string>RFAPIDefine</string>
+		<key>User Info</key>
+		<dict>
+			<key>user</key>
+			<string>info</string>
+		</dict>
+		<key>Notes</key>
+		<string>This is a test</string>
+	</dict>
+	<key>Serializers</key>
+	<dict>
+		<key>Serializer</key>
+		<string>TestRequestSerializer</string>
+		<key>Response Serializer</key>
+		<string>TestResponseSerializer</string>
+	</dict>
+	<key>NoSerializers</key>
+	<dict/>
+	<key>@ HTTPBin</key>
+	<dict>
+		<key>Anything</key>
+		<dict>
+			<key>Path</key>
+			<string>https://httpbin.org/anything/{path}</string>
+			<key>Method</key>
+			<string>POST</string>
+		</dict>
+	</dict>
+</dict>
+</plist>
