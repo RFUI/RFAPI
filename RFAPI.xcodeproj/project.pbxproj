@@ -24,6 +24,8 @@
 		D57C353E23C70F76000B6A3C /* test_defines.plist in Resources */ = {isa = PBXBuildFile; fileRef = D57C353B23C70A56000B6A3C /* test_defines.plist */; };
 		D57C354623C7193C000B6A3C /* RTHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = D57C354523C7193C000B6A3C /* RTHelper.m */; };
 		D57C354723C7193C000B6A3C /* RTHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = D57C354523C7193C000B6A3C /* RTHelper.m */; };
+		D57C354A23C83B89000B6A3C /* TestRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57C354923C83B89000B6A3C /* TestRequest.swift */; };
+		D57C354B23C83B89000B6A3C /* TestRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57C354923C83B89000B6A3C /* TestRequest.swift */; };
 		D5D61FF623C42A5300B26C33 /* TestDefine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D61FF523C42A5300B26C33 /* TestDefine.swift */; };
 		D5D61FF723C42A5300B26C33 /* TestDefine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D61FF523C42A5300B26C33 /* TestDefine.swift */; };
 		D5D61FFC23C5E19800B26C33 /* archived_define_v1.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */; };
@@ -63,6 +65,7 @@
 		D57C354423C7193B000B6A3C /* RTHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTHelper.h; sourceTree = "<group>"; };
 		D57C354523C7193C000B6A3C /* RTHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTHelper.m; sourceTree = "<group>"; };
 		D57C354823C7196B000B6A3C /* TestsBridgingHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestsBridgingHeader.h; sourceTree = "<group>"; };
+		D57C354923C83B89000B6A3C /* TestRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestRequest.swift; sourceTree = "<group>"; };
 		D5D61FF523C42A5300B26C33 /* TestDefine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDefine.swift; sourceTree = "<group>"; };
 		D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = archived_define_v1.plist; sourceTree = "<group>"; };
 		DFF2285EDB18B106627B701F /* Pods-Example-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Example-iOS/Pods-Example-iOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -187,6 +190,7 @@
 				D5D61FF523C42A5300B26C33 /* TestDefine.swift */,
 				D54183FB206CD13000DD25CE /* TestDefineManager.swift */,
 				D57C354823C7196B000B6A3C /* TestsBridgingHeader.h */,
+				D57C354923C83B89000B6A3C /* TestRequest.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -464,6 +468,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D57C354623C7193C000B6A3C /* RTHelper.m in Sources */,
+				D57C354A23C83B89000B6A3C /* TestRequest.swift in Sources */,
 				D5D61FF623C42A5300B26C33 /* TestDefine.swift in Sources */,
 				D55ADB0F23C06C6600AD6DB2 /* TestDefineManager.swift in Sources */,
 			);
@@ -474,6 +479,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D57C354723C7193C000B6A3C /* RTHelper.m in Sources */,
+				D57C354B23C83B89000B6A3C /* TestRequest.swift in Sources */,
 				D5D61FF723C42A5300B26C33 /* TestDefine.swift in Sources */,
 				D55ADB1023C06C6700AD6DB2 /* TestDefineManager.swift in Sources */,
 			);
