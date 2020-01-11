@@ -386,9 +386,11 @@ RFInitializingRootForNSObject
             scb(task, responseObject);
         }
         RFNetworkActivityMessage *message = task.activityMessage;
-        dispatch_sync_on_main(^{
-            [self.networkActivityIndicatorManager hideMessage:message];
-        });
+        if (message) {
+            dispatch_sync_on_main(^{
+                [self.networkActivityIndicatorManager hideMessage:message];
+            });
+        }
         RFAPIRequestFinishedCallback ccb = task.complation;
         if (ccb) {
             task.complation = nil;
@@ -408,7 +410,7 @@ RFInitializingRootForNSObject
 
     dispatch_group_async(self.completionGroup, self.completionQueue, ^{
         task.success = nil;
-
+        RFMessageManager *messageManager = self.networkActivityIndicatorManager;
         if (shouldContinue) {
             BOOL isCancel = (error.code == NSURLErrorCancelled && [error.domain isEqualToString:NSURLErrorDomain]);
 
@@ -419,17 +421,21 @@ RFInitializingRootForNSObject
                 }
             }
             else {
-                dispatch_sync_on_main(^{
-                    [self.networkActivityIndicatorManager alertError:error title:nil fallbackMessage:@"Request Failed"];
-                });
+                if (messageManager) {
+                    dispatch_sync_on_main(^{
+                        [messageManager alertError:error title:nil fallbackMessage:@"Request Failed"];
+                    });
+                }
             }
         }
         task.failure = nil;
 
         RFNetworkActivityMessage *message = task.activityMessage;
-        dispatch_sync_on_main(^{
-            [self.networkActivityIndicatorManager hideMessage:message];
-        });
+        if (message && messageManager) {
+            dispatch_sync_on_main(^{
+                [messageManager hideMessage:message];
+            });
+        }
         RFAPIRequestFinishedCallback ccb = task.complation;
         if (ccb) {
             task.complation = nil;
