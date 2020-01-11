@@ -16,7 +16,7 @@
     static NSRegularExpression *sharedInstance = nil;
     static dispatch_once_t oncePredicate;
     dispatch_once(&oncePredicate, ^{
-        sharedInstance = [[NSRegularExpression alloc] initWithPattern:@"\\{\\w+\\}" options:NSRegularExpressionAnchorsMatchLines error:nil];
+        sharedInstance = [[NSRegularExpression alloc] initWithPattern:@"\\{[\\w-]+\\}" options:NSRegularExpressionAnchorsMatchLines error:nil];
         NSAssert(sharedInstance, @"Cannot create path parameter regular expression");
     });
     return sharedInstance;
@@ -86,10 +86,10 @@
         }
     }
     
-    NSURL *url = [NSURL URLWithString:path];
+    NSURL *url = [NSURL.alloc initWithString:path];
     if (!url.scheme.length) {
         NSString *URLString = define.pathPrefix? [define.pathPrefix stringByAppendingString:path] : path;
-        url = [NSURL URLWithString:URLString relativeToURL:define.baseURL];
+        url = [NSURL.alloc initWithString:URLString relativeToURL:define.baseURL];
     }
     
     if (!url) {

@@ -94,11 +94,34 @@ class TestDefineManager: XCTestCase {
 
     func testMakeURLParametersInPath() {
         let define = RFAPIDefine()
-        define.path = "zz://example.com:{port}/{path}/{no_exsist}?{q1}=b"
+        define.path = "zz://example.com:{port}/{path}/{no-exsist}?{q1}=b"
 
         let p = ["port": 8080, "path": "hello-word", "q1": "key1", "key2": "c" ] as NSMutableDictionary
         let url = try! manager.requestURL(for: define, parameters: p)
         // No key2
         XCTAssertEqual(url.absoluteString, "zz://example.com:8080/hello-word/?key1=b")
     }
+
+    func testMakeURLBaseAndPrefix() {
+        let define = RFAPIDefine()
+        define.baseURL = URL(string: "http://example.com/api/")
+        define.pathPrefix = "/root/"
+        define.path = "doit"
+
+        var url = try! manager.requestURL(for: define, parameters: nil)
+        XCTAssertEqual(url.absoluteString, "http://example.com/root/doit")
+
+        define.pathPrefix = "relative/"
+        url = try! manager.requestURL(for: define, parameters: nil)
+        XCTAssertEqual(url.absoluteString, "http://example.com/api/relative/doit")
+
+        define.path = "/doit/"
+        url = try! manager.requestURL(for: define, parameters: nil)
+        XCTAssertEqual(url.absoluteString, "http://example.com/api/relative//doit/")
+
+        define.pathPrefix = "foo"
+        define.path = "bar"
+        url = try! manager.requestURL(for: define, parameters: nil)
+        XCTAssertEqual(url.absoluteString, "http://example.com/api/foobar")
+     }
 }
