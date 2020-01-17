@@ -135,12 +135,6 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
 
 @property (nullable) id<RFAPIModelTransformer> modelTransformer;
 
-// todo: 和 processingQueue 队列合一?
-/**
- If `NULL` (default), the main queue will be used.
- */
-@property (null_resettable, nonatomic) dispatch_queue_t responseProcessingQueue;
-
 #pragma mark - Methods for overwrite
 
 /**
@@ -222,17 +216,33 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 @property (nullable) RFAPIRequestProgressBlock downloadProgress;
 
 /// A block object to be executed when the request finishes successfully.
-@property (nullable) RFAPIRequestSuccessCallback success;
+@property (nullable) RFAPIRequestSuccessCallback success NS_SWIFT_NAME(successCallback);
 
 /// A block object to be executed when the request finishes unsuccessfully.
-@property (nullable) RFAPIRequestFailureCallback failure;
+@property (nullable) RFAPIRequestFailureCallback failure NS_SWIFT_NAME(failureCallback);
 
 /// A block object to be executed when the request is complated.
-@property (nullable) RFAPIRequestFinishedCallback complation;
+@property (nullable) RFAPIRequestFinishedCallback finished NS_SWIFT_NAME(finishedCallback);
 
 /// A block object to be executed when the request is complated.
-@property (nullable) RFAPIRequestCombinedCompletionCallback combinedComplation;
+@property (nullable) RFAPIRequestCombinedCompletionCallback combinedComplation NS_SWIFT_NAME(complationCallback);
 
 @property (nullable) NSDictionary *userInfo;
+
+@end
+
+@interface RFAPIRequestConext (Swift)
+
+/// Set callback to be executed when the request finishes successfully.
+- (void)addSuccess:(nullable void(^)(id<RFAPITask> __nonnull task, id __nullable responseObject))success NS_SWIFT_NAME(success(_:));
+
+/// Set callback to be executed when the request finishes unsuccessfully.
+- (void)addFailure:(nullable void (^)(id<RFAPITask> __nullable task, NSError *__nonnull error))failure NS_SWIFT_NAME(failure(_:));
+
+/// Set callback to be executed when the request is complated.
+- (void)addFinished:(nullable void (^)(id<RFAPITask> __nullable task, BOOL success))finished NS_SWIFT_NAME(finished(_:));
+
+/// Set callback to be executed when the request is complated.
+- (void)addComplation:(nullable void (^)(id<RFAPITask> __nullable task, id __nullable responseObject, NSError *__nullable error))complation NS_SWIFT_NAME(complation(_:));
 
 @end

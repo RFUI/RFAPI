@@ -71,6 +71,11 @@
 			<key>Method</key>
 			<string>POST</string>
 		</dict>
+		<key>404</key>
+		<dict>
+			<key>Path</key>
+			<string>https://httpbin.org/status/404</string>
+		</dict>
 	</dict>
 </dict>
 </plist>

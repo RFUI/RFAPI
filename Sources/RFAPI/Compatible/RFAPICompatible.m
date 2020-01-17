@@ -15,7 +15,7 @@
         c.success = success;
         c.failure = failure;
         if (completion) {
-            c.complation = ^(id<RFAPITask>  _Nullable task, BOOL success) {
+            c.finished = ^(id<RFAPITask>  _Nullable task, BOOL success) {
                 completion(task);
             };
         }

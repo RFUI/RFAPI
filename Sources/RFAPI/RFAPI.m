@@ -221,7 +221,7 @@ RFInitializingRootForNSObject
     task.downloadProgressBlock = context.downloadProgress;
     task.success = context.success;
     task.failure = context.failure;
-    task.complation = context.complation;
+    task.complation = context.finished;
     task.combinedComplation = context.combinedComplation;
     task.userInfo = context.userInfo;
 }
@@ -307,12 +307,6 @@ RFInitializingRootForNSObject
 }
 
 #pragma mark - Handel Response
-
-- (dispatch_queue_t)responseProcessingQueue {
-    if (_responseProcessingQueue) return _responseProcessingQueue;
-    _responseProcessingQueue = dispatch_get_main_queue();
-    return _responseProcessingQueue;
-}
 
 - (void)_RFAPI_handleTaskComplete:(_RFAPISessionTask *)task response:(NSURLResponse *)response data:(NSData *)data error:(NSError *)error {
     dispatch_async(self.processingQueue, ^{
@@ -455,7 +449,8 @@ RFInitializingRootForNSObject
         if (fcb) {
             fcb(nil, error);
         }
-        RFAPIRequestFinishedCallback ccb = context.complation;
+
+        RFAPIRequestFinishedCallback ccb = context.finished;
         if (ccb) {
             ccb(nil, NO);
         }
@@ -480,3 +475,21 @@ RFInitializingRootForNSObject
 @implementation RFAPIRequestConext
 
 @end
+
+@implementation RFAPIRequestConext (Swift)
+
+- (void)addSuccess:(void (^)(id<RFAPITask> _Nonnull, id _Nullable))success {
+    self.success = success;
+}
+- (void)addFailure:(void (^)(id<RFAPITask> _Nullable, NSError * _Nonnull))failure {
+    self.failure = failure;
+}
+- (void)addFinished:(void (^)(id<RFAPITask> _Nullable, BOOL))finished {
+    self.finished = finished;
+}
+- (void)addComplation:(void (^)(id<RFAPITask> _Nullable, id _Nullable, NSError * _Nullable))complation {
+    self.combinedComplation = complation;
+}
+
+@end
+
