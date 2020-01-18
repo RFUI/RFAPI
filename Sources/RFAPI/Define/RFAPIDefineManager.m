@@ -65,6 +65,14 @@
 
 - (NSURL *)requestURLForDefine:(RFAPIDefine *)define parameters:(NSMutableDictionary *)parameters error:(NSError *__autoreleasing *)error {
     NSMutableString *path = define.path.mutableCopy;
+    if (!path) {
+        if (error) {
+            *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorBadURL userInfo:@{
+                NSLocalizedDescriptionKey : @"API define path is nil."
+            }];
+        }
+        return nil;
+    }
 
     // Replace {PARAMETER} in path
     NSArray *matches = [RFAPIDefineManager.cachedPathParameterRegularExpression matchesInString:path options:kNilOptions range:NSMakeRange(0, path.length)];
