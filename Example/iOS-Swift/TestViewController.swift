@@ -71,10 +71,10 @@ class TestViewController: UIViewController,
         API.request(name: request.APIName) { c in
             c.loadMessage = request.message
             c.loadMessageShownModal = request.modal
-            c.success = { [weak self] _, responseObject in
+            c.success { [weak self] _, responseObject in
                 self?.display(response: responseObject)
             }
-            c.failure = { [weak self] _, error in
+            c.failure { [weak self] _, error in
                 self?.display(error: error)
             }
         }
