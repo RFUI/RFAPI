@@ -206,10 +206,16 @@ RFInitializingRootForNSObject
             [self.networkActivityIndicatorManager showMessage:message];
         });
     }
-    dispatch_async(self.processingQueue, ^{
+    dispatch_block_t work = ^{
         if (task.isEnd) return;
         [dataTask resume];
-    });
+    };
+    if (task.debugDelayRequestSend > 0) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(task.debugDelayRequestSend * NSEC_PER_SEC)), self.processingQueue, work);
+    }
+    else {
+        dispatch_async(self.processingQueue, work);
+    }
     return task;
 }
 
@@ -224,6 +230,7 @@ RFInitializingRootForNSObject
     task.complation = context.finished;
     task.combinedComplation = context.combinedComplation;
     task.userInfo = context.userInfo;
+    task.debugDelayRequestSend = context.debugDelayRequestSend;
 }
 
 #pragma mark - Build Request

@@ -38,6 +38,7 @@ typedef void(^RFAPITaskComplation)(id __nullable responseObject, NSURLResponse *
 
 /// From request context.
 @property (nullable) NSDictionary *userInfo;
+@property NSTimeInterval debugDelayRequestSend;
 
 #pragma mark - States
 

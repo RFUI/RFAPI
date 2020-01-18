@@ -227,6 +227,10 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 /// A block object to be executed when the request is complated.
 @property (nullable) RFAPIRequestCombinedCompletionCallback combinedComplation NS_SWIFT_NAME(complationCallback);
 
+/// For debugging purposes, delaying the sending of network requests.
+/// This may be used to test whether the UI is in a proper state when network latency.
+@property NSTimeInterval debugDelayRequestSend;
+
 @property (nullable) NSDictionary *userInfo;
 
 @end
