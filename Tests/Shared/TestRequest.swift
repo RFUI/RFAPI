@@ -13,6 +13,8 @@ class TestAPI: RFAPI {
 }
 
 class TestRequest: XCTestCase {
+
+    // No default base url
     lazy var api: TestAPI = {
         let api = TestAPI()
         let defineConfigURL = Bundle(for: type(of: self)).url(forResource: "test_defines", withExtension: "plist")!
@@ -40,23 +42,31 @@ class TestRequest: XCTestCase {
         wait(for: [successExpectation, completeExpectation], timeout: 10, enforceOrder: true)
     }
 
+    func testIdentifierControl() {
+        
+    }
+
+    func testFormUpload() {
+
+    }
+
+    func testTaskCancel() {
+
+    }
+
     func testHTTPStatusError() {
-        let failureExpectation = expectation(description: "Request Fails")
-        let finishedExpectation = expectation(description: "Request Finished")
-        let completeExpectation = expectation(description: "Request Completed")
-        api.request(name: "404") { c in
+        let completeExpectation = expectation(description: "")
+        let request = api.request(name: "404") { c in
             c.success { _, _ in
                 fatalError("This request should fail.")
             }
             c.failure { task, error in
                 XCTAssertNotNil(task)
-                debugPrint(error)
-                failureExpectation.fulfill()
+                XCTAssertNotNil(error)
             }
             c.finished { task, s in
                 XCTAssertNotNil(task)
                 XCTAssertFalse(s)
-                finishedExpectation.fulfill()
             }
             c.complation { task, rsp, error in
                 debugPrint(error!)
@@ -66,6 +76,29 @@ class TestRequest: XCTestCase {
                 completeExpectation.fulfill()
             }
         }
-        wait(for: [failureExpectation, finishedExpectation, completeExpectation], timeout: 10, enforceOrder: true)
+        wait(for: [completeExpectation], timeout: 10)
+        XCTAssertNotNil(request?.error)
+        XCTAssertEqual((request?.response as! HTTPURLResponse).statusCode, 404)
+    }
+
+    func testRedirects() {
+        let successExpectation = expectation(description: "Request Succeed")
+
+        let redirectTimesDefine = RFAPIDefine()
+        redirectTimesDefine.path = "https://httpbin.org/redirect/3"
+        let request = api.request(define: redirectTimesDefine) { c in
+            c.identifier = ""
+            c.success { task, response in
+                guard let rsp = response as? [String: Any] else {
+                      fatalError("Response invalid")
+                }
+                print(rsp)
+                XCTAssertEqual(task.originalRequest?.url?.absoluteURL.absoluteString, "https://httpbin.org/redirect/3")
+                XCTAssertEqual(task.currentRequest?.url?.absoluteURL.absoluteString, "https://httpbin.org/get")
+                successExpectation.fulfill()
+            }
+        }
+        wait(for: [successExpectation], timeout: 15, enforceOrder: true)
+        XCTAssertNil(request?.error)
     }
 }

@@ -64,6 +64,11 @@
 	<dict/>
 	<key>@ HTTPBin</key>
 	<dict>
+		<key>Status</key>
+		<dict>
+			<key>Path</key>
+			<string>https://httpbin.org/status/{code}</string>
+		</dict>
 		<key>Anything</key>
 		<dict>
 			<key>Path</key>

@@ -27,6 +27,10 @@ class TestDefineManager: XCTestCase {
         manager.setDefinesWithRulesInfo(rawConfig)
     }
 
+    func testRuleLoad() {
+        XCTAssertNotNil(manager.defaultDefine)
+    }
+
     func testDefinesSetter() {
         XCTAssert(manager.defines.count >= 2)
         manager.defines = []
