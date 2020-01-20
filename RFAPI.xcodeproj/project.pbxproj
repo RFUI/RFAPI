@@ -32,6 +32,9 @@
 		D5D61FF723C42A5300B26C33 /* TestDefine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D61FF523C42A5300B26C33 /* TestDefine.swift */; };
 		D5D61FFC23C5E19800B26C33 /* archived_define_v1.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */; };
 		D5D61FFD23C5E19800B26C33 /* archived_define_v1.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */; };
+		D5F9245923D5BBCA00E9781D /* big_json.data in Resources */ = {isa = PBXBuildFile; fileRef = D5F9245823D5BBCA00E9781D /* big_json.data */; };
+		D5F9245A23D5BBCA00E9781D /* big_json.data in Resources */ = {isa = PBXBuildFile; fileRef = D5F9245823D5BBCA00E9781D /* big_json.data */; };
+		D5F9245B23D5BBCA00E9781D /* big_json.data in Resources */ = {isa = PBXBuildFile; fileRef = D5F9245823D5BBCA00E9781D /* big_json.data */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -71,6 +74,7 @@
 		D59FF64F23D1E2D800206713 /* TestConvention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestConvention.swift; sourceTree = "<group>"; };
 		D5D61FF523C42A5300B26C33 /* TestDefine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDefine.swift; sourceTree = "<group>"; };
 		D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = archived_define_v1.plist; sourceTree = "<group>"; };
+		D5F9245823D5BBCA00E9781D /* big_json.data */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = big_json.data; sourceTree = "<group>"; };
 		DFF2285EDB18B106627B701F /* Pods-Example-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Example-iOS/Pods-Example-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		E5FA99E5E4196E679EB5925D /* Pods-Test-macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Test-macOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Test-macOS/Pods-Test-macOS.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -186,6 +190,7 @@
 		D54183E3206BBAA100DD25CE /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				D5F9245723D5BBB000E9781D /* Data */,
 				D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */,
 				D57C354423C7193B000B6A3C /* RTHelper.h */,
 				D57C354523C7193C000B6A3C /* RTHelper.m */,
@@ -233,6 +238,14 @@
 				D54183FE206CD44F00DD25CE /* RFDTestEntity.m */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		D5F9245723D5BBB000E9781D /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				D5F9245823D5BBCA00E9781D /* big_json.data */,
+			);
+			path = Data;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -346,6 +359,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D54183CA206B685100DD25CE /* Assets.xcassets in Resources */,
+				D5F9245923D5BBCA00E9781D /* big_json.data in Resources */,
 				D54183CD206B685100DD25CE /* LaunchScreen.storyboard in Resources */,
 				D541840C206CD45400DD25CE /* Main.storyboard in Resources */,
 				D541840D206CD45400DD25CE /* TestAPIDefine.plist in Resources */,
@@ -357,6 +371,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D5D61FFC23C5E19800B26C33 /* archived_define_v1.plist in Resources */,
+				D5F9245A23D5BBCA00E9781D /* big_json.data in Resources */,
 				D57C353D23C70F76000B6A3C /* test_defines.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -366,6 +381,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D5D61FFD23C5E19800B26C33 /* archived_define_v1.plist in Resources */,
+				D5F9245B23D5BBCA00E9781D /* big_json.data in Resources */,
 				D57C353E23C70F76000B6A3C /* test_defines.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

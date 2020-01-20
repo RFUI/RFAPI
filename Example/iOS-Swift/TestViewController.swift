@@ -24,6 +24,15 @@ class TestViewController: UIViewController,
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        makeListItems()
+    }
+
+    struct ListSection {
+        var title = ""
+        var objects = [TestRequestObject]()
+    }
+    var items = [ListSection]()
+    func makeListItems() {
         let r1 = TestRequestObject()
         r1.title = "Null"
         r1.APIName = "NullTest"
@@ -49,33 +58,62 @@ class TestViewController: UIViewController,
         r5.title = "Fail request"
         r5.APIName = "NotFound"
 
-        items = [ r1, r2, r3, r4, r5 ]
+        let r6 = TestRequestObject()
+        r6.title = "big_json"
+        r6.APIName = "local"
+
+        items = [
+            ListSection(title: "Sample Request", objects: [r1, r2, r3, r4, r5]),
+            ListSection(title: "Local Files", objects: [r6]),
+        ]
     }
 
-    var items = [TestRequestObject]()
     lazy var API = TestAPI()
 
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items.count
+        return items[section].objects.count
+    }
+
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return items[section].title
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let item = items[indexPath.row]
+        let item = items[indexPath.section].objects[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.textLabel?.text = item.title
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let request = items[indexPath.row]
-        API.request(name: request.APIName) { c in
-            c.loadMessage = request.message
-            c.loadMessageShownModal = request.modal
-            c.success { [weak self] _, responseObject in
-                self?.display(response: responseObject)
+        let request = items[indexPath.section].objects[indexPath.row]
+        if indexPath.section == 1 {
+            let define = RFAPIDefine()
+            define.path = Bundle.main.url(forResource: request.title, withExtension: "data")?.absoluteString
+            define.name = RFAPIName(rawValue: request.APIName)
+            API.request(define: define) { c in
+                c.success { [weak self] _, responseObject in
+                    self?.display(response: responseObject)
+                }
+                c.failure { [weak self] _, error in
+                    self?.display(error: error)
+                }
             }
-            c.failure { [weak self] _, error in
-                self?.display(error: error)
+        }
+        else {
+            API.request(name: request.APIName) { c in
+                c.loadMessage = request.message
+                c.loadMessageShownModal = request.modal
+                c.success { [weak self] _, responseObject in
+                    self?.display(response: responseObject)
+                }
+                c.failure { [weak self] _, error in
+                    self?.display(error: error)
+                }
             }
         }
     }
