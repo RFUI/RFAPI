@@ -16,6 +16,11 @@ http://www.opensource.org/licenses/mit-license.php
 
 typedef void(^RFAPITaskComplation)(id __nullable responseObject, NSURLResponse *__nullable response, NSError *__nullable error);
 
+/**
+ Private object manage status.
+
+ Some properties will be set to nil after use to save memory.
+ */
 @interface _RFAPISessionTask : NSObject <
     RFAPITask,
     NSURLSessionTaskDelegate,
@@ -56,16 +61,21 @@ typedef void(^RFAPITaskComplation)(id __nullable responseObject, NSURLResponse *
 @property (nullable) RFAPIRequestProgressBlock uploadProgressBlock;
 @property (nullable) RFAPIRequestProgressBlock downloadProgressBlock;
 
-@property (nullable) void (^completionHandler)(NSURLResponse *__nullable response, id __nullable responseObject, NSError *__nullable error);
-
 #pragma mark - Callback
 
+/// Reset after use
 @property (nullable) RFAPIRequestSuccessCallback success;
+/// Reset after use
 @property (nullable) RFAPIRequestFailureCallback failure;
+/// Reset after use
 @property (nullable) RFAPIRequestFinishedCallback complation;
+/// Reset after use
 @property (nullable) RFAPIRequestCombinedCompletionCallback combinedComplation;
 
+
+// NO implementation
 @property (copy, nullable) NSURL *downloadFileURL;
+// NO implementation
 @property (nullable) NSURL *__nullable (^downloadTaskDidFinishDownloading)(NSURLSession *__nonnull session, NSURLSessionDownloadTask *__nonnull downloadTask, NSURL *__nonnull location);
 
 @end

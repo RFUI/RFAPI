@@ -85,7 +85,7 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
 #endif
 
 /**
- The dispatch queue serialize response. Default is a private concurrent queue.
+ The dispatch queue serialize response. Default is a shared private concurrent queue.
  */
 @property (null_resettable, nonatomic) dispatch_queue_t processingQueue;
 
@@ -202,6 +202,7 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 @property (nullable) NSString *groupIdentifier;
 
 /// An activity message to be displayed durning the request executing.
+/// If the request is finished right after been make, eg. it has been already cached, the message will not be displayed.
 @property (nullable) RFNetworkActivityMessage *activityMessage;
 
 @property (nullable) NSString *loadMessage;
