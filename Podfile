@@ -5,7 +5,7 @@ source 'https://cdn.cocoapods.org/'
 target 'Example-iOS' do
     platform :ios, '8.0'
     
-    pod 'RFMessageManager', :subspecs => ['SVProgressHUD'], :git => 'https://github.com/RFUI/RFMessageManager.git', :branch => 'develop'
+    pod 'RFMessageManager', :subspecs => ['SVProgressHUD']
     pod 'RFAPI', :path => '.'
 #    pod 'PBFlex', :configurations => ['Debug']
 end
