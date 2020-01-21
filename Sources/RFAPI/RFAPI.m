@@ -18,6 +18,7 @@ NSString *RFAPILocalizedString(NSString *key, NSString *value) {
     return [NSBundle.mainBundle localizedStringForKey:key value:value table:nil];
 }
 
+// Avoid create many concurrent GCD queue.
 static dispatch_queue_t api_default_processing_queue() {
     static dispatch_queue_t queue;
     static dispatch_once_t onceToken;

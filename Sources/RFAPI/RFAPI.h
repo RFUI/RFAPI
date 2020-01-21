@@ -27,6 +27,12 @@
 /// API define object of current request.
 @property (readonly, nonnull) RFAPIDefine *define;
 
+/// Identifier string of current request.
+@property (readonly, nonnull) NSString *identifier;
+
+/// Group identifier string of current request.
+@property (readonly, nullable) NSString *groupIdentifier;
+
 /// The original request object passed when the task was created.
 @property (readonly, copy, nullable, nonatomic) NSURLRequest *currentRequest;
 
