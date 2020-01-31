@@ -9,7 +9,11 @@
 import XCTest
 
 class TestAPI: RFAPI {
+    var deallocExpectation: XCTestExpectation?
 
+    deinit {
+        deallocExpectation?.fulfill()
+    }
 }
 
 class TestRequest: XCTestCase {

@@ -32,7 +32,7 @@ typedef void(^RFAPITaskComplation)(id __nullable responseObject, NSURLResponse *
 
 #pragma mark -
 
-@property (weak, nullable) RFAPI *manager;
+@property (nullable) RFAPI *manager;
 @property (nonnull) RFAPIDefine *define;
 
 @property (nonnull) NSString *identifier;

@@ -99,4 +99,28 @@ class TestConvention: XCTestCase {
         // Callbacks should always have a delay.
         wait(for: [cannotMakeEndExpectation, cannotMakeCallbackExpectation], timeout: 0.1, enforceOrder: true)
     }
+
+    func testKeepInstanceBeforeTaskComplation() {
+        let requestComplateExpectation = expectation(description: "Request Complate")
+        let managerDeallocExpectation = expectation(description: "Manager Dealloc")
+
+        weak var apiInstance: TestAPI?
+        autoreleasepool {
+            let define = RFAPIDefine()
+            define.path = "https://httpbin.org/delay/2"
+
+            let api = TestAPI()
+            api.deallocExpectation = managerDeallocExpectation
+            api.request(define: define) { c in
+                c.identifier = ""
+                c.complation { _, _, error in
+                    XCTAssertNil(error)
+                    requestComplateExpectation.fulfill()
+                }
+            }
+            apiInstance = api
+        }
+        XCTAssertNotNil(apiInstance)
+        wait(for: [requestComplateExpectation, managerDeallocExpectation], timeout: 10, enforceOrder: true)
+    }
 }

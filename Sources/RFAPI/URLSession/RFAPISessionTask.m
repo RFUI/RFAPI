@@ -86,6 +86,8 @@
 
 - (void)URLSession:(__unused NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
     RFAPI *manager = self.manager;
+    NSAssert(manager, nil);
+    self.manager = nil;
 
     NSData *data = self.mutableData;
     if (data) {
