@@ -12,13 +12,14 @@
 #import <RFInitializing/RFInitializing.h>
 #import "RFAPIDefine.h"
 #import "RFAPIDefineManager.h"
+#import <AFNetworking/AFURLRequestSerialization.h>
+#import <AFNetworking/AFURLResponseSerialization.h>
 
 @class AFNetworkReachabilityManager;
 @class AFSecurityPolicy;
 @class RFAPIRequestConext;
 @class RFMessageManager;
 @class RFNetworkActivityMessage;
-@protocol AFMultipartFormData;
 @protocol RFAPIModelTransformer;
 
 @protocol RFAPITask

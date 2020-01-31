@@ -9,7 +9,7 @@ The MIT License (MIT)
 http://www.opensource.org/licenses/mit-license.php
 */
 
-#import <AFNetworking/AFHTTPSessionManager.h>
+#import "RFAPIPrivate.h"
 
 @class AFHTTPRequestSerializer;
 @class AFHTTPResponseSerializer;

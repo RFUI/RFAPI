@@ -10,6 +10,8 @@
  */
 
 #import "RFAPI.h"
+#import <AFNetworking/AFNetworkReachabilityManager.h>
+#import <AFNetworking/AFSecurityPolicy.h>
 #import <RFKit/dout.h>
 
 /// The localized string loaded from main bundle's default table.

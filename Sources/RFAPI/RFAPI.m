@@ -4,10 +4,6 @@
 #import "RFAPIModelTransformer.h"
 #import "RFAPISessionManager.h"
 #import "RFAPISessionTask.h"
-#import <AFNetworking/AFHTTPSessionManager.h>
-#import <AFNetworking/AFURLRequestSerialization.h>
-#import <AFNetworking/AFURLResponseSerialization.h>
-#import <AFNetworking/AFNetworkReachabilityManager.h>
 #import <RFMessageManager/RFMessageManager+RFDisplay.h>
 
 NSErrorDomain const RFAPIErrorDomain = @"RFAPIErrorDomain";
