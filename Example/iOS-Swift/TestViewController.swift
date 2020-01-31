@@ -62,16 +62,22 @@ class TestViewController: UIViewController,
         r6.title = "big_json"
         r6.APIName = "local"
 
+        let r7 = TestRequestObject()
+        r7.title = "Time out"
+        r7.APIName = "Timeout"
+        r7.message = "Waiting..."
+
         items = [
             ListSection(title: "Sample Request", objects: [r1, r2, r3, r4, r5]),
             ListSection(title: "Local Files", objects: [r6]),
+            ListSection(title: "HTTPBin", objects: [r7]),
         ]
     }
 
     lazy var API = TestAPI()
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return items.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

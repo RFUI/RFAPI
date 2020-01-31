@@ -64,5 +64,30 @@
 		<key>Response Type</key>
 		<integer>0</integer>
 	</dict>
+	<key>@ HTTPBin</key>
+	<dict>
+		<key>Status</key>
+		<dict>
+			<key>Path</key>
+			<string>https://httpbin.org/status/{code}</string>
+		</dict>
+		<key>Anything</key>
+		<dict>
+			<key>Path</key>
+			<string>https://httpbin.org/anything/{path}</string>
+			<key>Method</key>
+			<string>POST</string>
+		</dict>
+		<key>404</key>
+		<dict>
+			<key>Path</key>
+			<string>https://httpbin.org/status/404</string>
+		</dict>
+		<key>Timeout</key>
+		<dict>
+			<key>Path</key>
+			<string>https://httpbin.org/delay/10</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

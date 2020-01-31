@@ -9,6 +9,9 @@
 class TestAPI: RFAPI {
     override init() {
         super.init()
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 5
+        sessionConfiguration = config
         guard let configPath = Bundle.main.path(forResource: "TestAPIDefine", ofType: "plist"),
             let rules = NSDictionary(contentsOfFile: configPath) as? [String : [String : Any]] else {
             fatalError()
