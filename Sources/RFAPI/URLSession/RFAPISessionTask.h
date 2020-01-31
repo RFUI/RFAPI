@@ -28,8 +28,6 @@ typedef void(^RFAPITaskComplation)(id __nullable responseObject, NSURLResponse *
     NSURLSessionDownloadDelegate
 >
 
-- (nonnull instancetype)initWithTask:(nonnull NSURLSessionTask *)task;
-
 @property (nonnull) NSURLSessionTask *task;
 
 #pragma mark -

@@ -220,7 +220,7 @@ RFInitializingRootForNSObject
     task.identifier = context.identifier ?: task.define.name;
     task.groupIdentifier = context.groupIdentifier;
     task.activityMessage = context.activityMessage;
-    task.uploadProgressBlock = context.downloadProgress;
+    task.uploadProgressBlock = context.uploadProgress;
     task.downloadProgressBlock = context.downloadProgress;
     task.success = context.success;
     task.failure = context.failure;

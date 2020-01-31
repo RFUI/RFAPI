@@ -82,6 +82,9 @@
     NSParameterAssert(task);
     NSParameterAssert(delegate);
 
+    if (delegate.task != task) {
+        delegate.task = task;
+    }
     [self.lock lock];
     self.mutableTaskDelegatesKeyedByTaskIdentifier[@(task.taskIdentifier)] = delegate;
     [self.lock unlock];
@@ -98,7 +101,7 @@
 - (_RFAPISessionTask *)addSessionTask:(NSURLSessionTask *)sessionTask {
     if (!sessionTask) return nil;
 
-    _RFAPISessionTask *delegate = [[_RFAPISessionTask alloc] initWithTask:sessionTask];
+    _RFAPISessionTask *delegate = _RFAPISessionTask.new;
     sessionTask.taskDescription = self.taskDescriptionForSessionTasks;
     [self setDelegate:delegate forTask:sessionTask];
     return delegate;

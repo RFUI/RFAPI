@@ -3,38 +3,22 @@
 #import "RFAPISessionManager.h"
 
 @interface _RFAPISessionTask ()
-@property (nullable) NSMutableData *mutableData;
+@property NSMutableData *mutableData;
 @end
 
 @implementation _RFAPISessionTask
 
-- (instancetype)initWithTask:(NSURLSessionTask *)task {
+- (instancetype)init {
     self = [super init];
-    if (!self) return nil;
+    if (self) {
+        _mutableData = [NSMutableData.alloc initWithCapacity:512];
+        _uploadProgress = [NSProgress.alloc initWithParent:nil userInfo:nil];
+        _downloadProgress = [NSProgress.alloc initWithParent:nil userInfo:nil];
 
-    _task = task;
-    _mutableData = [NSMutableData.alloc initWithCapacity:512];
-    _uploadProgress = [NSProgress.alloc initWithParent:nil userInfo:nil];
-    _downloadProgress = [NSProgress.alloc initWithParent:nil userInfo:nil];
-
-    __weak __typeof__(task) weakTask = task;
-    for (NSProgress *progress in @[ _uploadProgress, _downloadProgress ]) {
-        progress.totalUnitCount = NSURLSessionTransferSizeUnknown;
-        progress.cancellable = YES;
-        progress.cancellationHandler = ^{
-            [weakTask cancel];
-        };
-        progress.pausable = YES;
-        progress.pausingHandler = ^{
-            [weakTask suspend];
-        };
-        if (@available(iOS 9, macOS 10.11, *)) {
-            progress.resumingHandler = ^{
-                [weakTask resume];
-            };
+        for (NSProgress *progress in @[ _uploadProgress, _downloadProgress ]) {
+            progress.totalUnitCount = NSURLSessionTransferSizeUnknown;
+            [progress addObserver:self forKeyPath:NSStringFromSelector(@selector(fractionCompleted)) options:NSKeyValueObservingOptionNew context:NULL];
         }
-
-        [progress addObserver:self forKeyPath:NSStringFromSelector(@selector(fractionCompleted)) options:NSKeyValueObservingOptionNew context:NULL];
     }
     return self;
 }
@@ -71,6 +55,14 @@
     }
 }
 
+- (void)suspend {
+    [self.task suspend];
+}
+
+- (void)resume {
+    [self.task resume];
+}
+
 - (void)cancel {
     [self.task cancel];
 }
@@ -78,7 +70,7 @@
 #pragma mark NSProgress Tracking
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
-   if (object == self.downloadProgress) {
+    if (object == self.downloadProgress) {
         if (self.downloadProgressBlock) {
             self.downloadProgressBlock(self, object);
         }
