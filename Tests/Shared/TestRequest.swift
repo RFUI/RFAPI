@@ -17,6 +17,9 @@ class TestRequest: XCTestCase {
     // No default base url
     lazy var api: TestAPI = {
         let api = TestAPI()
+        let uc = URLSessionConfiguration.default
+        uc.timeoutIntervalForRequest = 5
+        api.sessionConfiguration = uc
         let defineConfigURL = Bundle(for: type(of: self)).url(forResource: "test_defines", withExtension: "plist")!
         let defineConfig = NSDictionary(contentsOf: defineConfigURL) as! [String: [String: Any]]
         api.defineManager.setDefinesWithRulesInfo(defineConfig)
@@ -30,12 +33,13 @@ class TestRequest: XCTestCase {
         context.groupIdentifier = "v1"
         api.request(withName: "Anything", parameters: ["path": "lookup"], controlInfo: context, success: { task, response in
             guard let rsp = response as? [String: Any] else {
-                fatalError("Response invalid")
+                XCTAssert(false, "Response invalid.")
+                return
             }
             XCTAssertEqual(rsp["url"] as! String?, "https://httpbin.org/anything/lookup")
             successExpectation.fulfill()
         }, failure: { task, error in
-            assert(false, error.localizedDescription)
+            XCTAssert(false, error.localizedDescription)
         }) { _ in
             completeExpectation.fulfill()
         }
@@ -58,7 +62,7 @@ class TestRequest: XCTestCase {
         let completeExpectation = expectation(description: "")
         let request = api.request(name: "404") { c in
             c.success { _, _ in
-                fatalError("This request should fail.")
+                XCTAssert(false, "This request should fail.")
             }
             c.failure { task, error in
                 XCTAssertNotNil(task)
@@ -78,7 +82,11 @@ class TestRequest: XCTestCase {
         }
         wait(for: [completeExpectation], timeout: 10)
         XCTAssertNotNil(request?.error)
-        XCTAssertEqual((request?.response as! HTTPURLResponse).statusCode, 404)
+        guard let httpResponse = request?.response as? HTTPURLResponse else {
+            XCTAssert(false, "Response should be HTTPURLResponse")
+            return
+        }
+        XCTAssertEqual(httpResponse.statusCode, 404)
     }
 
     func testRedirects() {
@@ -90,7 +98,8 @@ class TestRequest: XCTestCase {
             c.identifier = ""
             c.success { task, response in
                 guard let rsp = response as? [String: Any] else {
-                      fatalError("Response invalid")
+                    XCTAssert(false, "Response invalid.")
+                    return
                 }
                 print(rsp)
                 XCTAssertEqual(task.originalRequest?.url?.absoluteURL.absoluteString, "https://httpbin.org/redirect/3")

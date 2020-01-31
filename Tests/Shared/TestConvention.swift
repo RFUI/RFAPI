@@ -30,7 +30,7 @@ class TestConvention: XCTestCase {
                 expSuccess1.fulfill()
             }
             c.failure { _, _ in
-                fatalError("This request should success.")
+                XCTAssert(false, "This request should success.")
             }
             c.finished { _, _ in
                 expFinsh1.fulfill()
@@ -47,7 +47,7 @@ class TestConvention: XCTestCase {
         api.request(name: "Status") { c in
             c.parameters = ["code": 500]
             c.success { _, _ in
-                fatalError("This request should fail.")
+                XCTAssert(false, "This request should fail.")
             }
             c.failure { _, _ in
                 expFail2.fulfill()
