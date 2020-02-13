@@ -185,6 +185,10 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 
 @interface RFAPIRequestConext : NSObject
 
+/// The timeout interval for the request, in seconds.
+/// If not set or its value is not greater than 0, the default timeout will be used.
+@property NSTimeInterval timeoutInterval;
+
 /**
  The parameters to be encoded.
 

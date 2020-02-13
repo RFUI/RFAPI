@@ -263,6 +263,9 @@ RFInitializingRootForNSObject
         mutableRequest = [[serializer requestBySerializingRequest:mutableRequest withParameters:arrayParameter?: parameters error:error] mutableCopy];
     }
     if (!mutableRequest) return nil;
+    if (context.timeoutInterval > 0) {
+        mutableRequest.timeoutInterval = context.timeoutInterval;
+    }
 
     // Set header
     [headers enumerateKeysAndObjectsUsingBlock:^(id field, id value, BOOL *_) {

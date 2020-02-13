@@ -78,6 +78,13 @@
 			<key>Method</key>
 			<string>POST</string>
 		</dict>
+		<key>Upload</key>
+		<dict>
+			<key>Path</key>
+			<string>https://httpbin.org/anything</string>
+			<key>Method</key>
+			<string>POST</string>
+		</dict>
 		<key>404</key>
 		<dict>
 			<key>Path</key>
