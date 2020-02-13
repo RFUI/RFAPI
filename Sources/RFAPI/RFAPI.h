@@ -250,15 +250,15 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 @interface RFAPIRequestConext (Swift)
 
 /// Set callback to be executed when the request finishes successfully.
-- (void)addSuccess:(nullable void(^)(id<RFAPITask> __nonnull task, id __nullable responseObject))success NS_SWIFT_NAME(success(_:));
+- (void)setSuccessCallback:(nullable void(^)(id<RFAPITask> __nonnull task, id __nullable responseObject))success NS_SWIFT_NAME(success(_:));
 
 /// Set callback to be executed when the request finishes unsuccessfully.
-- (void)addFailure:(nullable void (^)(id<RFAPITask> __nullable task, NSError *__nonnull error))failure NS_SWIFT_NAME(failure(_:));
+- (void)setFailureCallback:(nullable void (^)(id<RFAPITask> __nullable task, NSError *__nonnull error))failure NS_SWIFT_NAME(failure(_:));
 
 /// Set callback to be executed when the request is complated.
-- (void)addFinished:(nullable void (^)(id<RFAPITask> __nullable task, BOOL success))finished NS_SWIFT_NAME(finished(_:));
+- (void)setFinishedCallback:(nullable void (^)(id<RFAPITask> __nullable task, BOOL success))finished NS_SWIFT_NAME(finished(_:));
 
 /// Set callback to be executed when the request is complated.
-- (void)addComplation:(nullable void (^)(id<RFAPITask> __nullable task, id __nullable responseObject, NSError *__nullable error))complation NS_SWIFT_NAME(complation(_:));
+- (void)setComplationCallback:(nullable void (^)(id<RFAPITask> __nullable task, id __nullable responseObject, NSError *__nullable error))complation NS_SWIFT_NAME(complation(_:));
 
 @end

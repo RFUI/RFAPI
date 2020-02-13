@@ -485,16 +485,16 @@ RFInitializingRootForNSObject
 
 @implementation RFAPIRequestConext (Swift)
 
-- (void)addSuccess:(void (^)(id<RFAPITask> _Nonnull, id _Nullable))success {
+- (void)setSuccessCallback:(void (^)(id<RFAPITask> _Nonnull, id _Nullable))success {
     self.success = success;
 }
-- (void)addFailure:(void (^)(id<RFAPITask> _Nullable, NSError * _Nonnull))failure {
+- (void)setFailureCallback:(void (^)(id<RFAPITask> _Nullable, NSError * _Nonnull))failure {
     self.failure = failure;
 }
-- (void)addFinished:(void (^)(id<RFAPITask> _Nullable, BOOL))finished {
+- (void)setFinishedCallback:(void (^)(id<RFAPITask> _Nullable, BOOL))finished {
     self.finished = finished;
 }
-- (void)addComplation:(void (^)(id<RFAPITask> _Nullable, id _Nullable, NSError * _Nullable))complation {
+- (void)setComplationCallback:(void (^)(id<RFAPITask> _Nullable, id _Nullable, NSError * _Nullable))complation {
     self.combinedComplation = complation;
 }
 
