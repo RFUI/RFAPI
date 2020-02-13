@@ -81,6 +81,11 @@
 			<key>Path</key>
 			<string>https://httpbin.org/status/404</string>
 		</dict>
+		<key>Delay</key>
+		<dict>
+			<key>Path</key>
+			<string>https://httpbin.org/delay/{time}</string>
+		</dict>
 	</dict>
 </dict>
 </plist>

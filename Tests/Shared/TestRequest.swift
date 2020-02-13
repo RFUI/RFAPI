@@ -62,6 +62,38 @@ class TestRequest: XCTestCase {
 
     }
 
+    func testTimeout() {
+        let completeExpectation = expectation(description: "")
+        let request = api.request(name: "Delay") { c in
+            c.timeoutInterval = 1
+            c.parameters = ["time": 10]
+            c.success { _, _ in
+                XCTAssert(false, "This request should fail.")
+            }
+            c.failure { task, error in
+                XCTAssertNotNil(task)
+                XCTAssertNotNil(error)
+                let e = error as NSError
+                XCTAssertEqual(e.code, NSURLErrorTimedOut)
+                XCTAssertEqual(e.domain, NSURLErrorDomain)
+            }
+            c.finished { task, s in
+                XCTAssertNotNil(task)
+                XCTAssertFalse(s)
+            }
+            c.complation { task, rsp, error in
+                debugPrint(error!)
+                XCTAssertNotNil(task)
+                XCTAssertNil(rsp)
+                XCTAssertNotNil(error)
+                completeExpectation.fulfill()
+            }
+        }
+        XCTAssertEqual(request?.originalRequest?.timeoutInterval, 1)
+        wait(for: [completeExpectation], timeout: 10)
+        XCTAssertNotNil(request?.error)
+    }
+
     func testHTTPStatusError() {
         let completeExpectation = expectation(description: "")
         let request = api.request(name: "404") { c in
