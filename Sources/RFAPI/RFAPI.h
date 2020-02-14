@@ -149,40 +149,45 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
  */
 - (void)preprocessingRequestParameters:(NSMutableDictionary *__nullable __strong *__nonnull)parametersRef HTTPHeaders:(NSMutableDictionary *__nullable __strong *__nonnull)httpHeadersRef withParameters:(nullable NSDictionary *)parameters define:(nonnull RFAPIDefine *)define context:(nonnull RFAPIRequestConext *)context NS_SWIFT_NAME(preprocessingRequest(parametersRef:httpHeadersRef:parameters:define:context:));
 
-
 /**
  The default implementation apply `requestCustomization` of the request context.
  */
 - (nonnull NSMutableURLRequest *)finalizeSerializedRequest:(nonnull NSMutableURLRequest *)request withDefine:(nonnull RFAPIDefine *)define context:(nonnull RFAPIRequestConext *)context NS_SWIFT_NAME(finalizeSerializedRequest(_:define:context:));
 
 /**
- 默认实现返回 YES
+ Handle and progress all request errors in one place.
+
+ Default implementation just return YES.
  
  This method is called on the processingQueue.
 
- @return 返回 YES 将继续错误的处理继续交由请求的回调处理，NO 处理结束
+ @return Returning YES will continue error processing and continue with the callback processing of the request, if NO processing ends immediately.
  */
 - (BOOL)generalHandlerForError:(nonnull NSError *)error withDefine:(nonnull RFAPIDefine *)define task:(nonnull id<RFAPITask>)task failureCallback:(nullable RFAPIRequestFailureCallback)failure NS_SWIFT_NAME(generalHandlerForError(_:define:task:failure:));
 
 /**
- 判断响应是否是成功的结果
+ Determine if the response was a successful response.
  
  Default implementation just return YES.
  
  This method is called on the processingQueue.
  
- @param responseObjectRef 可以用来修改返回值
- @param error 可选的错误信息
+ @param responseObjectRef Can be used to modify the response object.
+ @param error Optional error.
  */
 - (BOOL)isSuccessResponse:(id __nullable __strong *__nonnull)responseObjectRef error:(NSError *__nullable __autoreleasing *__nonnull)error NS_SWIFT_NOTHROW;
 
 @end
 
-
+/// Send array parameters
 FOUNDATION_EXTERN NSString *__nonnull const RFAPIRequestArrayParameterKey;
+/// Sent parameters throgh qury string
 FOUNDATION_EXTERN NSString *__nonnull const RFAPIRequestForceQuryStringParametersKey;
+
+/// Errors generated inside RFAPI
 FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 
+///
 @interface RFAPIRequestConext : NSObject
 
 /// The timeout interval for the request, in seconds.
@@ -216,6 +221,7 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 /// If the request is finished right after been make, eg. it has been already cached, the message will not be displayed.
 @property (nullable) RFNetworkActivityMessage *activityMessage;
 
+/// If not nil and the `activityMessage` is not be set, a message will be create automatically.
 @property (nullable) NSString *loadMessage;
 @property BOOL loadMessageShownModal;
 
@@ -243,6 +249,7 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 /// This may be used to test whether the UI is in a proper state when network latency.
 @property NSTimeInterval debugDelayRequestSend;
 
+/// This value will be passed to the task object.
 @property (nullable) NSDictionary *userInfo;
 
 @end
