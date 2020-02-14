@@ -1,14 +1,22 @@
 
+source 'https://github.com/PBPods/PBFlex.git'
+source 'https://cdn.cocoapods.org/'
+
 target 'Example-iOS' do
     platform :ios, '8.0'
-    pod 'RFMessageManager', :subspecs => ['SVProgressHUD'], :git => 'https://github.com/RFUI/RFMessageManager.git', :branch => 'develop'
+    
+    pod 'RFMessageManager', :subspecs => ['SVProgressHUD']
     pod 'RFAPI', :path => '.'
+#    pod 'PBFlex', :configurations => ['Debug']
+end
 
-    target 'Test-iOS' do
-    end
+target 'Test-iOS' do
+   platform :ios, '12.0'
+
+   pod 'RFAPI', :path => '.'
 end
 
 target 'Test-macOS' do
-    platform :osx, '10.9'
+    platform :osx, '10.13'
     pod 'RFAPI', :path => '.'
 end
