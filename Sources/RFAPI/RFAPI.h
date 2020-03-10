@@ -237,12 +237,14 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 @property (nullable) RFAPIRequestSuccessCallback success NS_SWIFT_NAME(successCallback);
 
 /// A block object to be executed when the request finishes unsuccessfully.
+/// It will not be called if the request is cancelled.
 @property (nullable) RFAPIRequestFailureCallback failure NS_SWIFT_NAME(failureCallback);
 
 /// A block object to be executed when the request is complated.
 @property (nullable) RFAPIRequestFinishedCallback finished NS_SWIFT_NAME(finishedCallback);
 
 /// A block object to be executed when the request is complated.
+/// Error will be nil if the request is cancelled. At this time, you could get the error object on the task object.
 @property (nullable) RFAPIRequestCombinedCompletionCallback combinedComplation NS_SWIFT_NAME(complationCallback);
 
 /// For debugging purposes, delaying the sending of network requests.

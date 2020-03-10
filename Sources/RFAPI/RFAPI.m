@@ -411,13 +411,13 @@ RFInitializingRootForNSObject
 
 - (void)_RFAPI_executeTaskCallback:(nonnull _RFAPISessionTask *)task failure:(nonnull NSError *)error {
     task.error = error;
+    BOOL isCancel = (error.code == NSURLErrorCancelled && [error.domain isEqualToString:NSURLErrorDomain]);
     dispatch_group_async(self.completionGroup, self.completionQueue, ^{
         BOOL shouldContinue = [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
 
         task.success = nil;
         RFMessageManager *messageManager = self.networkActivityIndicatorManager;
         if (shouldContinue) {
-            BOOL isCancel = (error.code == NSURLErrorCancelled && [error.domain isEqualToString:NSURLErrorDomain]);
 
             RFAPIRequestFailureCallback fcb = task.failure;
             if (fcb) {
@@ -449,7 +449,7 @@ RFInitializingRootForNSObject
         RFAPIRequestCombinedCompletionCallback cbcb = task.combinedComplation;
         if (cbcb) {
             task.combinedComplation = nil;
-            cbcb(task, nil, error);
+            cbcb(task, nil, isCancel ? nil : error);
         }
     });
 }

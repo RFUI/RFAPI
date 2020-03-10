@@ -56,8 +56,68 @@ class TestRequest: XCTestCase {
 
     }
 
-    func testTaskCancel() {
+    func testTaskCancelImmediately() {
+        let completeExpectation = expectation(description: "")
+        let request = api.request(name: "Delay") { c in
+            c.success { _, _ in
+                XCTAssert(false, "This request should fail.")
+            }
+            c.failure { _, _ in
+                XCTAssert(false, "Do not call the failure callback when canceling.")
+            }
+            c.finished { task, success in
+                XCTAssertFalse(success)
+                guard let task = task else {
+                    XCTAssert(false, "Task should have")
+                    return
+                }
+                XCTAssertNil(task.response)
+                XCTAssertNil(task.responseObject)
+            }
+            c.complation { task, rsp, error in
+                XCTAssertNotNil(task)
+                XCTAssertNil(rsp)
+                XCTAssertNil(error)
+                XCTAssertNotNil(task?.error)
+                completeExpectation.fulfill()
+            }
+        }
+        request?.cancel()
+        XCTAssertNotNil(request)
+        wait(for: [completeExpectation], timeout: 1)
+    }
 
+    func testTaskCancelAfterAWhile() {
+        let completeExpectation = expectation(description: "")
+        let request = api.request(name: "Delay") { c in
+            c.success { _, _ in
+                XCTAssert(false, "This request should fail.")
+            }
+            c.failure { _, _ in
+                XCTAssert(false, "Do not call the failure callback when canceling.")
+            }
+            c.finished { task, success in
+                XCTAssertFalse(success)
+                guard let task = task else {
+                    XCTAssert(false, "Task should have")
+                    return
+                }
+                XCTAssertNil(task.response)
+                XCTAssertNil(task.responseObject)
+            }
+            c.complation { task, rsp, error in
+                XCTAssertNotNil(task)
+                XCTAssertNil(rsp)
+                XCTAssertNil(error)
+                XCTAssertNotNil(task?.error)
+                completeExpectation.fulfill()
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            request?.cancel()
+        }
+        XCTAssertNotNil(request)
+        wait(for: [completeExpectation], timeout: 2)
     }
 
     func testTimeout() {
