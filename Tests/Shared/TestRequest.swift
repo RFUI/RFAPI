@@ -24,9 +24,7 @@ class TestRequest: XCTestCase {
         let uc = URLSessionConfiguration.default
         uc.timeoutIntervalForRequest = 5
         api.sessionConfiguration = uc
-        let defineConfigURL = Bundle(for: type(of: self)).url(forResource: "test_defines", withExtension: "plist")!
-        let defineConfig = NSDictionary(contentsOf: defineConfigURL) as! [String: [String: Any]]
-        api.defineManager.setDefinesWithRulesInfo(defineConfig)
+        api.loadTestDefines()
         return api
     }()
 
@@ -82,10 +80,10 @@ class TestRequest: XCTestCase {
                 XCTAssertFalse(s)
             }
             c.complation { task, rsp, error in
-                debugPrint(error!)
                 XCTAssertNotNil(task)
                 XCTAssertNil(rsp)
                 XCTAssertNotNil(error)
+                debugPrint(error!)
                 completeExpectation.fulfill()
             }
         }

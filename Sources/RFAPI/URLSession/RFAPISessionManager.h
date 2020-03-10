@@ -2,7 +2,7 @@
 RFAPISessionManager
 RFAPI
 
-Copyright © 2019 BB9z
+Copyright © 2019-2020 BB9z
 https://github.com/RFUI/RFAPI
 
 The MIT License (MIT)

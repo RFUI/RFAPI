@@ -411,9 +411,9 @@ RFInitializingRootForNSObject
 
 - (void)_RFAPI_executeTaskCallback:(nonnull _RFAPISessionTask *)task failure:(nonnull NSError *)error {
     task.error = error;
-    BOOL shouldContinue = [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
-
     dispatch_group_async(self.completionGroup, self.completionQueue, ^{
+        BOOL shouldContinue = [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
+
         task.success = nil;
         RFMessageManager *messageManager = self.networkActivityIndicatorManager;
         if (shouldContinue) {

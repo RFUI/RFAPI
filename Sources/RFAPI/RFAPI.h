@@ -159,7 +159,7 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
 
  Default implementation just return YES.
  
- This method is called on the processingQueue.
+ This method is called on the completionQueue.
 
  @return Returning YES will continue error processing and continue with the callback processing of the request, if NO processing ends immediately.
  */

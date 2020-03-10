@@ -7,7 +7,6 @@ env:
   - LANG=en_US.UTF-8
   - LANGUAGE=en_US.UTF-8
   - RFCI_PRODUCT_NAME="RFAPI"
-  - RFWorkspace="RFAPI.xcworkspace"
 matrix:
   include:
     - osx_image: xcode11.3
