@@ -362,6 +362,10 @@ RFInitializingRootForNSObject
             case RFAPIDefineResponseExpectObjects: {
                 NSError *error = nil;
                 id modelObject = [self.modelTransformer transformResponse:(id)responseObject toType:type kind:task.define.responseClass error:&error];
+                if (!self.modelTransformer) {
+                    NSLog(@"⚠️ Response except object, but modelTransformer has not been set.");
+                    modelObject = responseObject;
+                }
                 if (error) {
                     [self _RFAPI_executeTaskCallback:task failure:error];
                 }
