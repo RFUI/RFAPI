@@ -46,8 +46,11 @@
 /// Serialized response object from server response.
 @property (nullable) id responseObject;
 
-/// An error object that indicates why the task failed.
+/// An error object that indicates why the task is unsuccessful.
 @property (nullable) NSError *error;
+
+/// Whether the request completed successfully.
+@property (readonly) BOOL isSuccess;
 
 /// This property is the dictionary pass through the request context.
 @property (nullable) NSDictionary *userInfo;

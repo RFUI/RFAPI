@@ -48,6 +48,33 @@ class TestRequest: XCTestCase {
         wait(for: [successExpectation, completeExpectation], timeout: 10, enforceOrder: true)
     }
 
+    func testSuccssAndFailure() {
+        let successRequestFinishExpectation = expectation(description: "successRequest finish")
+        let failureRequsetFinishExpectation = expectation(description: "failureRequset finish")
+        let successRequest = api.request(name: "IsSuccess") { c in
+            c.complation { task, _, _ in
+                XCTAssertTrue(task!.isSuccess)
+                successRequestFinishExpectation.fulfill()
+            }
+        }
+        let failureRequset = api.request(name: "IsFailure") { c in
+            c.complation { task, _, _ in
+                XCTAssertFalse(task!.isSuccess)
+                failureRequsetFinishExpectation.fulfill()
+            }
+        }
+        guard let sRequest = successRequest,
+            let fRequset = failureRequset else {
+                assertionFailure()
+                return
+        }
+        XCTAssertFalse(sRequest.isSuccess)
+        XCTAssertFalse(fRequset.isSuccess)
+        wait(for: [successRequestFinishExpectation, failureRequsetFinishExpectation], timeout: 10, enforceOrder: false)
+        XCTAssertTrue(sRequest.isSuccess)
+        XCTAssertFalse(fRequset.isSuccess)
+    }
+
     func testIdentifierControl() {
         
     }

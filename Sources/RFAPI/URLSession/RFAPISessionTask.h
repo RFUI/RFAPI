@@ -50,6 +50,7 @@ typedef void(^RFAPITaskComplation)(id __nullable responseObject, NSURLResponse *
 @property (readonly, copy, nullable, nonatomic) NSURLResponse *response;
 @property (nullable) id responseObject;
 @property (nullable) NSError *error;
+@property BOOL isSuccess;
 
 /// 
 @property (readonly, nonatomic) BOOL isEnd;

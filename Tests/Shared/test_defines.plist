@@ -95,6 +95,13 @@
 			<key>Response Type</key>
 			<integer>1</integer>
 		</dict>
+		<key>IsFailure</key>
+		<dict>
+			<key>Path</key>
+			<string>https://httpbin.org/status/400</string>
+			<key>Response Type</key>
+			<integer>1</integer>
+		</dict>
 	</dict>
 </dict>
 </plist>

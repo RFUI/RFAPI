@@ -383,6 +383,7 @@ RFInitializingRootForNSObject
 
 - (void)_RFAPI_executeTaskCallback:(nonnull _RFAPISessionTask *)task success:(nullable id)responseObject {
     task.responseObject = responseObject;
+    task.isSuccess = YES;
     dispatch_group_async(self.completionGroup, self.completionQueue, ^{
         task.failure = nil;
         RFAPIRequestSuccessCallback scb = task.success;
@@ -411,6 +412,7 @@ RFInitializingRootForNSObject
 
 - (void)_RFAPI_executeTaskCallback:(nonnull _RFAPISessionTask *)task failure:(nonnull NSError *)error {
     task.error = error;
+    task.isSuccess = NO;
     BOOL isCancel = (error.code == NSURLErrorCancelled && [error.domain isEqualToString:NSURLErrorDomain]);
     dispatch_group_async(self.completionGroup, self.completionQueue, ^{
         BOOL shouldContinue = [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
