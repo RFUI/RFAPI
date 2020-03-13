@@ -117,6 +117,7 @@ class TestRequest: XCTestCase {
     func testTaskCancelAfterAWhile() {
         let completeExpectation = expectation(description: "")
         let request = api.request(name: "Delay") { c in
+            c.parameters = ["time": 10]
             c.success { _, _ in
                 XCTAssert(false, "This request should fail.")
             }
