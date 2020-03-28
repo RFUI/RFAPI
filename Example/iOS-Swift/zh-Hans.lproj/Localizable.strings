@@ -1,0 +1,8 @@
+
+"ListSection.Sample" = "示例请求";
+"ListSection.Local" = "本地文件";
+"ListSection.HTTPBin" = "HTTPBin";
+
+"HUDState.Waiting" = "请稍候...";
+"HUDState.Loadding" = "载入中...";
+"HUDState.Uploading" = "上传中...";

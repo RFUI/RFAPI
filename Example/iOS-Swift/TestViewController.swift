@@ -8,6 +8,10 @@
 
 import UIKit
 
+func L(_ value: String, key: String, comment: String = "") -> String {
+    return NSLocalizedString(key, tableName: nil, bundle: Bundle.main, value: value, comment: comment)
+}
+
 class TestRequestObject {
     var title = ""
     var APIName = ""
@@ -47,7 +51,7 @@ class TestViewController: UIViewController,
         let r3 = TestRequestObject()
         r3.title = "Objects"
         r3.APIName = "ObjArraySample"
-        r3.message = "Loadding..."
+        r3.message = L("Loadding...", key: "HUDState.Loadding")
         r3.modal = true
 
         let r4 = TestRequestObject()
@@ -66,18 +70,18 @@ class TestViewController: UIViewController,
         let r7 = TestRequestObject()
         r7.title = "Time out"
         r7.APIName = "Timeout"
-        r7.message = "Waiting..."
+        r7.message = L("Waiting...", key: "HUDState.Waiting")
 
         let r8 = TestRequestObject()
         r8.title = "Upload"
         r8.APIName = "Upload"
-        r8.message = "Uploading..."
+        r8.message = L("Uploading...", key: "HUDState.Uploading")
         uploadRequest = r8
 
         items = [
-            ListSection(title: "Sample Request", objects: [r1, r2, r3, r4, r5]),
-            ListSection(title: "Local Files", objects: [r6]),
-            ListSection(title: "HTTPBin", objects: [r7, r8]),
+            ListSection(title: L("Sample Requests", key: "ListSection.Sample"), objects: [r1, r2, r3, r4, r5]),
+            ListSection(title: L("Local Files", key: "ListSection.Local", comment: "Load file content."), objects: [r6]),
+            ListSection(title: L("HTTPBin", key: "ListSection.HTTPBin"), objects: [r7, r8]),
         ]
     }
 
