@@ -4,6 +4,7 @@
 
 #import <AFNetworking/AFURLRequestSerialization.h>
 #import <AFNetworking/AFURLResponseSerialization.h>
+#import <JSONModel/JSONModel.h>
 #import <RFAPI/RFAPI.h>
 #import <RFAPI/RFAPIDefineConfigFile.h>
 #import <RFAPI/RFAPIJSONModelTransformer.h>

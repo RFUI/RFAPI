@@ -14,7 +14,6 @@
 		D50F619B242EDED20072AB4B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D50F619D242EDED20072AB4B /* Main.storyboard */; };
 		D54183C3206B685100DD25CE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54183C2206B685100DD25CE /* AppDelegate.swift */; };
 		D54183CA206B685100DD25CE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D54183C9206B685100DD25CE /* Assets.xcassets */; };
-		D5418408206CD45400DD25CE /* RFDTestEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = D54183FE206CD44F00DD25CE /* RFDTestEntity.m */; };
 		D541840D206CD45400DD25CE /* TestAPIDefine.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5418405206CD45300DD25CE /* TestAPIDefine.plist */; };
 		D55ADAF523BF4AFB00AD6DB2 /* TestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55ADAF423BF4AFB00AD6DB2 /* TestAPI.swift */; };
 		D55ADB0F23C06C6600AD6DB2 /* TestDefineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54183FB206CD13000DD25CE /* TestDefineManager.swift */; };
@@ -35,6 +34,7 @@
 		D5C3AC1B242EE782004D5762 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D5C3AC1A242EE782004D5762 /* LaunchScreen.storyboard */; };
 		D5C3AC21242EEADB004D5762 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D5C3AC23242EEADB004D5762 /* InfoPlist.strings */; };
 		D5C3AC25242EEC1F004D5762 /* LaunchScreen_zh-Hans.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D5C3AC24242EEC1E004D5762 /* LaunchScreen_zh-Hans.storyboard */; };
+		D5C3AC2724308E1F004D5762 /* TestEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C3AC2624308E1F004D5762 /* TestEntity.swift */; };
 		D5D61FF623C42A5300B26C33 /* TestDefine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D61FF523C42A5300B26C33 /* TestDefine.swift */; };
 		D5D61FF723C42A5300B26C33 /* TestDefine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D61FF523C42A5300B26C33 /* TestDefine.swift */; };
 		D5D61FFC23C5E19800B26C33 /* archived_define_v1.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */; };
@@ -65,9 +65,7 @@
 		D54183DD206BBA7B00DD25CE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D54183F2206BDCFF00DD25CE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D54183FB206CD13000DD25CE /* TestDefineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDefineManager.swift; sourceTree = "<group>"; };
-		D54183FE206CD44F00DD25CE /* RFDTestEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RFDTestEntity.m; sourceTree = "<group>"; };
 		D5418405206CD45300DD25CE /* TestAPIDefine.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TestAPIDefine.plist; sourceTree = "<group>"; };
-		D5418407206CD45400DD25CE /* RFDTestEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RFDTestEntity.h; sourceTree = "<group>"; };
 		D55ADAF423BF4AFB00AD6DB2 /* TestAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAPI.swift; sourceTree = "<group>"; };
 		D55ADAFB23C06B7E00AD6DB2 /* Test-iOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Test-iOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D55ADB0723C06C3B00AD6DB2 /* Test-macOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Test-macOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -85,6 +83,7 @@
 		D5C3AC1A242EE782004D5762 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D5C3AC22242EEADB004D5762 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		D5C3AC24242EEC1E004D5762 /* LaunchScreen_zh-Hans.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "LaunchScreen_zh-Hans.storyboard"; sourceTree = "<group>"; };
+		D5C3AC2624308E1F004D5762 /* TestEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEntity.swift; sourceTree = "<group>"; };
 		D5D61FF523C42A5300B26C33 /* TestDefine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDefine.swift; sourceTree = "<group>"; };
 		D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = archived_define_v1.plist; sourceTree = "<group>"; };
 		D5F9245823D5BBCA00E9781D /* big_json.data */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = big_json.data; sourceTree = "<group>"; };
@@ -252,8 +251,7 @@
 		D55ADAF623BF4D1D00AD6DB2 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				D5418407206CD45400DD25CE /* RFDTestEntity.h */,
-				D54183FE206CD44F00DD25CE /* RFDTestEntity.m */,
+				D5C3AC2624308E1F004D5762 /* TestEntity.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -499,8 +497,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D54183C3206B685100DD25CE /* AppDelegate.swift in Sources */,
-				D5418408206CD45400DD25CE /* RFDTestEntity.m in Sources */,
 				D55ADAF523BF4AFB00AD6DB2 /* TestAPI.swift in Sources */,
+				D5C3AC2724308E1F004D5762 /* TestEntity.swift in Sources */,
 				D5091B1723BF2E3B00E52FF3 /* TestViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
