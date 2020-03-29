@@ -67,9 +67,7 @@
     NSMutableString *path = define.path.mutableCopy;
     if (!path) {
         if (error) {
-            *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorBadURL userInfo:@{
-                NSLocalizedDescriptionKey : @"API define path is nil."
-            }];
+            *error = [RFAPI localizedErrorWithDoomain:NSURLErrorDomain code:NSURLErrorBadURL underlyingError:nil descriptionKey:@"RFAPI.Error.DefineNoPath" descriptionValue:@"API define path is nil" reasonKey:@"RFAPI.Error.GeneralFailureReasonApp" reasonValue:nil suggestionKey:@"RFAPI.Error.GeneralRecoverySuggestion" suggestionValue:nil url:nil];
         }
         return nil;
     }
@@ -101,13 +99,10 @@
     }
     
     if (!url) {
-        RFAPILogError_(@"无法拼接路径 %@ 到 %@\n请检查接口定义", path, define.baseURL);
+        NSString *debugFormat = [RFAPI localizedStringForKey:@"RFAPI.Debug.CannotJoinPathToBaseURL" value:@"Unable to join path %1$@ to %2$@, please check the API define"];
+        RFAPILogError_(debugFormat, path, define.baseURL)
         if (error) {
-            *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorBadURL userInfo:@{
-                NSLocalizedDescriptionKey : @"内部错误，无法创建请求",
-                NSLocalizedFailureReasonErrorKey : @"很可能是应用 bug",
-                NSLocalizedRecoverySuggestionErrorKey : @"请再试一次，如果依旧请尝试重启应用。给您带来不便，敬请谅解"
-            }];
+            *error = [RFAPI localizedErrorWithDoomain:NSURLErrorDomain code:NSURLErrorBadURL underlyingError:nil descriptionKey:@"RFAPI.Error.CannotCreateRequestDescription" descriptionValue:@"Internal error, unable to create request" reasonKey:@"RFAPI.Error.CannotCreateRequestReason" reasonValue:@"It seems to be an application bug" suggestionKey:@"RFAPI.Error.CannotCreateRequestSuggestion" suggestionValue:@"Please try again. If it still doesn't work, try restarting the application" url:nil];
         }
         return nil;
     }

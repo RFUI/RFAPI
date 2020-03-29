@@ -10,10 +10,6 @@ NSErrorDomain const RFAPIErrorDomain = @"RFAPIErrorDomain";
 NSString *const RFAPIRequestArrayParameterKey = @"_RFParmArray_";
 NSString *const RFAPIRequestForceQuryStringParametersKey = @"_RFParmForceQuryString_";
 
-NSString *RFAPILocalizedString(NSString *key, NSString *value) {
-    return [NSBundle.mainBundle localizedStringForKey:key value:value table:nil];
-}
-
 // Avoid create many concurrent GCD queue.
 static dispatch_queue_t api_default_processing_queue() {
     static dispatch_queue_t queue;
@@ -109,14 +105,12 @@ RFInitializingRootForNSObject
 
 - (void)cancelOperationWithIdentifier:(nullable NSString *)identifier {
     for (id<RFAPITask>op in [self operationsWithIdentifier:identifier]) {
-        _dout_debug(@"Cancel HTTP request operation(%p) with identifier: %@", (void *)op, identifier);
         [op cancel];
     }
 }
 
 - (void)cancelOperationsWithGroupIdentifier:(nullable NSString *)identifier {
     for (id<RFAPITask>op in [self operationsWithGroupIdentifier:identifier]) {
-        _dout_debug(@"Cancel HTTP request operation(%p) with group identifier: %@", (void *)op, identifier);
         [op cancel];
     }
 }
@@ -176,15 +170,9 @@ RFInitializingRootForNSObject
     NSError *e = nil;
     NSMutableURLRequest *request = [self _RFAPI_makeURLRequestWithDefine:define context:context error:&e];
     if (!request) {
-        RFAPILogError_(@"无法创建请求: %@", e)
-        NSMutableDictionary *eInfo = [NSMutableDictionary.alloc initWithCapacity:4];
-        eInfo[NSLocalizedDescriptionKey] = @"内部错误，无法创建请求";
-        eInfo[NSLocalizedFailureReasonErrorKey] = @"很可能是应用 bug";
-        eInfo[NSLocalizedRecoverySuggestionErrorKey] = @"请再试一次，如果依旧请尝试重启应用。给您带来不便，敬请谅解";
-        if (e) {
-            eInfo[NSUnderlyingErrorKey] = e;
-        }
-        NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:eInfo];
+        NSString *debugFormat = [self.class localizedStringForKey:@"RFAPI.Debug.CannotCreateRequestError" value:@"Cannot create request: %@"];
+        RFAPILogError_(debugFormat, e)
+        NSError *error = [self.class localizedErrorWithDoomain:NSURLErrorDomain code:NSURLErrorCancelled underlyingError:e descriptionKey:@"RFAPI.Error.CannotCreateRequest" descriptionValue:@"Internal error, unable to create request" reasonKey:@"RFAPI.Error.CannotCreateRequestReason" reasonValue:@"It seems to be an application bug" suggestionKey:@"RFAPI.Error.CannotCreateRequestSuggestion" suggestionValue:@"Please try again. If it still doesn't work, try restarting the application" url:request.URL];
         [self _RFAPI_executeContext:context failure:error];
         return nil;
     }
@@ -480,6 +468,37 @@ RFInitializingRootForNSObject
 
 - (BOOL)isSuccessResponse:(id  _Nullable __strong *)responseObjectRef error:(NSError * _Nullable __autoreleasing *)error {
     return YES;
+}
+
+#pragma mark -
+
++ (NSError *)localizedErrorWithDoomain:(NSErrorDomain)domain code:(NSInteger)code underlyingError:(NSError *)error descriptionKey:(NSString *)descriptionKey descriptionValue:(NSString *)descriptionValue reasonKey:(NSString *)reasonKey reasonValue:(NSString *)reasonValue suggestionKey:(NSString *)suggestionKey suggestionValue:(NSString *)suggestionValue url:(NSURL *)url {
+    NSMutableDictionary *eInfo = [NSMutableDictionary.alloc initWithCapacity:5];
+    eInfo[NSLocalizedDescriptionKey] = [self localizedStringForKey:descriptionKey value:descriptionValue];
+    if (reasonKey || reasonValue) {
+        NSString *reason = [self localizedStringForKey:reasonKey value:reasonValue];
+        if (reason.length) {
+            eInfo[NSLocalizedFailureReasonErrorKey] = reason;
+        }
+    }
+    if (suggestionKey || suggestionValue) {
+        NSString *suggestion = [self localizedStringForKey:suggestionKey value:suggestionValue];
+        if (suggestion.length) {
+            eInfo[NSLocalizedRecoverySuggestionErrorKey] = suggestion;
+        }
+    }
+    if (error) {
+        eInfo[NSUnderlyingErrorKey] = error;
+    }
+    if (url) {
+        eInfo[NSURLErrorKey] = url;
+    }
+    return [NSError errorWithDomain:domain code:code userInfo:eInfo];
+}
+
++ (NSString *)localizedStringForKey:(NSString *)key value:(NSString *)value {
+    NSParameterAssert(key || value);
+    return [NSBundle.mainBundle localizedStringForKey:key value:value table:nil];
 }
 
 @end

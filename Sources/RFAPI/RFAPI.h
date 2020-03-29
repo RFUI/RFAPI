@@ -180,6 +180,22 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
  */
 - (BOOL)isSuccessResponse:(id __nullable __strong *__nonnull)responseObjectRef error:(NSError *__nullable __autoreleasing *__nonnull)error NS_SWIFT_NOTHROW;
 
+#pragma mark - Localization
+
+/**
+ Make localized error object.
+
+ Localized version of strings reads from the default table in the main bundle.
+ */
++ (nonnull NSError *)localizedErrorWithDoomain:(nonnull NSErrorDomain)domain code:(NSInteger)code underlyingError:(nullable NSError *)error descriptionKey:(nonnull NSString *)descriptionKey descriptionValue:(nonnull NSString *)descriptionValue reasonKey:(nullable NSString *)reasonKey reasonValue:(nullable NSString *)reasonValue suggestionKey:(nullable NSString *)suggestionKey suggestionValue:(nullable NSString *)suggestionValue url:(nullable NSURL *)url;
+
+/**
+ The localized string loaded from main bundle's default table.
+
+ key and value must not be nil at the same time.
+ */
++ (nonnull NSString *)localizedStringForKey:(nullable NSString *)key value:(nullable NSString *)value;
+
 @end
 
 /// Send array parameters
