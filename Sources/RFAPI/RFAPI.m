@@ -139,7 +139,7 @@ RFInitializingRootForNSObject
     if (!define.name) {
         define.name = APIName;
     }
-    RFAssert(define, @"Can not find an API with name: %@.", APIName)
+    NSAssert(define, @"Can not find an API with name: %@.", APIName);
     if (!define) return nil;
     return [self requestWithDefine:define context:contextBlock];
 }
@@ -152,7 +152,7 @@ RFInitializingRootForNSObject
     NSString *identifier = context.identifier;
     if (!identifier) {
         identifier = APIDefine.name;
-        RFAssert(identifier, @"Context identifier and define name both are nil.")
+        NSAssert(identifier, @"Context identifier and define name both are nil.");
         context.identifier = identifier;
     }
     if (!context.activityMessage && context.loadMessage) {
