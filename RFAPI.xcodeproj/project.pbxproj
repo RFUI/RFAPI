@@ -27,6 +27,7 @@
 		D59FF65023D1E2D800206713 /* TestConvention.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59FF64F23D1E2D800206713 /* TestConvention.swift */; };
 		D59FF65123D1E2D800206713 /* TestConvention.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59FF64F23D1E2D800206713 /* TestConvention.swift */; };
 		D5A8C7CF24418E4200CAEF4C /* TestControlBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A8C7CE24418E4200CAEF4C /* TestControlBinding.swift */; };
+		D5A8C7D42441B87F00CAEF4C /* ControlBindingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A8C7D22441B87C00CAEF4C /* ControlBindingVC.swift */; };
 		D5ABE71024172D6000B9BB98 /* TestSubclass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5ABE70F24172D6000B9BB98 /* TestSubclass.swift */; };
 		D5ABE71124172D6000B9BB98 /* TestSubclass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5ABE70F24172D6000B9BB98 /* TestSubclass.swift */; };
 		D5ABE7132417348100B9BB98 /* DefineLoad.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5ABE7122417348100B9BB98 /* DefineLoad.swift */; };
@@ -78,6 +79,8 @@
 		D57C354923C83B89000B6A3C /* TestRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestRequest.swift; sourceTree = "<group>"; };
 		D59FF64F23D1E2D800206713 /* TestConvention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestConvention.swift; sourceTree = "<group>"; };
 		D5A8C7CE24418E4200CAEF4C /* TestControlBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestControlBinding.swift; sourceTree = "<group>"; };
+		D5A8C7D22441B87C00CAEF4C /* ControlBindingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBindingVC.swift; sourceTree = "<group>"; };
+		D5A8C7D62441C95600CAEF4C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		D5ABE70F24172D6000B9BB98 /* TestSubclass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSubclass.swift; sourceTree = "<group>"; };
 		D5ABE7122417348100B9BB98 /* DefineLoad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefineLoad.swift; sourceTree = "<group>"; };
 		D5C3AC0D242EE623004D5762 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -170,17 +173,14 @@
 		D54183C1206B685100DD25CE /* iOS-Swift */ = {
 			isa = PBXGroup;
 			children = (
-				D54183C2206B685100DD25CE /* AppDelegate.swift */,
+				D5A8C7D12441B6B900CAEF4C /* Launching */,
+				D5A8C7D02441B68200CAEF4C /* Scenes */,
 				D54183C9206B685100DD25CE /* Assets.xcassets */,
 				D54183CE206B685100DD25CE /* Info.plist */,
 				D5C3AC23242EEADB004D5762 /* InfoPlist.strings */,
-				D5C3AC1A242EE782004D5762 /* LaunchScreen.storyboard */,
-				D5C3AC24242EEC1E004D5762 /* LaunchScreen_zh-Hans.storyboard */,
 				D5C3AC0C242EE623004D5762 /* Localizable.strings */,
-				D50F619D242EDED20072AB4B /* Main.storyboard */,
 				D55ADAF423BF4AFB00AD6DB2 /* TestAPI.swift */,
 				D5418405206CD45300DD25CE /* TestAPIDefine.plist */,
-				D5091B1623BF2E3B00E52FF3 /* TestViewController.swift */,
 			);
 			path = "iOS-Swift";
 			sourceTree = "<group>";
@@ -257,6 +257,26 @@
 				D5C3AC2624308E1F004D5762 /* TestEntity.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		D5A8C7D02441B68200CAEF4C /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				D50F619D242EDED20072AB4B /* Main.storyboard */,
+				D5091B1623BF2E3B00E52FF3 /* TestViewController.swift */,
+				D5A8C7D22441B87C00CAEF4C /* ControlBindingVC.swift */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		D5A8C7D12441B6B900CAEF4C /* Launching */ = {
+			isa = PBXGroup;
+			children = (
+				D54183C2206B685100DD25CE /* AppDelegate.swift */,
+				D5C3AC1A242EE782004D5762 /* LaunchScreen.storyboard */,
+				D5C3AC24242EEC1E004D5762 /* LaunchScreen_zh-Hans.storyboard */,
+			);
+			path = Launching;
 			sourceTree = "<group>";
 		};
 		D5F9245723D5BBB000E9781D /* Data */ = {
@@ -503,6 +523,7 @@
 				D55ADAF523BF4AFB00AD6DB2 /* TestAPI.swift in Sources */,
 				D5C3AC2724308E1F004D5762 /* TestEntity.swift in Sources */,
 				D5091B1723BF2E3B00E52FF3 /* TestViewController.swift in Sources */,
+				D5A8C7D42441B87F00CAEF4C /* ControlBindingVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -542,6 +563,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				D50F619C242EDED20072AB4B /* Base */,
+				D5A8C7D62441C95600CAEF4C /* zh-Hans */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
