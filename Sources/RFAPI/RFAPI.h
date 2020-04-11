@@ -252,6 +252,15 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 /// Note this block is called on the session queue, not the main queue.
 @property (nullable) RFAPIRequestProgressBlock downloadProgress;
 
+/**
+ You could pass some UI elements here.
+
+ For UIControl or any object response to `setEnabled:`, it will set enabled to NO when the request starts and restore to YES after request is finished.
+ For UIRefreshControl, it will try call `beginRefreshing` when the request starts and `endRefreshing` after request is finished.
+ For UIActivityIndicatorView, it will call `startAnimating` when the request starts and `stopAnimating` after request is finished.
+ */
+@property (nullable) NSArray<id> *bindControls;
+
 /// A block object to be executed when the request finishes successfully.
 @property (nullable) RFAPIRequestSuccessCallback success NS_SWIFT_NAME(successCallback);
 

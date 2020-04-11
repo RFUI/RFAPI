@@ -182,6 +182,7 @@ RFInitializingRootForNSObject
     task.manager = self;
     task.define = define;
     [self transferContext:context toTask:task];
+    [task updateBindControlsEnabled:NO];
 
     // Start request
     RFNetworkActivityMessage *message = task.activityMessage;
@@ -210,12 +211,13 @@ RFInitializingRootForNSObject
     task.activityMessage = context.activityMessage;
     task.uploadProgressBlock = context.uploadProgress;
     task.downloadProgressBlock = context.downloadProgress;
+    task.bindControls = context.bindControls;
     task.success = context.success;
     task.failure = context.failure;
     task.complation = context.finished;
     task.combinedComplation = context.combinedComplation;
-    task.userInfo = context.userInfo;
     task.debugDelayRequestSend = context.debugDelayRequestSend;
+    task.userInfo = context.userInfo;
 }
 
 #pragma mark - Build Request
@@ -373,18 +375,20 @@ RFInitializingRootForNSObject
     task.responseObject = responseObject;
     task.isSuccess = YES;
     dispatch_group_async(self.completionGroup, self.completionQueue, ^{
-        task.failure = nil;
-        RFAPIRequestSuccessCallback scb = task.success;
-        if (scb) {
-            task.success = nil;
-            scb(task, responseObject);
-        }
+        [task updateBindControlsEnabled:YES];
         RFNetworkActivityMessage *message = task.activityMessage;
         if (message) {
             dispatch_sync_on_main(^{
                 [self.networkActivityIndicatorManager hideMessage:message];
             });
         }
+
+        RFAPIRequestSuccessCallback scb = task.success;
+        if (scb) {
+            task.success = nil;
+            scb(task, responseObject);
+        }
+        task.failure = nil;
         RFAPIRequestFinishedCallback ccb = task.complation;
         if (ccb) {
             task.complation = nil;
@@ -403,12 +407,18 @@ RFInitializingRootForNSObject
     task.isSuccess = NO;
     BOOL isCancel = (error.code == NSURLErrorCancelled && [error.domain isEqualToString:NSURLErrorDomain]);
     dispatch_group_async(self.completionGroup, self.completionQueue, ^{
-        BOOL shouldContinue = [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
+        [task updateBindControlsEnabled:YES];
+        RFMessageManager *messageManager = self.networkActivityIndicatorManager;
+        RFNetworkActivityMessage *message = task.activityMessage;
+        if (message && messageManager) {
+            dispatch_sync_on_main(^{
+                [messageManager hideMessage:message];
+            });
+        }
 
         task.success = nil;
-        RFMessageManager *messageManager = self.networkActivityIndicatorManager;
+        BOOL shouldContinue = [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
         if (shouldContinue) {
-
             RFAPIRequestFailureCallback fcb = task.failure;
             if (fcb) {
                 if (!isCancel) {
@@ -424,13 +434,6 @@ RFInitializingRootForNSObject
             }
         }
         task.failure = nil;
-
-        RFNetworkActivityMessage *message = task.activityMessage;
-        if (message && messageManager) {
-            dispatch_sync_on_main(^{
-                [messageManager hideMessage:message];
-            });
-        }
         RFAPIRequestFinishedCallback ccb = task.complation;
         if (ccb) {
             task.complation = nil;

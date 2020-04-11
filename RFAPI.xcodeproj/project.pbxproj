@@ -26,6 +26,7 @@
 		D57C354B23C83B89000B6A3C /* TestRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57C354923C83B89000B6A3C /* TestRequest.swift */; };
 		D59FF65023D1E2D800206713 /* TestConvention.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59FF64F23D1E2D800206713 /* TestConvention.swift */; };
 		D59FF65123D1E2D800206713 /* TestConvention.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59FF64F23D1E2D800206713 /* TestConvention.swift */; };
+		D5A8C7CF24418E4200CAEF4C /* TestControlBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A8C7CE24418E4200CAEF4C /* TestControlBinding.swift */; };
 		D5ABE71024172D6000B9BB98 /* TestSubclass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5ABE70F24172D6000B9BB98 /* TestSubclass.swift */; };
 		D5ABE71124172D6000B9BB98 /* TestSubclass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5ABE70F24172D6000B9BB98 /* TestSubclass.swift */; };
 		D5ABE7132417348100B9BB98 /* DefineLoad.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5ABE7122417348100B9BB98 /* DefineLoad.swift */; };
@@ -76,6 +77,7 @@
 		D57C354823C7196B000B6A3C /* TestsBridgingHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestsBridgingHeader.h; sourceTree = "<group>"; };
 		D57C354923C83B89000B6A3C /* TestRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestRequest.swift; sourceTree = "<group>"; };
 		D59FF64F23D1E2D800206713 /* TestConvention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestConvention.swift; sourceTree = "<group>"; };
+		D5A8C7CE24418E4200CAEF4C /* TestControlBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestControlBinding.swift; sourceTree = "<group>"; };
 		D5ABE70F24172D6000B9BB98 /* TestSubclass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSubclass.swift; sourceTree = "<group>"; };
 		D5ABE7122417348100B9BB98 /* DefineLoad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefineLoad.swift; sourceTree = "<group>"; };
 		D5C3AC0D242EE623004D5762 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 			isa = PBXGroup;
 			children = (
 				D54183DD206BBA7B00DD25CE /* Info.plist */,
+				D5A8C7CE24418E4200CAEF4C /* TestControlBinding.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -514,6 +517,7 @@
 				D55ADB0F23C06C6600AD6DB2 /* TestDefineManager.swift in Sources */,
 				D57C354A23C83B89000B6A3C /* TestRequest.swift in Sources */,
 				D5ABE71024172D6000B9BB98 /* TestSubclass.swift in Sources */,
+				D5A8C7CF24418E4200CAEF4C /* TestControlBinding.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
