@@ -16,7 +16,7 @@ extension DispatchQueue {
     }
 }
 
-class Sub1API: RFAPI {
+fileprivate class Sub1API: RFAPI {
 
     override func preprocessingRequest(parametersRef: UnsafeMutablePointer<NSMutableDictionary?>, httpHeadersRef: UnsafeMutablePointer<NSMutableDictionary?>, parameters: [AnyHashable : Any]?, define: RFAPIDefine, context: RFAPIRequestConext) {
         XCTAssertEqual(DispatchQueue.currentQueueLabel, context.userInfo?["QueueName"] as? String)
@@ -39,7 +39,7 @@ class Sub1API: RFAPI {
     }
 }
 
-class TestSubclass: XCTestCase {
+private class TestSubclass: XCTestCase {
     func testFunctionThread() {
         let api = Sub1API()
         api.loadTestDefines()

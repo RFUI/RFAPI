@@ -16,7 +16,7 @@ class TestAPI: RFAPI {
     }
 }
 
-class TestRequest: XCTestCase {
+private class TestRequest: XCTestCase {
 
     // No default base url
     lazy var api: TestAPI = {

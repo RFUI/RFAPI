@@ -8,7 +8,7 @@
 
 import XCTest
 
-class TestConvention: XCTestCase {
+private class TestConvention: XCTestCase {
 
     // Has default base url
     lazy var api: TestAPI = {
