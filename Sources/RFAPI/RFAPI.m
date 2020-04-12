@@ -417,13 +417,11 @@ RFInitializingRootForNSObject
         }
 
         task.success = nil;
-        BOOL shouldContinue = [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
-        if (shouldContinue) {
+        BOOL shouldContinueErrorHandling = [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
+        if (shouldContinueErrorHandling && !isCancel) {
             RFAPIRequestFailureCallback fcb = task.failure;
             if (fcb) {
-                if (!isCancel) {
-                    fcb(task, error);
-                }
+                fcb(task, error);
             }
             else {
                 if (messageManager) {
