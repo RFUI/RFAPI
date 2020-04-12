@@ -69,7 +69,6 @@ class TestViewController: UIViewController,
         ]
     }
 
-    lazy var API = TestAPI()
     weak var lastTask: RFAPITask?
 
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -101,7 +100,8 @@ class TestViewController: UIViewController,
             let define = RFAPIDefine()
             define.path = Bundle.main.url(forResource: request.title, withExtension: "data")?.absoluteString
             define.name = RFAPIName(rawValue: request.APIName)
-            lastTask = API.request(define: define) { c in
+            lastTask = TestAPI.shared.request(define: define) { c in
+                c.groupIdentifier = apiGroupIdentifier
                 c.success { [weak self] _, responseObject in
                     self?.display(response: responseObject)
                 }
@@ -111,7 +111,8 @@ class TestViewController: UIViewController,
             }
         }
         else {
-            lastTask = API.request(name: request.APIName) { c in
+            lastTask = TestAPI.shared.request(name: request.APIName) { c in
+                c.groupIdentifier = apiGroupIdentifier
                 c.loadMessage = request.message
                 c.loadMessageShownModal = request.modal
                 c.success { [weak self] _, responseObject in

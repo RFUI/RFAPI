@@ -28,9 +28,11 @@ class ControlBindingViewController: UIViewController {
     }
 
     @IBAction func refresh(_ sender: Any) {
-        TestAPI().request(name: "Timeout") { c in
+        TestAPI.shared.request(name: "Timeout") { c in
+            c.timeoutInterval = 3
             c.loadMessage = ""
             c.bindControls = controls
+            c.groupIdentifier = apiGroupIdentifier
         }
     }
 }
