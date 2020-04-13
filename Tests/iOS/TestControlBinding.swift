@@ -41,7 +41,7 @@ private class TestControlBinding: XCTestCase {
         let _ = api.request(name: "Delay") { c in
             c.timeoutInterval = 1
             c.parameters = ["time": 10]
-            c.bindControls = [button, barItem, activityIndicator, refreshControl]
+            c.bindControls = [button, barItem, activityIndicator, refreshControl, customControl]
             c.complation { _, _, _ in
                 XCTAssertTrue(button.isEnabled)
                 XCTAssertTrue(barItem.isEnabled)
