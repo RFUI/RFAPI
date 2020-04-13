@@ -45,10 +45,12 @@
                 if (enabled) [(UIActivityIndicatorView *)anyControl stopAnimating];
                 else [(UIActivityIndicatorView *)anyControl startAnimating];
             }
+#if !TARGET_OS_TV
             else if ([(NSObject *)anyControl isKindOfClass:UIRefreshControl.class]) {
                 if (enabled) [(UIRefreshControl *)anyControl endRefreshing];
                 else [(UIRefreshControl *)anyControl beginRefreshing];
             }
+#endif
             else if ([(NSObject *)anyControl respondsToSelector:@selector(setEnabled:)]) {
                 [(UIControl *)anyControl setEnabled:enabled];
             }

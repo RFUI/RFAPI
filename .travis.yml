@@ -9,7 +9,7 @@ env:
   - RFCI_PRODUCT_NAME="RFAPI"
 matrix:
   include:
-    - osx_image: xcode11.3
+    - osx_image: xcode11.4
       env: RFCI_TASK="POD_LINT"
     - osx_image: xcode10
       env:

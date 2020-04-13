@@ -130,13 +130,13 @@ class TestViewController: UIViewController,
                         try! data.appendPart(withFileURL: Bundle.main.executableURL!, name: "eXe")
                         data.throttleBandwidth(withPacketSize: 3000, delay: 0.1)
                     }
-                    c.uploadProgress = { [weak self] task, progress in
+                    c.uploadProgress = { [weak self] _, progress in
                         guard let sf = self else { return }
                         DispatchQueue.main.async {
                             sf.display(response: String(format: "Uploading %.1f%%", progress.fractionCompleted * 100))
                         }
                     }
-                    c.downloadProgress = { [weak self] task, progress in
+                    c.downloadProgress = { [weak self] _, progress in
                         guard let sf = self else { return }
                         DispatchQueue.main.async {
                             sf.display(response: String(format: "Downloaing %.1f%%", progress.fractionCompleted * 100))
