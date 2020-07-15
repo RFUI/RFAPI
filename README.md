@@ -1,10 +1,14 @@
 # RFAPI
 
+<!-- markdownlint-disable MD033 inline html -->
+
 [![Build Status](https://img.shields.io/travis/RFUI/RFAPI.svg?style=flat-square&colorA=333333&colorB=6600cc)](https://travis-ci.com/RFUI/RFAPI)
 [![Codecov](https://img.shields.io/codecov/c/github/RFUI/RFAPI.svg?style=flat-square&colorA=333333&colorB=6600cc)](https://codecov.io/gh/RFUI/RFAPI)
 [![CocoaPods](https://img.shields.io/cocoapods/v/RFAPI.svg?style=flat-square&colorA=333333&colorB=6600cc)](https://cocoapods.org/pods/RFAPI)
 
 <base href="//github.com/RFUI/RFAPI/blob/develop/" />
+
+<small>*English* [简体中文 :cn:](README~zh-hans.md)</small>
 
 RFAPI is a full-featured URL session wrapper designed for API requests. It's easy to use and powerfull.
 
@@ -13,7 +17,6 @@ RFAPI is a full-featured URL session wrapper designed for API requests. It's eas
 ## CocoaPods Install
 
 ```ruby
-
 pod 'RFAPI'
 ```
 
