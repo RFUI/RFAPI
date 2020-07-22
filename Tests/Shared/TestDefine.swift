@@ -8,7 +8,7 @@
 
 import XCTest
 
-class TestDefine: XCTestCase {
+private class TestDefine: XCTestCase {
 
     func testMerge() {
         let r1 = RFAPIDefine()

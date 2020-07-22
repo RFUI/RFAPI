@@ -46,8 +46,11 @@
 /// Serialized response object from server response.
 @property (nullable) id responseObject;
 
-/// An error object that indicates why the task failed.
+/// An error object that indicates why the task is unsuccessful.
 @property (nullable) NSError *error;
+
+/// Whether the request completed successfully.
+@property (readonly) BOOL isSuccess;
 
 /// This property is the dictionary pass through the request context.
 @property (nullable) NSDictionary *userInfo;
@@ -159,7 +162,7 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
 
  Default implementation just return YES.
  
- This method is called on the processingQueue.
+ This method is called on the completionQueue.
 
  @return Returning YES will continue error processing and continue with the callback processing of the request, if NO processing ends immediately.
  */
@@ -176,6 +179,22 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
  @param error Optional error.
  */
 - (BOOL)isSuccessResponse:(id __nullable __strong *__nonnull)responseObjectRef error:(NSError *__nullable __autoreleasing *__nonnull)error NS_SWIFT_NOTHROW;
+
+#pragma mark - Localization
+
+/**
+ Make localized error object.
+
+ Localized version of strings reads from the default table in the main bundle.
+ */
++ (nonnull NSError *)localizedErrorWithDoomain:(nonnull NSErrorDomain)domain code:(NSInteger)code underlyingError:(nullable NSError *)error descriptionKey:(nonnull NSString *)descriptionKey descriptionValue:(nonnull NSString *)descriptionValue reasonKey:(nullable NSString *)reasonKey reasonValue:(nullable NSString *)reasonValue suggestionKey:(nullable NSString *)suggestionKey suggestionValue:(nullable NSString *)suggestionValue url:(nullable NSURL *)url;
+
+/**
+ The localized string loaded from main bundle's default table.
+
+ key and value must not be nil at the same time.
+ */
++ (nonnull NSString *)localizedStringForKey:(nullable NSString *)key value:(nullable NSString *)value;
 
 @end
 
@@ -233,16 +252,27 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 /// Note this block is called on the session queue, not the main queue.
 @property (nullable) RFAPIRequestProgressBlock downloadProgress;
 
+/**
+ You could pass some UI elements here.
+
+ For UIControl or any object response to `setEnabled:`, it will set enabled to NO when the request starts and restore to YES after request is finished.
+ For UIRefreshControl, it will try call `beginRefreshing` when the request starts and `endRefreshing` after request is finished.
+ For UIActivityIndicatorView, it will call `startAnimating` when the request starts and `stopAnimating` after request is finished.
+ */
+@property (nullable) NSArray<id> *bindControls;
+
 /// A block object to be executed when the request finishes successfully.
 @property (nullable) RFAPIRequestSuccessCallback success NS_SWIFT_NAME(successCallback);
 
 /// A block object to be executed when the request finishes unsuccessfully.
+/// It will not be called if the request is cancelled.
 @property (nullable) RFAPIRequestFailureCallback failure NS_SWIFT_NAME(failureCallback);
 
 /// A block object to be executed when the request is complated.
 @property (nullable) RFAPIRequestFinishedCallback finished NS_SWIFT_NAME(finishedCallback);
 
 /// A block object to be executed when the request is complated.
+/// Error will be nil if the request is cancelled. At this time, you could get the error object on the task object.
 @property (nullable) RFAPIRequestCombinedCompletionCallback combinedComplation NS_SWIFT_NAME(complationCallback);
 
 /// For debugging purposes, delaying the sending of network requests.

@@ -96,5 +96,33 @@
 			<string>https://httpbin.org/delay/10</string>
 		</dict>
 	</dict>
+	<key>@ Error</key>
+	<dict>
+		<key>NoPath</key>
+		<dict/>
+		<key>InvaildPath</key>
+		<dict>
+			<key>Path</key>
+			<string>null.json?测=❌</string>
+		</dict>
+		<key>MismatchObject</key>
+		<dict>
+			<key>Path</key>
+			<string>array_sample.json</string>
+			<key>Response Type</key>
+			<integer>2</integer>
+			<key>Response Class</key>
+			<string>RFDTestEntity</string>
+		</dict>
+		<key>MismatchArray</key>
+		<dict>
+			<key>Path</key>
+			<string>object_sample.json</string>
+			<key>Response Type</key>
+			<integer>3</integer>
+			<key>Response Class</key>
+			<string>RFDTestEntity</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

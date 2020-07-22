@@ -28,6 +28,46 @@
     [self.uploadProgress removeObserver:self forKeyPath:NSStringFromSelector(@selector(fractionCompleted))];
 }
 
+- (void)updateBindControlsEnabled:(BOOL)enabled {
+    if (!self.bindControls.count) return;
+    @weakify(self)
+    dispatch_block_t work = ^{
+        @strongify(self)
+        if (!self) return;
+        NSArray *controls = self.bindControls.copy;
+        for (id anyControl in controls) {
+#if TARGET_OS_OSX
+            if ([(NSObject *)anyControl respondsToSelector:@selector(setEnabled:)]) {
+                [(NSControl *)anyControl setEnabled:enabled];
+            }
+#else
+            if ([(NSObject *)anyControl isKindOfClass:UIActivityIndicatorView.class]) {
+                if (enabled) [(UIActivityIndicatorView *)anyControl stopAnimating];
+                else [(UIActivityIndicatorView *)anyControl startAnimating];
+            }
+#if !TARGET_OS_TV
+            else if ([(NSObject *)anyControl isKindOfClass:UIRefreshControl.class]) {
+                if (enabled) [(UIRefreshControl *)anyControl endRefreshing];
+                else [(UIRefreshControl *)anyControl beginRefreshing];
+            }
+#endif
+            else if ([(NSObject *)anyControl respondsToSelector:@selector(setEnabled:)]) {
+                [(UIControl *)anyControl setEnabled:enabled];
+            }
+#endif
+        }
+        if (enabled) {
+            self.bindControls = nil;
+        }
+    };
+    if (NSThread.isMainThread) {
+        work();
+    }
+    else {
+        dispatch_async(dispatch_get_main_queue(), work);
+    }
+}
+
 #pragma mark -
 
 - (NSURLRequest *)currentRequest {

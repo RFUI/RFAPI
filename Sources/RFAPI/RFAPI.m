@@ -10,10 +10,6 @@ NSErrorDomain const RFAPIErrorDomain = @"RFAPIErrorDomain";
 NSString *const RFAPIRequestArrayParameterKey = @"_RFParmArray_";
 NSString *const RFAPIRequestForceQuryStringParametersKey = @"_RFParmForceQuryString_";
 
-NSString *RFAPILocalizedString(NSString *key, NSString *value) {
-    return [NSBundle.mainBundle localizedStringForKey:key value:value table:nil];
-}
-
 // Avoid create many concurrent GCD queue.
 static dispatch_queue_t api_default_processing_queue() {
     static dispatch_queue_t queue;
@@ -109,14 +105,12 @@ RFInitializingRootForNSObject
 
 - (void)cancelOperationWithIdentifier:(nullable NSString *)identifier {
     for (id<RFAPITask>op in [self operationsWithIdentifier:identifier]) {
-        _dout_debug(@"Cancel HTTP request operation(%p) with identifier: %@", (void *)op, identifier);
         [op cancel];
     }
 }
 
 - (void)cancelOperationsWithGroupIdentifier:(nullable NSString *)identifier {
     for (id<RFAPITask>op in [self operationsWithGroupIdentifier:identifier]) {
-        _dout_debug(@"Cancel HTTP request operation(%p) with group identifier: %@", (void *)op, identifier);
         [op cancel];
     }
 }
@@ -145,7 +139,7 @@ RFInitializingRootForNSObject
     if (!define.name) {
         define.name = APIName;
     }
-    RFAssert(define, @"Can not find an API with name: %@.", APIName)
+    NSAssert(define, @"Can not find an API with name: %@.", APIName);
     if (!define) return nil;
     return [self requestWithDefine:define context:contextBlock];
 }
@@ -158,7 +152,7 @@ RFInitializingRootForNSObject
     NSString *identifier = context.identifier;
     if (!identifier) {
         identifier = APIDefine.name;
-        RFAssert(identifier, @"Context identifier and define name both are nil.")
+        NSAssert(identifier, @"Context identifier and define name both are nil.");
         context.identifier = identifier;
     }
     if (!context.activityMessage && context.loadMessage) {
@@ -176,15 +170,11 @@ RFInitializingRootForNSObject
     NSError *e = nil;
     NSMutableURLRequest *request = [self _RFAPI_makeURLRequestWithDefine:define context:context error:&e];
     if (!request) {
-        RFAPILogError_(@"无法创建请求: %@", e)
-        NSMutableDictionary *eInfo = [NSMutableDictionary.alloc initWithCapacity:4];
-        eInfo[NSLocalizedDescriptionKey] = @"内部错误，无法创建请求";
-        eInfo[NSLocalizedFailureReasonErrorKey] = @"很可能是应用 bug";
-        eInfo[NSLocalizedRecoverySuggestionErrorKey] = @"请再试一次，如果依旧请尝试重启应用。给您带来不便，敬请谅解";
-        if (e) {
-            eInfo[NSUnderlyingErrorKey] = e;
-        }
-        NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:eInfo];
+#if RFDEBUG
+        NSString *debugFormat = [self.class localizedStringForKey:@"RFAPI.Debug.CannotCreateRequestError" value:@"Cannot create request: %@"];
+        RFAPILogError_(debugFormat, e)
+#endif
+        NSError *error = [self.class localizedErrorWithDoomain:NSURLErrorDomain code:NSURLErrorCancelled underlyingError:e descriptionKey:@"RFAPI.Error.CannotCreateRequest" descriptionValue:@"Internal error, unable to create request" reasonKey:@"RFAPI.Error.CannotCreateRequestReason" reasonValue:@"It seems to be an application bug" suggestionKey:@"RFAPI.Error.CannotCreateRequestSuggestion" suggestionValue:@"Please try again. If it still doesn't work, try restarting the application" url:request.URL];
         [self _RFAPI_executeContext:context failure:error];
         return nil;
     }
@@ -194,6 +184,7 @@ RFInitializingRootForNSObject
     task.manager = self;
     task.define = define;
     [self transferContext:context toTask:task];
+    [task updateBindControlsEnabled:NO];
 
     // Start request
     RFNetworkActivityMessage *message = task.activityMessage;
@@ -222,12 +213,13 @@ RFInitializingRootForNSObject
     task.activityMessage = context.activityMessage;
     task.uploadProgressBlock = context.uploadProgress;
     task.downloadProgressBlock = context.downloadProgress;
+    task.bindControls = context.bindControls;
     task.success = context.success;
     task.failure = context.failure;
     task.complation = context.finished;
     task.combinedComplation = context.combinedComplation;
-    task.userInfo = context.userInfo;
     task.debugDelayRequestSend = context.debugDelayRequestSend;
+    task.userInfo = context.userInfo;
 }
 
 #pragma mark - Build Request
@@ -362,6 +354,10 @@ RFInitializingRootForNSObject
             case RFAPIDefineResponseExpectObjects: {
                 NSError *error = nil;
                 id modelObject = [self.modelTransformer transformResponse:(id)responseObject toType:type kind:task.define.responseClass error:&error];
+                if (!self.modelTransformer) {
+                    NSLog(@"⚠️ Response except object, but modelTransformer has not been set.");
+                    modelObject = responseObject;
+                }
                 if (error) {
                     [self _RFAPI_executeTaskCallback:task failure:error];
                 }
@@ -379,19 +375,22 @@ RFInitializingRootForNSObject
 
 - (void)_RFAPI_executeTaskCallback:(nonnull _RFAPISessionTask *)task success:(nullable id)responseObject {
     task.responseObject = responseObject;
+    task.isSuccess = YES;
     dispatch_group_async(self.completionGroup, self.completionQueue, ^{
-        task.failure = nil;
-        RFAPIRequestSuccessCallback scb = task.success;
-        if (scb) {
-            task.success = nil;
-            scb(task, responseObject);
-        }
+        [task updateBindControlsEnabled:YES];
         RFNetworkActivityMessage *message = task.activityMessage;
         if (message) {
             dispatch_sync_on_main(^{
                 [self.networkActivityIndicatorManager hideMessage:message];
             });
         }
+
+        RFAPIRequestSuccessCallback scb = task.success;
+        if (scb) {
+            task.success = nil;
+            scb(task, responseObject);
+        }
+        task.failure = nil;
         RFAPIRequestFinishedCallback ccb = task.complation;
         if (ccb) {
             task.complation = nil;
@@ -407,19 +406,24 @@ RFInitializingRootForNSObject
 
 - (void)_RFAPI_executeTaskCallback:(nonnull _RFAPISessionTask *)task failure:(nonnull NSError *)error {
     task.error = error;
-    BOOL shouldContinue = [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
-
+    task.isSuccess = NO;
+    BOOL isCancel = (error.code == NSURLErrorCancelled && [error.domain isEqualToString:NSURLErrorDomain]);
     dispatch_group_async(self.completionGroup, self.completionQueue, ^{
-        task.success = nil;
+        [task updateBindControlsEnabled:YES];
         RFMessageManager *messageManager = self.networkActivityIndicatorManager;
-        if (shouldContinue) {
-            BOOL isCancel = (error.code == NSURLErrorCancelled && [error.domain isEqualToString:NSURLErrorDomain]);
+        RFNetworkActivityMessage *message = task.activityMessage;
+        if (message && messageManager) {
+            dispatch_sync_on_main(^{
+                [messageManager hideMessage:message];
+            });
+        }
 
+        task.success = nil;
+        BOOL shouldContinueErrorHandling = [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
+        if (shouldContinueErrorHandling && !isCancel) {
             RFAPIRequestFailureCallback fcb = task.failure;
             if (fcb) {
-                if (!isCancel) {
-                    fcb(task, error);
-                }
+                fcb(task, error);
             }
             else {
                 if (messageManager) {
@@ -430,13 +434,6 @@ RFInitializingRootForNSObject
             }
         }
         task.failure = nil;
-
-        RFNetworkActivityMessage *message = task.activityMessage;
-        if (message && messageManager) {
-            dispatch_sync_on_main(^{
-                [messageManager hideMessage:message];
-            });
-        }
         RFAPIRequestFinishedCallback ccb = task.complation;
         if (ccb) {
             task.complation = nil;
@@ -445,7 +442,7 @@ RFInitializingRootForNSObject
         RFAPIRequestCombinedCompletionCallback cbcb = task.combinedComplation;
         if (cbcb) {
             task.combinedComplation = nil;
-            cbcb(task, nil, error);
+            cbcb(task, nil, isCancel ? nil : error);
         }
     });
 }
@@ -474,6 +471,37 @@ RFInitializingRootForNSObject
 
 - (BOOL)isSuccessResponse:(id  _Nullable __strong *)responseObjectRef error:(NSError * _Nullable __autoreleasing *)error {
     return YES;
+}
+
+#pragma mark -
+
++ (NSError *)localizedErrorWithDoomain:(NSErrorDomain)domain code:(NSInteger)code underlyingError:(NSError *)error descriptionKey:(NSString *)descriptionKey descriptionValue:(NSString *)descriptionValue reasonKey:(NSString *)reasonKey reasonValue:(NSString *)reasonValue suggestionKey:(NSString *)suggestionKey suggestionValue:(NSString *)suggestionValue url:(NSURL *)url {
+    NSMutableDictionary *eInfo = [NSMutableDictionary.alloc initWithCapacity:5];
+    eInfo[NSLocalizedDescriptionKey] = [self localizedStringForKey:descriptionKey value:descriptionValue];
+    if (reasonKey || reasonValue) {
+        NSString *reason = [self localizedStringForKey:reasonKey value:reasonValue];
+        if (reason.length) {
+            eInfo[NSLocalizedFailureReasonErrorKey] = reason;
+        }
+    }
+    if (suggestionKey || suggestionValue) {
+        NSString *suggestion = [self localizedStringForKey:suggestionKey value:suggestionValue];
+        if (suggestion.length) {
+            eInfo[NSLocalizedRecoverySuggestionErrorKey] = suggestion;
+        }
+    }
+    if (error) {
+        eInfo[NSUnderlyingErrorKey] = error;
+    }
+    if (url) {
+        eInfo[NSURLErrorKey] = url;
+    }
+    return [NSError errorWithDomain:domain code:code userInfo:eInfo];
+}
+
++ (NSString *)localizedStringForKey:(NSString *)key value:(NSString *)value {
+    NSParameterAssert(key || value);
+    return [NSBundle.mainBundle localizedStringForKey:key value:value table:nil];
 }
 
 @end

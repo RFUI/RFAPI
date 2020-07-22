@@ -12,8 +12,6 @@
 
 typedef NSString * RFAPIName NS_EXTENSIBLE_STRING_ENUM;
 
-// todo: Default define
-
 /**
  A define object is used to describe all aspects of an API: what the URL is, how to send the request sent, how to handle the response, and so on.
  */

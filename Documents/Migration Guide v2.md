@@ -1,6 +1,6 @@
 # RFAPI v2 升级指南
 
-> *Because there should be no non-Chinese developers using this library before, this guide is not available in English at this time.*
+> *Because there should be no non-Chinese developers using this library before, this guide is not available in English.*
 
 v1 到 v2 几乎全部重写，内部变化很大，但是实际项目需要调整的地方应该不多。
 
@@ -44,5 +44,4 @@ v1 请求有两个方法，正常请求和表单上传请求，正常请求有�
 
 ## 国际化
 
-// todo
-<!-- v1 的很多错误信息是硬编码在代码中的 -->
+v1 的错误信息是硬编码在代码中的，且是中文；现在可以在 app 中默认的 Localizable.strings 定义。 

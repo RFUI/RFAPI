@@ -20,3 +20,8 @@ target 'Test-macOS' do
     platform :osx, '10.13'
     pod 'RFAPI', :path => '.'
 end
+
+target 'Test-tvOS' do
+    platform :tvos, '12.0'
+    pod 'RFAPI', :path => '.'
+end

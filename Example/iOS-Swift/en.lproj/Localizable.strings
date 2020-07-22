@@ -1,0 +1,29 @@
+
+"ListSection.Sample"  = "Sample Requests";
+"ListSection.Local"   = "Local Files";
+"ListSection.HTTPBin" = "HTTPBin";
+
+"HUDState.Waiting"   = "Waiting...";
+"HUDState.Loadding"  = "Loadding...";
+"HUDState.Uploading" = "Uploading...";
+
+/// - RFAPI Build-in
+
+"RFAPI.Error.GeneralFailureReasonApp" = "It seems to be an application bug";
+"RFAPI.Error.GeneralFailureReasonServer" = "It may be the server being upgraded or maintained, or it may be an application bug";
+"RFAPI.Error.GeneralRecoverySuggestion" = "Please try again later. Check for a new version if this error persists";
+
+"RFAPI.Debug.CannotCreateRequestError" = "Cannot create request: %@";
+"RFAPI.Error.CannotCreateRequestDescription" = "Internal error, unable to create request";
+"RFAPI.Error.CannotCreateRequestReason" = "It seems to be an application bug";
+"RFAPI.Error.CannotCreateRequestSuggestion" = "Please try again. If it still doesn't work, try restarting the application";
+"RFAPI.Error.DefineNoPath" = "API define path is nil";
+"RFAPI.Debug.CannotJoinPathToBaseURL" = "Unable to join path %1$@ to %2$@, please check the API define";
+
+/// RFAPIJSONModelTransformer
+
+"RFAPI.Error.UnexpectedServerResponse" = "Unexpected server response";
+"RFAPI.Debug.ObjectResponseTypeMismatchClass" = "Server response is %@ other than a dictionary\nPlease check your code first, then contart the server staff if the sever does not return as required";
+"RFAPI.Debug.ObjectResponseConvertToModelError" = "Cannot convert response to model: %@\nPlease check your code first, then contart the server staff if the sever does not return as required";
+"RFAPI.Debug.ArrayResponseTypeMismatchClass" = "Server response is %@ other than an array\nPlease check your code first, then contart the server staff if the sever does not return as required";
+"RFAPI.Debug.ArrayResponseConvertToModelError" = "Cannot convert elements in the array to model: %@\nPlease check your code first, then contart the server staff if the sever does not return as required";

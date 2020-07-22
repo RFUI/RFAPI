@@ -92,6 +92,7 @@ STAGE_MAIN() {
         pod install
         XC_TestMac
         XC_TestAutoIOS "Test-iOS"
+        XC_Test "Test-tvOS" "platform=tvOS Simulator,name=Apple TV"
     else
         logError "Unexpected CI task: $RFCI_TASK"
     fi

@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name             = 'RFAPI'
-  s.version          = '2.0.0-beta.1'
-  s.summary          = 'API Manager.'
+  s.version          = '2.0.0-beta.2'
+  s.summary          = 'RFAPI is a network request library specially designed for API requests. It is a URL session wrapper base on AFNetworking.'
 
   s.homepage         = 'https://github.com/RFUI/RFAPI'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }

@@ -39,6 +39,10 @@ typedef void(^RFAPITaskComplation)(id __nullable responseObject, NSURLResponse *
 @property (nullable) NSString *groupIdentifier;
 @property (nullable) RFNetworkActivityMessage *activityMessage;
 
+/// Set nil when task finished.
+@property (nullable) NSArray<id> *bindControls;
+- (void)updateBindControlsEnabled:(BOOL)enabled;
+
 /// From request context.
 @property (nullable) NSDictionary *userInfo;
 @property NSTimeInterval debugDelayRequestSend;
@@ -50,6 +54,7 @@ typedef void(^RFAPITaskComplation)(id __nullable responseObject, NSURLResponse *
 @property (readonly, copy, nullable, nonatomic) NSURLResponse *response;
 @property (nullable) id responseObject;
 @property (nullable) NSError *error;
+@property BOOL isSuccess;
 
 /// 
 @property (readonly, nonatomic) BOOL isEnd;

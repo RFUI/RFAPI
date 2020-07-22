@@ -8,11 +8,22 @@
 
 import UIKit
 
+func L(_ value: String, key: String, comment: String = "") -> String {
+    return NSLocalizedString(key, tableName: nil, bundle: Bundle.main, value: value, comment: comment)
+}
+
 class TestRequestObject {
     var title = ""
     var APIName = ""
     var message: String?
     var modal = false
+
+    convenience init(title: String, api: String, message: String? = "") {
+        self.init()
+        self.title = title
+        self.APIName = api
+        self.message = message
+    }
 }
 
 class TestViewController: UIViewController,
@@ -34,54 +45,30 @@ class TestViewController: UIViewController,
     var items = [ListSection]()
     var uploadRequest: TestRequestObject?
     func makeListItems() {
-        let r1 = TestRequestObject()
-        r1.title = "Null"
-        r1.APIName = "NullTest"
-        r1.message = "Request: Null"
-
-        let r2 = TestRequestObject()
-        r2.title = "An object"
-        r2.APIName = "ObjSample"
-        r2.message = ""
-
-        let r3 = TestRequestObject()
-        r3.title = "Objects"
-        r3.APIName = "ObjArraySample"
-        r3.message = "Loadding..."
+        let r1 = TestRequestObject(title: "Null", api: "NullTest", message: "Request: Null")
+        let r2 = TestRequestObject(title: "An object", api: "ObjSample", message: "")
+        let r3 = TestRequestObject(title: "Objects", api: "ObjArraySample", message: L("Loadding...", key: "HUDState.Loadding"))
         r3.modal = true
-
-        let r4 = TestRequestObject()
-        r4.title = "Empty object"
-        r4.APIName = "ObjEmpty"
-        // r4 no progress
-
-        let r5 = TestRequestObject()
-        r5.title = "Fail request"
-        r5.APIName = "NotFound"
-
-        let r6 = TestRequestObject()
-        r6.title = "big_json"
-        r6.APIName = "local"
-
-        let r7 = TestRequestObject()
-        r7.title = "Time out"
-        r7.APIName = "Timeout"
-        r7.message = "Waiting..."
-
-        let r8 = TestRequestObject()
-        r8.title = "Upload"
-        r8.APIName = "Upload"
-        r8.message = "Uploading..."
+        let r4 = TestRequestObject(title: "Empty object", api: "ObjEmpty", message: nil)
+        let r5 = TestRequestObject(title: "Fail request", api: "NotFound")
+        let r6 = TestRequestObject(title: "big_json", api: "local")
+        let r7 = TestRequestObject(title: "Time out", api: "Timeout", message: L("Waiting...", key: "HUDState.Waiting"))
+        let r8 = TestRequestObject(title: "Upload", api: "Upload", message: L("Uploading...", key: "HUDState.Uploading"))
         uploadRequest = r8
 
+        let r10 = TestRequestObject(title: "Path not set", api: "NoPath")
+        let r11 = TestRequestObject(title: "Path invalided", api: "InvaildPath")
+        let r12 = TestRequestObject(title: "Mismatch object", api: "MismatchObject")
+        let r13 = TestRequestObject(title: "Mismatch array", api: "MismatchArray")
+
         items = [
-            ListSection(title: "Sample Request", objects: [r1, r2, r3, r4, r5]),
-            ListSection(title: "Local Files", objects: [r6]),
-            ListSection(title: "HTTPBin", objects: [r7, r8]),
+            ListSection(title: L("Sample Requests", key: "ListSection.Sample"), objects: [r1, r2, r3, r4, r5]),
+            ListSection(title: L("Local Files", key: "ListSection.Local", comment: "Load file content."), objects: [r6]),
+            ListSection(title: L("HTTPBin", key: "ListSection.HTTPBin"), objects: [r7, r8]),
+            ListSection(title: L("Error", key: "ListSection.Error"), objects: [r10, r11, r12, r13]),
         ]
     }
 
-    lazy var API = TestAPI()
     weak var lastTask: RFAPITask?
 
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -113,7 +100,8 @@ class TestViewController: UIViewController,
             let define = RFAPIDefine()
             define.path = Bundle.main.url(forResource: request.title, withExtension: "data")?.absoluteString
             define.name = RFAPIName(rawValue: request.APIName)
-            lastTask = API.request(define: define) { c in
+            lastTask = TestAPI.shared.request(define: define) { c in
+                c.groupIdentifier = apiGroupIdentifier
                 c.success { [weak self] _, responseObject in
                     self?.display(response: responseObject)
                 }
@@ -123,7 +111,8 @@ class TestViewController: UIViewController,
             }
         }
         else {
-            lastTask = API.request(name: request.APIName) { c in
+            lastTask = TestAPI.shared.request(name: request.APIName) { c in
+                c.groupIdentifier = apiGroupIdentifier
                 c.loadMessage = request.message
                 c.loadMessageShownModal = request.modal
                 c.success { [weak self] _, responseObject in
@@ -141,13 +130,13 @@ class TestViewController: UIViewController,
                         try! data.appendPart(withFileURL: Bundle.main.executableURL!, name: "eXe")
                         data.throttleBandwidth(withPacketSize: 3000, delay: 0.1)
                     }
-                    c.uploadProgress = { [weak self] task, progress in
+                    c.uploadProgress = { [weak self] _, progress in
                         guard let sf = self else { return }
                         DispatchQueue.main.async {
                             sf.display(response: String(format: "Uploading %.1f%%", progress.fractionCompleted * 100))
                         }
                     }
-                    c.downloadProgress = { [weak self] task, progress in
+                    c.downloadProgress = { [weak self] _, progress in
                         guard let sf = self else { return }
                         DispatchQueue.main.async {
                             sf.display(response: String(format: "Downloaing %.1f%%", progress.fractionCompleted * 100))

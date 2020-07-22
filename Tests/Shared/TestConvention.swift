@@ -8,15 +8,13 @@
 
 import XCTest
 
-class TestConvention: XCTestCase {
+private class TestConvention: XCTestCase {
 
     // Has default base url
     lazy var api: TestAPI = {
         let api = TestAPI()
         api.baseURL = URL(string: "https://httpbin.org")
-        let defineConfigURL = Bundle(for: type(of: self)).url(forResource: "test_defines", withExtension: "plist")!
-        let defineConfig = NSDictionary(contentsOf: defineConfigURL) as! [String: [String: Any]]
-        api.defineManager.setDefinesWithRulesInfo(defineConfig)
+        api.loadTestDefines()
         return api
     }()
 
@@ -122,5 +120,6 @@ class TestConvention: XCTestCase {
         }
         XCTAssertNotNil(apiInstance)
         wait(for: [requestComplateExpectation, managerDeallocExpectation], timeout: 10, enforceOrder: true)
+        XCTAssertNil(apiInstance)
     }
 }

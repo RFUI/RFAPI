@@ -1,0 +1,33 @@
+
+/* Class = "UINavigationItem"; title = "RFAPI"; ObjectID = "AVC-BL-cRR"; */
+"AVC-BL-cRR.title" = "RFAPI";
+
+/* Class = "UIBarButtonItem"; title = "Item"; ObjectID = "EPc-r0-xf1"; */
+"EPc-r0-xf1.title" = "Item";
+
+/* Class = "UINavigationItem"; title = "Requests"; ObjectID = "J6L-JP-3hQ"; */
+"J6L-JP-3hQ.title" = "请求";
+
+/* Class = "UILabel"; text = "Control Binding"; ObjectID = "SoU-6N-unl"; */
+"SoU-6N-unl.text" = "控件绑定";
+
+/* Class = "UIButton"; disabledTitle = "Loading"; ObjectID = "TWh-Mz-u8r"; */
+"TWh-Mz-u8r.disabledTitle" = "加载中";
+
+/* Class = "UIButton"; normalTitle = "Start"; ObjectID = "TWh-Mz-u8r"; */
+"TWh-Mz-u8r.normalTitle" = "开始";
+
+/* Class = "UITextView"; text = "Resopnse"; ObjectID = "VNd-yL-ZI4"; */
+"VNd-yL-ZI4.text" = "请求响应";
+
+/* Class = "UILabel"; text = "Title"; ObjectID = "XT4-OY-1f4"; */
+"XT4-OY-1f4.text" = "Title";
+
+/* Class = "UIBarButtonItem"; title = "Menu"; ObjectID = "YX8-Sl-RrG"; */
+"YX8-Sl-RrG.title" = "菜单";
+
+/* Class = "UINavigationItem"; title = "Control Binding"; ObjectID = "YnI-DD-juW"; */
+"YnI-DD-juW.title" = "控件绑定";
+
+/* Class = "UILabel"; text = "Make Requests"; ObjectID = "sGW-gK-m8l"; */
+"sGW-gK-m8l.text" = "创建请求";

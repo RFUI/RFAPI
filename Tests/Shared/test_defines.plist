@@ -86,6 +86,22 @@
 			<key>Path</key>
 			<string>https://httpbin.org/delay/{time}</string>
 		</dict>
+		<key>IsSuccess</key>
+		<dict>
+			<key>Method</key>
+			<string>DELETE</string>
+			<key>Path</key>
+			<string>https://httpbin.org/delete</string>
+			<key>Response Type</key>
+			<integer>1</integer>
+		</dict>
+		<key>IsFailure</key>
+		<dict>
+			<key>Path</key>
+			<string>https://httpbin.org/status/400</string>
+			<key>Response Type</key>
+			<integer>1</integer>
+		</dict>
 	</dict>
 </dict>
 </plist>

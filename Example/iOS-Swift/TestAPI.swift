@@ -7,6 +7,8 @@
 //
 
 class TestAPI: RFAPI {
+    static var shared = TestAPI()
+
     override init() {
         super.init()
         let config = URLSessionConfiguration.default

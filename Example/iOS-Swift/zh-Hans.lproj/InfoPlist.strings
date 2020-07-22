@@ -1,0 +1,5 @@
+
+"CFBundleDisplayName" = "RFAPI 演示";
+
+// LaunchScreen 是静态的，暂不支持文本的国际化，用加载其他版本曲线实现
+"UILaunchStoryboardName" = "LaunchScreen_zh-Hans";

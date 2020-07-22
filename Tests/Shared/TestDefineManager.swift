@@ -14,7 +14,7 @@ class TestRequestSerializer: AFHTTPRequestSerializer {}
 @objc(TestResponseSerializer)
 class TestResponseSerializer: AFHTTPResponseSerializer {}
 
-class TestDefineManager: XCTestCase {
+private class TestDefineManager: XCTestCase {
 
     lazy var manager = RFAPIDefineManager()
     lazy var rawConfig: [String: [String: Any]] = {

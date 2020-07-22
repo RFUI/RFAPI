@@ -1,5 +1,5 @@
 language: objective-c
-sudo: false
+os: osx
 cache: cocoapods
 env:
   global:
@@ -7,10 +7,9 @@ env:
   - LANG=en_US.UTF-8
   - LANGUAGE=en_US.UTF-8
   - RFCI_PRODUCT_NAME="RFAPI"
-  - RFWorkspace="RFAPI.xcworkspace"
-matrix:
+jobs:
   include:
-    - osx_image: xcode11.3
+    - osx_image: xcode11.4
       env: RFCI_TASK="POD_LINT"
     - osx_image: xcode10
       env:
