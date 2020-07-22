@@ -11,8 +11,10 @@
         case RFAPIDefineResponseExpectObject: {
             NSDictionary *responseObject = response;
             if (![responseObject isKindOfClass:NSDictionary.class]) {
+#if RFDEBUG
                 NSString *debugFormat = [RFAPI localizedStringForKey:@"RFAPI.Debug.ObjectResponseTypeMismatchClass" value:@"Server response is %@ other than a dictionary\nPlease check your code first, then contart the server staff if the sever does not return as required"];
                 RFAPILogError_(debugFormat, responseObject.class)
+#endif
                 *error = [self badResponseError:nil];
                 return nil;
             }
@@ -20,8 +22,10 @@
             NSError *e = nil;
             id JSONModelObject = [(JSONModel *)[modelClass alloc] initWithDictionary:responseObject error:&e];
             if (!JSONModelObject) {
+#if RFDEBUG
                 NSString *debugFormat = [RFAPI localizedStringForKey:@"RFAPI.Debug.ObjectResponseConvertToModelError" value:@"Cannot convert response to model: %@\nPlease check your code first, then contart the server staff if the sever does not return as required"];
                 RFAPILogError_(debugFormat, e)
+#endif
                 *error = [self badResponseError:e];
             }
             return JSONModelObject;
@@ -29,8 +33,10 @@
         case RFAPIDefineResponseExpectObjects: {
             NSArray *responseObject = response;
             if (![responseObject isKindOfClass:NSArray.class]) {
+#if RFDEBUG
                 NSString *debugFormat = [RFAPI localizedStringForKey:@"RFAPI.Debug.ArrayResponseTypeMismatchClass" value:@"Server response is %@ other than an array\nPlease check your code first, then contart the server staff if the sever does not return as required"];
                 RFAPILogError_(debugFormat, responseObject.class)
+#endif
                 *error = [self badResponseError:nil];
                 return nil;
             }
@@ -43,9 +49,10 @@
                     [objects addObject:obj];
                     continue;
                 }
-
+#if RFDEBUG
                 NSString *debugFormat = [RFAPI localizedStringForKey:@"RFAPI.Debug.ObjectResponseConvertToModelError" value:@"Cannot convert elements in the array to model: %@\nPlease check your code first, then contart the server staff if the sever does not return as required"];
                 RFAPILogError_(debugFormat, e)
+#endif
                 *error = [self badResponseError:e];
                 return nil;
             }

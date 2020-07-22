@@ -170,8 +170,10 @@ RFInitializingRootForNSObject
     NSError *e = nil;
     NSMutableURLRequest *request = [self _RFAPI_makeURLRequestWithDefine:define context:context error:&e];
     if (!request) {
+#if RFDEBUG
         NSString *debugFormat = [self.class localizedStringForKey:@"RFAPI.Debug.CannotCreateRequestError" value:@"Cannot create request: %@"];
         RFAPILogError_(debugFormat, e)
+#endif
         NSError *error = [self.class localizedErrorWithDoomain:NSURLErrorDomain code:NSURLErrorCancelled underlyingError:e descriptionKey:@"RFAPI.Error.CannotCreateRequest" descriptionValue:@"Internal error, unable to create request" reasonKey:@"RFAPI.Error.CannotCreateRequestReason" reasonValue:@"It seems to be an application bug" suggestionKey:@"RFAPI.Error.CannotCreateRequestSuggestion" suggestionValue:@"Please try again. If it still doesn't work, try restarting the application" url:request.URL];
         [self _RFAPI_executeContext:context failure:error];
         return nil;

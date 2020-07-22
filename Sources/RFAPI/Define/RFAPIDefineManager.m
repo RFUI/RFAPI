@@ -99,8 +99,10 @@
     }
     
     if (!url) {
+#if RFDEBUG
         NSString *debugFormat = [RFAPI localizedStringForKey:@"RFAPI.Debug.CannotJoinPathToBaseURL" value:@"Unable to join path %1$@ to %2$@, please check the API define"];
         RFAPILogError_(debugFormat, path, define.baseURL)
+#endif
         if (error) {
             *error = [RFAPI localizedErrorWithDoomain:NSURLErrorDomain code:NSURLErrorBadURL underlyingError:nil descriptionKey:@"RFAPI.Error.CannotCreateRequestDescription" descriptionValue:@"Internal error, unable to create request" reasonKey:@"RFAPI.Error.CannotCreateRequestReason" reasonValue:@"It seems to be an application bug" suggestionKey:@"RFAPI.Error.CannotCreateRequestSuggestion" suggestionValue:@"Please try again. If it still doesn't work, try restarting the application" url:nil];
         }
