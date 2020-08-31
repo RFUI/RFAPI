@@ -8,4 +8,5 @@
 #import <RFAPI/RFAPICompatible.h>
 #import <RFAPI/RFAPIDefineConfigFile.h>
 #import <RFAPI/RFAPIJSONModelTransformer.h>
+#import <RFMessageManager/RFMessageManager.h>
 #import "RTHelper.h"

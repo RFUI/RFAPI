@@ -54,6 +54,9 @@
 		D5D61FF723C42A5300B26C33 /* TestDefine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D61FF523C42A5300B26C33 /* TestDefine.swift */; };
 		D5D61FFC23C5E19800B26C33 /* archived_define_v1.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */; };
 		D5D61FFD23C5E19800B26C33 /* archived_define_v1.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */; };
+		D5F8E7E724FD698000CBBC2C /* TestActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F8E7E624FD698000CBBC2C /* TestActivityManager.swift */; };
+		D5F8E7E824FD698100CBBC2C /* TestActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F8E7E624FD698000CBBC2C /* TestActivityManager.swift */; };
+		D5F8E7E924FD698100CBBC2C /* TestActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F8E7E624FD698000CBBC2C /* TestActivityManager.swift */; };
 		D5F9245A23D5BBCA00E9781D /* big_json.data in Resources */ = {isa = PBXBuildFile; fileRef = D5F9245823D5BBCA00E9781D /* big_json.data */; };
 		D5F9245B23D5BBCA00E9781D /* big_json.data in Resources */ = {isa = PBXBuildFile; fileRef = D5F9245823D5BBCA00E9781D /* big_json.data */; };
 /* End PBXBuildFile section */
@@ -109,6 +112,7 @@
 		D5C3AC2624308E1F004D5762 /* TestEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEntity.swift; sourceTree = "<group>"; };
 		D5D61FF523C42A5300B26C33 /* TestDefine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDefine.swift; sourceTree = "<group>"; };
 		D5D61FFB23C5E19800B26C33 /* archived_define_v1.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = archived_define_v1.plist; sourceTree = "<group>"; };
+		D5F8E7E624FD698000CBBC2C /* TestActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestActivityManager.swift; sourceTree = "<group>"; };
 		D5F9245823D5BBCA00E9781D /* big_json.data */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = big_json.data; sourceTree = "<group>"; };
 		DFF2285EDB18B106627B701F /* Pods-Example-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Example-iOS/Pods-Example-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		E5FA99E5E4196E679EB5925D /* Pods-Test-macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Test-macOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Test-macOS/Pods-Test-macOS.release.xcconfig"; sourceTree = "<group>"; };
@@ -244,6 +248,7 @@
 				D57C354423C7193B000B6A3C /* RTHelper.h */,
 				D57C354523C7193C000B6A3C /* RTHelper.m */,
 				D57C353B23C70A56000B6A3C /* test_defines.plist */,
+				D5F8E7E624FD698000CBBC2C /* TestActivityManager.swift */,
 				D59FF64F23D1E2D800206713 /* TestConvention.swift */,
 				D5D61FF523C42A5300B26C33 /* TestDefine.swift */,
 				D54183FB206CD13000DD25CE /* TestDefineManager.swift */,
@@ -460,8 +465,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5BF665024BEBCA5008BC122 /* big_json.data in Resources */,
 				D54183CA206B685100DD25CE /* Assets.xcassets in Resources */,
+				D5BF665024BEBCA5008BC122 /* big_json.data in Resources */,
 				D5C3AC21242EEADB004D5762 /* InfoPlist.strings in Resources */,
 				D5C3AC1B242EE782004D5762 /* LaunchScreen.storyboard in Resources */,
 				D5C3AC25242EEC1F004D5762 /* LaunchScreen_zh-Hans.storyboard in Resources */,
@@ -627,6 +632,7 @@
 			files = (
 				D5518D382444558500C27F69 /* DefineLoad.swift in Sources */,
 				D5518D3B2444559600C27F69 /* RTHelper.m in Sources */,
+				D5F8E7E924FD698100CBBC2C /* TestActivityManager.swift in Sources */,
 				D5518D3D2444559C00C27F69 /* TestConvention.swift in Sources */,
 				D5518D3E2444559E00C27F69 /* TestDefine.swift in Sources */,
 				D5518D3F244455A100C27F69 /* TestDefineManager.swift in Sources */,
@@ -641,6 +647,7 @@
 			files = (
 				D5ABE7132417348100B9BB98 /* DefineLoad.swift in Sources */,
 				D57C354623C7193C000B6A3C /* RTHelper.m in Sources */,
+				D5F8E7E724FD698000CBBC2C /* TestActivityManager.swift in Sources */,
 				D5A8C7CF24418E4200CAEF4C /* TestControlBinding.swift in Sources */,
 				D59FF65023D1E2D800206713 /* TestConvention.swift in Sources */,
 				D5D61FF623C42A5300B26C33 /* TestDefine.swift in Sources */,
@@ -656,6 +663,7 @@
 			files = (
 				D5ABE7142417348100B9BB98 /* DefineLoad.swift in Sources */,
 				D57C354723C7193C000B6A3C /* RTHelper.m in Sources */,
+				D5F8E7E824FD698100CBBC2C /* TestActivityManager.swift in Sources */,
 				D59FF65123D1E2D800206713 /* TestConvention.swift in Sources */,
 				D5D61FF723C42A5300B26C33 /* TestDefine.swift in Sources */,
 				D55ADB1023C06C6700AD6DB2 /* TestDefineManager.swift in Sources */,

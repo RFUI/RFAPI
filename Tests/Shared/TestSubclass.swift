@@ -34,6 +34,7 @@ fileprivate class Sub1API: RFAPI {
 
     override func generalHandlerForError(_ error: Error, define: RFAPIDefine, task: RFAPITask, failure: RFAPIRequestFailureCallback? = nil) -> Bool {
         XCTAssertEqual(DispatchQueue.currentQueueLabel, completionQueue.label)
+        errorHandlerCalledCount += 1
         return super.generalHandlerForError(error, define: define, task: task, failure: failure)
     }
 
@@ -85,7 +86,9 @@ private class TestSubclass: XCTestCase {
     }
 
     func testCanceledRequestShouldNotCallGeneralErrorHandler() {
+        let activity = TestActivityManager()
         let api = Sub1API()
+        api.networkActivityIndicatorManager = activity
         api.loadTestDefines()
         let finishExpectation = expectation(description: "Request finished")
         let task = api.request(name: "IsSuccess") { c in
@@ -96,10 +99,13 @@ private class TestSubclass: XCTestCase {
         task?.cancel()
         wait(for: [finishExpectation], timeout: 5)
         XCTAssert(api.errorHandlerCalledCount == 0)
+        XCTAssertNil(activity.displayingMessage)
     }
 
     func testFailureRequestMustCallGeneralErrorHandler() {
+        let activity = TestActivityManager()
         let api = Sub1API()
+        api.networkActivityIndicatorManager = activity
         api.loadTestDefines()
         let finishExpectation = expectation(description: "Request finished")
         api.request(name: "IsFailure") { c in
@@ -109,5 +115,38 @@ private class TestSubclass: XCTestCase {
         }
         wait(for: [finishExpectation], timeout: 5)
         XCTAssert(api.errorHandlerCalledCount == 1)
+        XCTAssertNotNil(activity.displayingMessage, "Error message should be shown")
+    }
+
+    func testFailureRequestWithFailureCallback() {
+        let activity = TestActivityManager()
+        let api = Sub1API()
+        api.networkActivityIndicatorManager = activity
+        api.loadTestDefines()
+        let finishExpectation = expectation(description: "Request finished")
+        api.request(name: "IsFailure") { c in
+            c.failure { _, _ in
+                finishExpectation.fulfill()
+            }
+        }
+        wait(for: [finishExpectation], timeout: 5)
+        XCTAssert(api.errorHandlerCalledCount == 1)
+        XCTAssertNil(activity.displayingMessage, "Custom failure should not display default error message")
+    }
+
+    func testFailureRequestWithComplationCallback() {
+        let activity = TestActivityManager()
+        let api = Sub1API()
+        api.networkActivityIndicatorManager = activity
+        api.loadTestDefines()
+        let finishExpectation = expectation(description: "Request finished")
+        api.request(name: "IsFailure") { c in
+            c.complation({ _, _, _ in
+                finishExpectation.fulfill()
+            })
+        }
+        wait(for: [finishExpectation], timeout: 5)
+        XCTAssert(api.errorHandlerCalledCount == 1)
+        XCTAssertNil(activity.displayingMessage, "Custom complation should not display default error message")
     }
 }

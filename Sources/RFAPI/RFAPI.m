@@ -419,17 +419,19 @@ RFInitializingRootForNSObject
         }
 
         task.success = nil;
-        BOOL shouldContinueErrorHandling = isCancel ? YES : [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
-        if (shouldContinueErrorHandling) {
-            RFAPIRequestFailureCallback fcb = task.failure;
-            if (fcb) {
-                fcb(task, error);
-            }
-            else {
-                if (messageManager) {
-                    dispatch_sync_on_main(^{
-                        [messageManager alertError:error title:nil fallbackMessage:@"Request Failed"];
-                    });
+        if (!isCancel) {
+            BOOL shouldContinueErrorHandling = [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
+            if (shouldContinueErrorHandling) {
+                RFAPIRequestFailureCallback fcb = task.failure;
+                if (fcb) {
+                    fcb(task, error);
+                }
+                else if (!task.combinedComplation) {
+                    if (messageManager) {
+                        dispatch_sync_on_main(^{
+                            [messageManager alertError:error title:nil fallbackMessage:@"Request Failed"];
+                        });
+                    }
                 }
             }
         }
