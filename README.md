@@ -8,7 +8,7 @@
 
 <base href="//github.com/RFUI/RFAPI/blob/develop/" />
 
-<small>*English* [简体中文 :cn:](README~zh-hans.md)</small>
+<small>*English* [简体中文 :cn:](README.zh-hans.md)</small>
 
 RFAPI is a network request library specially designed for API requests. It is a URL session wrapper base on AFNetworking.
 
