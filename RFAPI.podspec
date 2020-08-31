@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'RFAPI'
-  s.version          = '2.0.0-beta.2'
+  s.version          = '2.0.0'
   s.summary          = 'RFAPI is a network request library specially designed for API requests. It is a URL session wrapper base on AFNetworking.'
 
   s.homepage         = 'https://github.com/RFUI/RFAPI'
@@ -17,21 +17,31 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = '9.0'
   # s.watchos.deployment_target = '2.0'
 
-  s.dependency 'JSONModel'
-  s.dependency 'AFNetworking/Serialization', '>= 2.3'
-  s.dependency 'AFNetworking/Security', '>= 2.3'
-  s.dependency 'AFNetworking/Reachability', '>= 2.3'
-  s.dependency 'RFKit/Runtime', '> 1.7'
-  s.dependency 'RFInitializing', '>= 1.1'
-  s.dependency 'RFMessageManager/Manager', '>= 0.5'
-  s.dependency 'RFMessageManager/RFNetworkActivityMessage'
-  s.source_files = ['Sources/**/*.{h,m}']
-  s.public_header_files = [
-    'Sources/RFAPI/RFAPI.h',
-    'Sources/RFAPI/Define/*.h',
-    'Sources/RFAPI/ModelTransformer/*.h',
-    'Sources/RFAPI/Compatible/*.h',
-  ]
+  s.subspec 'Core' do |ss|
+    ss.dependency 'AFNetworking/Serialization', '>= 2.3'
+    ss.dependency 'AFNetworking/Security', '>= 2.3'
+    ss.dependency 'AFNetworking/Reachability', '>= 2.3'
+    ss.dependency 'RFKit/Runtime', '> 1.7'
+    ss.dependency 'RFInitializing', '>= 1.1'
+    ss.dependency 'RFMessageManager/Manager', '>= 0.5'
+    ss.dependency 'RFMessageManager/RFNetworkActivityMessage'
+    ss.source_files = ['Sources/RFAPI/**/*.{h,m}']
+    ss.public_header_files = [
+      'Sources/RFAPI/RFAPI.h',
+      'Sources/RFAPI/Define/*.h',
+      'Sources/RFAPI/ModelTransformer/*.h',
+      'Sources/RFAPI/Compatible/*.h',
+    ]
+  end
+
+  s.subspec 'JSONModel' do |ss|
+    ss.dependency 'RFAPI/Core'
+    ss.dependency 'JSONModel'
+    ss.source_files = ['Sources/JSONModelTransformer/**/*.{h,m}']
+    ss.public_header_files = [
+      'Sources/JSONModelTransformer/*.h',
+    ]
+  end
 
   s.pod_target_xcconfig = {
     # These config should only exsists in develop branch.
