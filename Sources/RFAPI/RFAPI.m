@@ -419,8 +419,8 @@ RFInitializingRootForNSObject
         }
 
         task.success = nil;
-        BOOL shouldContinueErrorHandling = [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
-        if (shouldContinueErrorHandling && !isCancel) {
+        BOOL shouldContinueErrorHandling = isCancel ? YES : [self generalHandlerForError:error withDefine:task.define task:task failureCallback:task.failure];
+        if (shouldContinueErrorHandling) {
             RFAPIRequestFailureCallback fcb = task.failure;
             if (fcb) {
                 fcb(task, error);

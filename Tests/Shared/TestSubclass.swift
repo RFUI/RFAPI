@@ -37,6 +37,8 @@ fileprivate class Sub1API: RFAPI {
         XCTAssertEqual(DispatchQueue.currentQueueLabel, processingQueue.label)
         return super.isSuccessResponse(responseObjectRef, error: error)
     }
+
+    var errorHandlerCalledCount = 0
 }
 
 private class TestSubclass: XCTestCase {
@@ -63,5 +65,45 @@ private class TestSubclass: XCTestCase {
             }
         }
         wait(for: [completeExpectation, completeExpectation2], timeout: 10, enforceOrder: false)
+    }
+
+    func testSuccessRequestShouldNotCallGeneralErrorHandler() {
+        let api = Sub1API()
+        api.loadTestDefines()
+        let finishExpectation = expectation(description: "Request finished")
+        api.request(name: "IsSuccess") { c in
+            c.finished { _, _ in
+                finishExpectation.fulfill()
+            }
+        }
+        wait(for: [finishExpectation], timeout: 5)
+        XCTAssert(api.errorHandlerCalledCount == 0)
+    }
+
+    func testCanceldRequestShouldNotCallGeneralErrorHandler() {
+        let api = Sub1API()
+        api.loadTestDefines()
+        let finishExpectation = expectation(description: "Request finished")
+        let task = api.request(name: "IsSuccess") { c in
+            c.finished { _, _ in
+                finishExpectation.fulfill()
+            }
+        }
+        task?.cancel()
+        wait(for: [finishExpectation], timeout: 5)
+        XCTAssert(api.errorHandlerCalledCount == 0)
+    }
+
+    func testFailureRequestMustCallGeneralErrorHandler() {
+        let api = Sub1API()
+        api.loadTestDefines()
+        let finishExpectation = expectation(description: "Request finished")
+        api.request(name: "IsFailure") { c in
+            c.finished { _, _ in
+                finishExpectation.fulfill()
+            }
+        }
+        wait(for: [finishExpectation], timeout: 5)
+        XCTAssert(api.errorHandlerCalledCount == 1)
     }
 }

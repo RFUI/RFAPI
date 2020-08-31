@@ -38,7 +38,7 @@ private class TestRequest: XCTestCase {
                 XCTAssert(false, "Response invalid.")
                 return
             }
-            XCTAssertEqual(rsp["url"] as! String?, "https://httpbin.org/anything/lookup")
+            XCTAssertEqual(rsp["url"] as? String, "https://httpbin.org/anything/lookup")
             successExpectation.fulfill()
         }, failure: { task, error in
             XCTAssert(false, error.localizedDescription)
