@@ -19,12 +19,16 @@ extension DispatchQueue {
 fileprivate class Sub1API: RFAPI {
 
     override func preprocessingRequest(parametersRef: UnsafeMutablePointer<NSMutableDictionary?>, httpHeadersRef: UnsafeMutablePointer<NSMutableDictionary?>, parameters: [AnyHashable : Any]?, define: RFAPIDefine, context: RFAPIRequestConext) {
-        XCTAssertEqual(DispatchQueue.currentQueueLabel, context.userInfo?["QueueName"] as? String)
+        if let queueName = context.userInfo?["QueueName"] as? String {
+            XCTAssertEqual(DispatchQueue.currentQueueLabel, queueName)
+        }
         super.preprocessingRequest(parametersRef: parametersRef, httpHeadersRef: httpHeadersRef, parameters: parameters, define: define, context: context)
     }
 
     override func finalizeSerializedRequest(_ request: NSMutableURLRequest, define: RFAPIDefine, context: RFAPIRequestConext) -> NSMutableURLRequest {
-        XCTAssertEqual(DispatchQueue.currentQueueLabel, context.userInfo?["QueueName"] as? String)
+        if let queueName = context.userInfo?["QueueName"] as? String {
+            XCTAssertEqual(DispatchQueue.currentQueueLabel, queueName)
+        }
         return super.finalizeSerializedRequest(request, define: define, context: context)
     }
 
@@ -80,7 +84,7 @@ private class TestSubclass: XCTestCase {
         XCTAssert(api.errorHandlerCalledCount == 0)
     }
 
-    func testCanceldRequestShouldNotCallGeneralErrorHandler() {
+    func testCanceledRequestShouldNotCallGeneralErrorHandler() {
         let api = Sub1API()
         api.loadTestDefines()
         let finishExpectation = expectation(description: "Request finished")

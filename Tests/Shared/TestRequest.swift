@@ -228,10 +228,11 @@ private class TestRequest: XCTestCase {
                 XCTAssertEqual(task.currentRequest?.url?.absoluteURL.absoluteString, "https://httpbin.org/get")
                 successExpectation.fulfill()
             }
-            c.failure { _, error in
+            c.failure { task, error in
                 if error.localizedDescription.contains("404") {
                     // https://github.com/postmanlabs/httpbin/issues/617
                     NSLog("⚠️ httpbin redirect is down, skip")
+                    task?.error = nil
                     successExpectation.fulfill()
                 }
             }
