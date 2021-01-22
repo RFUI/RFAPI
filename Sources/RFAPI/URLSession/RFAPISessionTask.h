@@ -2,7 +2,7 @@
 RFAPISessionTask
 RFAPI
 
-Copyright © 2019-2020 BB9z
+Copyright © 2019-2021 BB9z
 https://github.com/RFUI/RFAPI
 
 The MIT License (MIT)
@@ -46,6 +46,8 @@ typedef void(^RFAPITaskComplation)(id __nullable responseObject, NSURLResponse *
 /// From request context.
 @property (nullable) NSDictionary *userInfo;
 @property NSTimeInterval debugDelayRequestSend;
+
+@property (nullable) id __nullable (^responseObjectTransformer)(RFAPIDefine *__nonnull define, id __nullable responseObject);
 
 #pragma mark - States
 

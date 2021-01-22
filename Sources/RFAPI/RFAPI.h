@@ -1,7 +1,7 @@
 /*
  RFAPI
 
- Copyright © 2014-2016, 2018-2020 BB9z
+ Copyright © 2014-2016, 2018-2021 BB9z
  https://github.com/RFUI/RFAPI
  
  The MIT License (MIT)
@@ -230,6 +230,9 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 /// Customization URL request object
 @property (nullable) NSMutableURLRequest *__nonnull (^requestCustomization)(NSMutableURLRequest *__nonnull request);
 
+/// Allow transform resesoinse object in the processing queue. The return value will become the final responseObject.
+@property (nullable) id __nullable (^responseObjectTransformer)(RFAPIDefine *__nonnull define, id __nullable responseObject);
+
 /// Identifier for request. If `nil`, the api name will be used.
 @property (nullable) NSString *identifier;
 
@@ -278,6 +281,9 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 /// For debugging purposes, delaying the sending of network requests.
 /// This may be used to test whether the UI is in a proper state when network latency.
 @property NSTimeInterval debugDelayRequestSend;
+
+/// If no nil, simulate the request fail with the given error code.
+@property NSInteger debugRequestFailWithCode;
 
 /// This value will be passed to the task object.
 @property (nullable) NSDictionary *userInfo;

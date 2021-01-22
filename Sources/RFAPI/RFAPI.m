@@ -194,6 +194,13 @@ RFInitializingRootForNSObject
             [self.networkActivityIndicatorManager showMessage:message];
         });
     }
+
+    if (context.debugRequestFailWithCode != 0) {
+        NSError *error = [NSError errorWithDomain:RFAPIErrorDomain code:context.debugRequestFailWithCode userInfo:@{ NSLocalizedDescriptionKey: [NSString.alloc initWithFormat:@"Debug error, code: %@", @(context.debugRequestFailWithCode)] }];
+        [self _RFAPI_executeTaskCallback:task failure:error];
+        return task;
+    }
+
     dispatch_block_t work = ^{
         if (task.isEnd) return;
         [dataTask resume];
@@ -218,6 +225,7 @@ RFInitializingRootForNSObject
     task.failure = context.failure;
     task.complation = context.finished;
     task.combinedComplation = context.combinedComplation;
+    task.responseObjectTransformer = context.responseObjectTransformer;
     task.debugDelayRequestSend = context.debugDelayRequestSend;
     task.userInfo = context.userInfo;
 }
@@ -362,6 +370,9 @@ RFInitializingRootForNSObject
                     [self _RFAPI_executeTaskCallback:task failure:error];
                 }
                 else {
+                    if (task.responseObjectTransformer) {
+                        modelObject = task.responseObjectTransformer(task.define, modelObject);
+                    }
                     [self _RFAPI_executeTaskCallback:task success:modelObject];
                 }
                 return;
