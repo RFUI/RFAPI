@@ -225,6 +225,7 @@ RFInitializingRootForNSObject
     task.failure = context.failure;
     task.complation = context.finished;
     task.combinedComplation = context.combinedComplation;
+    task.responseObjectTransformer = context.responseObjectTransformer;
     task.debugDelayRequestSend = context.debugDelayRequestSend;
     task.userInfo = context.userInfo;
 }
@@ -369,6 +370,9 @@ RFInitializingRootForNSObject
                     [self _RFAPI_executeTaskCallback:task failure:error];
                 }
                 else {
+                    if (task.responseObjectTransformer) {
+                        modelObject = task.responseObjectTransformer(task.define, modelObject);
+                    }
                     [self _RFAPI_executeTaskCallback:task success:modelObject];
                 }
                 return;

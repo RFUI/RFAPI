@@ -230,6 +230,9 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 /// Customization URL request object
 @property (nullable) NSMutableURLRequest *__nonnull (^requestCustomization)(NSMutableURLRequest *__nonnull request);
 
+/// Allow transform resesoinse object in the processing queue. The return value will become the final responseObject.
+@property (nullable) id __nullable (^responseObjectTransformer)(RFAPIDefine *__nonnull define, id __nullable responseObject);
+
 /// Identifier for request. If `nil`, the api name will be used.
 @property (nullable) NSString *identifier;
 
