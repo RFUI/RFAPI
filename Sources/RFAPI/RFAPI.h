@@ -1,7 +1,7 @@
 /*
  RFAPI
 
- Copyright © 2014-2016, 2018-2020 BB9z
+ Copyright © 2014-2016, 2018-2021 BB9z
  https://github.com/RFUI/RFAPI
  
  The MIT License (MIT)
@@ -278,6 +278,9 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 /// For debugging purposes, delaying the sending of network requests.
 /// This may be used to test whether the UI is in a proper state when network latency.
 @property NSTimeInterval debugDelayRequestSend;
+
+/// If no nil, simulate the request fail with the given error code.
+@property NSInteger debugRequestFailWithCode;
 
 /// This value will be passed to the task object.
 @property (nullable) NSDictionary *userInfo;
