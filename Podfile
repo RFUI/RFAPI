@@ -3,7 +3,7 @@ source 'https://github.com/PBPods/PBFlex.git'
 source 'https://cdn.cocoapods.org/'
 
 target 'Example-iOS' do
-    platform :ios, '8.0'
+    platform :ios, '9.0'
     
     pod 'RFMessageManager', :subspecs => ['SVProgressHUD']
     pod 'RFAPI', :path => '.'
