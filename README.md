@@ -44,7 +44,7 @@ Only integration through CocoaPods is supported due to dependent factors. There 
 pod 'RFAPI'
 ```
 
-Specify develop branch to install the lastest version:
+Specify develop branch to install the latest version:
 
 ```ruby
 pod 'RFAPI',
@@ -59,7 +59,7 @@ Unlike most network libraries, you cannot make a request with a url object. Inst
 ```swift
 let define = RFAPIDefine()
 define.name = RFAPIName(rawValue: "TopicListRecommended")
-define.path = "https://exapmle.com/api/v2/topics/recommended"
+define.path = "https://example.com/api/v2/topics/recommended"
 define.method = "GET"
 define.needsAuthorization = true
 define.responseExpectType = .objects
@@ -71,7 +71,7 @@ Generally, a default define should be created. After that, you only need to prov
 ```swift
 let api = ... // RFAPI instance
 let defaultDefine = RFAPIDefine()
-defaultDefine.baseURL = URL(string: "https://exapmle.com/")
+defaultDefine.baseURL = URL(string: "https://example.com/")
 defaultDefine.pathPrefix = "api/v2/"
 defaultDefine.method = "GET"
 defaultDefine.needsAuthorization = true
@@ -93,7 +93,7 @@ The more recommended way is to load the defines from the configuration file. You
 ```json
 {
   "DEFAULT": {
-    "Base": "https://exapmle.com/",
+    "Base": "https://example.com/",
     "Path Prefix": "api/v2/",
     "Method": "GET",
     "Authorization": true
@@ -128,7 +128,7 @@ By default, the content format of request and response are both JSON. You can mo
 {
   "FormUpload": {
     "Method": "POST",
-    "Path": "commom/formupload",
+    "Path": "common/formupload",
     "Serializer": "AFHTTPRequestSerializer",
     "Response Serializer": "AFPropertyListResponseSerializer",
     "Response Type": 1
@@ -162,7 +162,7 @@ For more usage, checkout [Cookbook](Documents/Cookbook.md)
 
     When a request is cancelled, the failure callback will not be called. Also a failure callback will never be called with an `NSURLErrorCancelled` error parameter.
 
-    But you could get an `NSURLErrorCancelled` error from a RFAPITask object in the finished or complation callback.
+    But you could get an `NSURLErrorCancelled` error from a RFAPITask object in the finished or completion callback.
 
 * Most parameters are mutable
 

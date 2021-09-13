@@ -17,7 +17,7 @@
 /* Class = "UIButton"; normalTitle = "Start"; ObjectID = "TWh-Mz-u8r"; */
 "TWh-Mz-u8r.normalTitle" = "开始";
 
-/* Class = "UITextView"; text = "Resopnse"; ObjectID = "VNd-yL-ZI4"; */
+/* Class = "UITextView"; text = "Response"; ObjectID = "VNd-yL-ZI4"; */
 "VNd-yL-ZI4.text" = "请求响应";
 
 /* Class = "UILabel"; text = "Title"; ObjectID = "XT4-OY-1f4"; */

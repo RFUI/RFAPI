@@ -52,13 +52,13 @@ private class TestRequest: XCTestCase {
         let successRequestFinishExpectation = expectation(description: "successRequest finish")
         let failureRequsetFinishExpectation = expectation(description: "failureRequset finish")
         let successRequest = api.request(name: "IsSuccess") { c in
-            c.complation { task, _, _ in
+            c.completion { task, _, _ in
                 XCTAssertTrue(task!.isSuccess)
                 successRequestFinishExpectation.fulfill()
             }
         }
         let failureRequset = api.request(name: "IsFailure") { c in
-            c.complation { task, _, _ in
+            c.completion { task, _, _ in
                 XCTAssertFalse(task!.isSuccess)
                 failureRequsetFinishExpectation.fulfill()
             }
@@ -101,7 +101,7 @@ private class TestRequest: XCTestCase {
                 XCTAssertNil(task.response)
                 XCTAssertNil(task.responseObject)
             }
-            c.complation { task, rsp, error in
+            c.completion { task, rsp, error in
                 XCTAssertNotNil(task)
                 XCTAssertNil(rsp)
                 XCTAssertNil(error)
@@ -133,7 +133,7 @@ private class TestRequest: XCTestCase {
                 XCTAssertNil(task.response)
                 XCTAssertNil(task.responseObject)
             }
-            c.complation { task, rsp, error in
+            c.completion { task, rsp, error in
                 XCTAssertNotNil(task)
                 XCTAssertNil(rsp)
                 XCTAssertNil(error)
@@ -167,7 +167,7 @@ private class TestRequest: XCTestCase {
                 XCTAssertNotNil(task)
                 XCTAssertFalse(s)
             }
-            c.complation { task, rsp, error in
+            c.completion { task, rsp, error in
                 XCTAssertNotNil(task)
                 XCTAssertNil(rsp)
                 XCTAssertNotNil(error)
@@ -194,7 +194,7 @@ private class TestRequest: XCTestCase {
                 XCTAssertNotNil(task)
                 XCTAssertFalse(s)
             }
-            c.complation { task, rsp, error in
+            c.completion { task, rsp, error in
                 debugPrint(error!)
                 XCTAssertNotNil(task)
                 XCTAssertNil(rsp)

@@ -7,7 +7,7 @@
 "HUDState.Loadding"  = "载入中...";
 "HUDState.Uploading" = "上传中...";
 
-/// - RFAPI Build-in
+/// - RFAPI Built-in
 
 "RFAPI.Error.GeneralFailureReasonApp" = "很可能是应用 bug";
 "RFAPI.Error.GeneralFailureReasonServer" = "可能服务器正在升级或者维护，也可能是应用 bug";

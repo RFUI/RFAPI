@@ -200,7 +200,7 @@ typedef void(^RFAPIRequestCombinedCompletionCallback)(id<RFAPITask> __nullable t
 
 /// Send array parameters
 FOUNDATION_EXTERN NSString *__nonnull const RFAPIRequestArrayParameterKey;
-/// Sent parameters throgh qury string
+/// Sent parameters through qury string
 FOUNDATION_EXTERN NSString *__nonnull const RFAPIRequestForceQuryStringParametersKey;
 
 /// Errors generated inside RFAPI
@@ -217,7 +217,7 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
  The parameters to be encoded.
 
  If you want to send an array parameters, set `RFAPIRequestArrayParameterKey` key with the array.
- If you want some parameters sent throgh qury string of the URL, set `RFAPIRequestForceQuryStringParametersKey` with a dictionary contains these parameters.
+ If you want some parameters sent through qury string of the URL, set `RFAPIRequestForceQuryStringParametersKey` with a dictionary contains these parameters.
  */
 @property (nullable) NSDictionary<NSString *, id> *parameters;
 
@@ -239,7 +239,7 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 /// Group identifier for request.
 @property (nullable) NSString *groupIdentifier;
 
-/// An activity message to be displayed durning the request executing.
+/// An activity message to be displayed during the request executing.
 /// If the request is finished right after been make, eg. it has been already cached, the message will not be displayed.
 @property (nullable) RFNetworkActivityMessage *activityMessage;
 
@@ -271,12 +271,14 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 /// It will not be called if the request is cancelled.
 @property (nullable) RFAPIRequestFailureCallback failure NS_SWIFT_NAME(failureCallback);
 
-/// A block object to be executed when the request is complated.
+/// A block object to be executed when the request is completed.
 @property (nullable) RFAPIRequestFinishedCallback finished NS_SWIFT_NAME(finishedCallback);
 
-/// A block object to be executed when the request is complated.
+/// A block object to be executed when the request is completed.
 /// Error will be nil if the request is cancelled. At this time, you could get the error object on the task object.
-@property (nullable) RFAPIRequestCombinedCompletionCallback combinedComplation NS_SWIFT_NAME(complationCallback);
+@property (nullable) RFAPIRequestCombinedCompletionCallback combinedCompletion NS_SWIFT_NAME(completionCallback);
+
+@property (nullable) RFAPIRequestCombinedCompletionCallback combinedComplation API_DEPRECATED_WITH_REPLACEMENT("combinedCompletion", macos(10.10, 10.10), ios(8.0, 8.0), tvos(9.0, 9.0)) NS_SWIFT_NAME(complationCallback);
 
 /// For debugging purposes, delaying the sending of network requests.
 /// This may be used to test whether the UI is in a proper state when network latency.
@@ -298,10 +300,12 @@ FOUNDATION_EXTERN NSErrorDomain __nonnull const RFAPIErrorDomain;
 /// Set callback to be executed when the request finishes unsuccessfully.
 - (void)setFailureCallback:(nullable void (^)(id<RFAPITask> __nullable task, NSError *__nonnull error))failure NS_SWIFT_NAME(failure(_:));
 
-/// Set callback to be executed when the request is complated.
+/// Set callback to be executed when the request is completed.
 - (void)setFinishedCallback:(nullable void (^)(id<RFAPITask> __nullable task, BOOL success))finished NS_SWIFT_NAME(finished(_:));
 
-/// Set callback to be executed when the request is complated.
-- (void)setComplationCallback:(nullable void (^)(id<RFAPITask> __nullable task, id __nullable responseObject, NSError *__nullable error))complation NS_SWIFT_NAME(complation(_:));
+/// Set callback to be executed when the request is completed.
+- (void)setCompletionCallback:(nullable void (^)(id<RFAPITask> __nullable task, id __nullable responseObject, NSError *__nullable error))completion NS_SWIFT_NAME(completion(_:));
+
+- (void)setComplationCallback:(nullable void (^)(id<RFAPITask> __nullable task, id __nullable responseObject, NSError *__nullable error))complation API_DEPRECATED_WITH_REPLACEMENT("-setCompletionCallback:", macos(10.10, 10.10), ios(8.0, 8.0), tvos(9.0, 9.0)) NS_SWIFT_NAME(complation(_:));
 
 @end

@@ -61,7 +61,7 @@ pod 'RFAPI',
 ```swift
 let define = RFAPIDefine()
 define.name = RFAPIName(rawValue: "TopicListRecommended")
-define.path = "https://exapmle.com/api/v2/topics/recommended"
+define.path = "https://example.com/api/v2/topics/recommended"
 define.method = "GET"
 define.needsAuthorization = true
 define.responseExpectType = .objects
@@ -73,7 +73,7 @@ define.responseClass = "TopicEntity"
 ```swift
 let api = ... // RFAPI 实例
 let defaultDefine = RFAPIDefine()
-defaultDefine.baseURL = URL(string: "https://exapmle.com/")
+defaultDefine.baseURL = URL(string: "https://example.com/")
 defaultDefine.pathPrefix = "api/v2/"
 defaultDefine.method = "GET"
 defaultDefine.needsAuthorization = true
@@ -95,7 +95,7 @@ define.responseClass = "TopicEntity"
 ```json
 {
   "DEFAULT": {
-    "Base": "https://exapmle.com/",
+    "Base": "https://example.com/",
     "Path Prefix": "api/v2/",
     "Method": "GET",
     "Authorization": true
@@ -130,7 +130,7 @@ defineManager.setDefinesWithRulesInfo(rules)
 {
   "FormUpload": {
     "Method": "POST",
-    "Path": "commom/formupload",
+    "Path": "common/formupload",
     "Serializer": "AFHTTPRequestSerializer",
     "Response Serializer": "AFPropertyListResponseSerializer",
     "Response Type": 1
