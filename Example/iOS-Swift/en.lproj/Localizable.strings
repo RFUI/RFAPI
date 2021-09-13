@@ -7,7 +7,7 @@
 "HUDState.Loadding"  = "Loadding...";
 "HUDState.Uploading" = "Uploading...";
 
-/// - RFAPI Build-in
+/// - RFAPI Built-in
 
 "RFAPI.Error.GeneralFailureReasonApp" = "It seems to be an application bug";
 "RFAPI.Error.GeneralFailureReasonServer" = "It may be the server being upgraded or maintained, or it may be an application bug";

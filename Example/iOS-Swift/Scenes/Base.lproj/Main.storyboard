@@ -137,7 +137,7 @@
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FPp-Vf-YK5" userLabel="Response Area">
                                                 <rect key="frame" x="180" y="0.0" width="325" height="623"/>
                                                 <subviews>
-                                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Resopnse" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="VNd-yL-ZI4">
+                                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Response" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="VNd-yL-ZI4">
                                                         <rect key="frame" x="8" y="8" width="309" height="607"/>
                                                         <color key="textColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>

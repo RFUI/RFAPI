@@ -223,8 +223,8 @@ RFInitializingRootForNSObject
     task.bindControls = context.bindControls;
     task.success = context.success;
     task.failure = context.failure;
-    task.complation = context.finished;
-    task.combinedComplation = context.combinedComplation;
+    task.completion = context.finished;
+    task.combinedCompletion = context.combinedCompletion;
     task.responseObjectTransformer = context.responseObjectTransformer;
     task.debugDelayRequestSend = context.debugDelayRequestSend;
     task.userInfo = context.userInfo;
@@ -242,11 +242,11 @@ RFInitializingRootForNSObject
     NSMutableDictionary *headers = [NSMutableDictionary.alloc initWithCapacity:4];
     [self preprocessingRequestParameters:&parameters HTTPHeaders:&headers withParameters:context.parameters define:define context:context];
 
-    // Creat URL
+    // Create URL
     NSURL *url = [self.defineManager requestURLForDefine:define parameters:parameters error:error];
     if (!url) return nil;
 
-    // Creat URLRequest
+    // Create URLRequest
     NSMutableURLRequest *mutableRequest = nil;
 
     id<AFURLRequestSerialization> serializer = [self.defineManager requestSerializerForDefine:define];
@@ -313,7 +313,7 @@ RFInitializingRootForNSObject
     return request;
 }
 
-#pragma mark - Handel Response
+#pragma mark - Handle Response
 
 - (void)_RFAPI_handleTaskComplete:(_RFAPISessionTask *)task response:(NSURLResponse *)response data:(NSData *)data error:(NSError *)error {
     dispatch_async(self.processingQueue, ^{
@@ -402,14 +402,14 @@ RFInitializingRootForNSObject
             scb(task, responseObject);
         }
         task.failure = nil;
-        RFAPIRequestFinishedCallback ccb = task.complation;
+        RFAPIRequestFinishedCallback ccb = task.completion;
         if (ccb) {
-            task.complation = nil;
+            task.completion = nil;
             ccb(task, YES);
         }
-        RFAPIRequestCombinedCompletionCallback cbcb = task.combinedComplation;
+        RFAPIRequestCombinedCompletionCallback cbcb = task.combinedCompletion;
         if (cbcb) {
-            task.combinedComplation = nil;
+            task.combinedCompletion = nil;
             cbcb(task, responseObject, nil);
         }
     });
@@ -437,7 +437,7 @@ RFInitializingRootForNSObject
                 if (fcb) {
                     fcb(task, error);
                 }
-                else if (!task.combinedComplation) {
+                else if (!task.combinedCompletion) {
                     if (messageManager) {
                         dispatch_sync_on_main(^{
                             [messageManager alertError:error title:nil fallbackMessage:@"Request Failed"];
@@ -447,14 +447,14 @@ RFInitializingRootForNSObject
             }
         }
         task.failure = nil;
-        RFAPIRequestFinishedCallback ccb = task.complation;
+        RFAPIRequestFinishedCallback ccb = task.completion;
         if (ccb) {
-            task.complation = nil;
+            task.completion = nil;
             ccb(task, NO);
         }
-        RFAPIRequestCombinedCompletionCallback cbcb = task.combinedComplation;
+        RFAPIRequestCombinedCompletionCallback cbcb = task.combinedCompletion;
         if (cbcb) {
-            task.combinedComplation = nil;
+            task.combinedCompletion = nil;
             cbcb(task, nil, isCancel ? nil : error);
         }
     });
@@ -471,7 +471,7 @@ RFInitializingRootForNSObject
         if (ccb) {
             ccb(nil, NO);
         }
-        RFAPIRequestCombinedCompletionCallback cbcb = context.combinedComplation;
+        RFAPIRequestCombinedCompletionCallback cbcb = context.combinedCompletion;
         if (cbcb) {
             cbcb(nil, nil, error);
         }
@@ -535,8 +535,11 @@ RFInitializingRootForNSObject
 - (void)setFinishedCallback:(void (^)(id<RFAPITask> _Nullable, BOOL))finished {
     self.finished = finished;
 }
-- (void)setComplationCallback:(void (^)(id<RFAPITask> _Nullable, id _Nullable, NSError * _Nullable))complation {
-    self.combinedComplation = complation;
+- (void)setCompletionCallback:(void (^)(id<RFAPITask> _Nullable, id _Nullable, NSError * _Nullable))completion {
+    self.combinedCompletion = completion;
+}
+- (void)setComplationCallback:(void (^)(id<RFAPITask> _Nullable, id _Nullable, NSError * _Nullable))completion {
+    self.combinedCompletion = completion;
 }
 
 @end

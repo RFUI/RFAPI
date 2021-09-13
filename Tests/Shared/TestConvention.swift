@@ -33,7 +33,7 @@ private class TestConvention: XCTestCase {
             c.finished { _, _ in
                 expFinsh1.fulfill()
             }
-            c.complation { _, _, _ in
+            c.completion { _, _, _ in
                 expComplete1.fulfill()
             }
         }
@@ -53,7 +53,7 @@ private class TestConvention: XCTestCase {
             c.finished { _, _ in
                 expFinsh2.fulfill()
             }
-            c.complation { _, _, _ in
+            c.completion { _, _, _ in
                 expComplete2.fulfill()
             }
         }
@@ -64,14 +64,14 @@ private class TestConvention: XCTestCase {
         let cannotMakeDefine = RFAPIDefine()
         cannotMakeDefine.name = RFAPIName(rawValue: "")
         var request = api.request(define: cannotMakeDefine) { c in
-            c.complation { task, _, _ in
+            c.completion { task, _, _ in
                 XCTAssertNil(task)
             }
         }
         XCTAssertNil(request)
 
         request = api.request(name: "Anything"){ c in
-            c.complation { task, _, _ in
+            c.completion { task, _, _ in
                 XCTAssertNotNil(task)
             }
         }
@@ -98,7 +98,7 @@ private class TestConvention: XCTestCase {
         wait(for: [cannotMakeEndExpectation, cannotMakeCallbackExpectation], timeout: 0.1, enforceOrder: true)
     }
 
-    func testKeepInstanceBeforeTaskComplation() {
+    func testKeepInstanceBeforeTaskcompletion() {
         let requestComplateExpectation = expectation(description: "Request Complate")
         let managerDeallocExpectation = expectation(description: "Manager Dealloc")
 
@@ -111,7 +111,7 @@ private class TestConvention: XCTestCase {
             api.deallocExpectation = managerDeallocExpectation
             api.request(define: define) { c in
                 c.identifier = ""
-                c.complation { _, _, error in
+                c.completion { _, _, error in
                     XCTAssertNil(error)
                     requestComplateExpectation.fulfill()
                 }

@@ -58,13 +58,13 @@ private class TestSubclass: XCTestCase {
         sendQueue.async {
             api.request(name: "IsSuccess") { c in
                 c.userInfo = ["QueueName": sendQueue.label]
-                c.complation { _, _, _ in
+                c.completion { _, _, _ in
                     completeExpectation.fulfill()
                 }
             }
             api.request(name: "404") { c in
                 c.userInfo = ["QueueName": sendQueue.label]
-                c.complation { _, _, _ in
+                c.completion { _, _, _ in
                     completeExpectation2.fulfill()
                 }
             }
@@ -134,19 +134,19 @@ private class TestSubclass: XCTestCase {
         XCTAssertNil(activity.displayingMessage, "Custom failure should not display default error message")
     }
 
-    func testFailureRequestWithComplationCallback() {
+    func testFailureRequestWithCompletionCallback() {
         let activity = TestActivityManager()
         let api = Sub1API()
         api.networkActivityIndicatorManager = activity
         api.loadTestDefines()
         let finishExpectation = expectation(description: "Request finished")
         api.request(name: "IsFailure") { c in
-            c.complation({ _, _, _ in
+            c.completion({ _, _, _ in
                 finishExpectation.fulfill()
             })
         }
         wait(for: [finishExpectation], timeout: 5)
         XCTAssert(api.errorHandlerCalledCount == 1)
-        XCTAssertNil(activity.displayingMessage, "Custom complation should not display default error message")
+        XCTAssertNil(activity.displayingMessage, "Custom completion should not display default error message")
     }
 }

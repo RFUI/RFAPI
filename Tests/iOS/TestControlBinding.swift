@@ -42,7 +42,7 @@ private class TestControlBinding: XCTestCase {
             c.timeoutInterval = 1
             c.parameters = ["time": 10]
             c.bindControls = [button, barItem, activityIndicator, refreshControl, customControl]
-            c.complation { _, _, _ in
+            c.completion { _, _, _ in
                 XCTAssertTrue(button.isEnabled)
                 XCTAssertTrue(barItem.isEnabled)
                 XCTAssertFalse(activityIndicator.isAnimating)

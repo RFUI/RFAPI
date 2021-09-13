@@ -14,7 +14,7 @@ http://www.opensource.org/licenses/mit-license.php
 @class _RFURLSessionManager;
 @class RFNetworkActivityMessage;
 
-typedef void(^RFAPITaskComplation)(id __nullable responseObject, NSURLResponse *__nullable response, NSError *__nullable error);
+typedef void(^RFAPITaskCompletion)(id __nullable responseObject, NSURLResponse *__nullable response, NSError *__nullable error);
 
 /**
  Private object manage status.
@@ -73,9 +73,9 @@ typedef void(^RFAPITaskComplation)(id __nullable responseObject, NSURLResponse *
 /// Reset after use
 @property (nullable) RFAPIRequestFailureCallback failure;
 /// Reset after use
-@property (nullable) RFAPIRequestFinishedCallback complation;
+@property (nullable) RFAPIRequestFinishedCallback completion;
 /// Reset after use
-@property (nullable) RFAPIRequestCombinedCompletionCallback combinedComplation;
+@property (nullable) RFAPIRequestCombinedCompletionCallback combinedCompletion;
 
 
 // NO implementation

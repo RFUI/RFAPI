@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'RFAPI'
-  s.version          = '2.1.0'
+  s.version          = '2.1.1'
   s.summary          = 'RFAPI is a network request library specially designed for API requests. It is a URL session wrapper base on AFNetworking.'
 
   s.homepage         = 'https://github.com/RFUI/RFAPI'
@@ -44,9 +44,9 @@ Pod::Spec.new do |s|
   end
 
   s.pod_target_xcconfig = {
-    # These config should only exsists in develop branch.
+    # These config should only exists in develop branch.
     'WARNING_CFLAGS'=> [
-      '-Weverything',                   # Enable all possiable as we are developing a library.
+      '-Weverything',                   # Enable all possible as we are developing a library.
       '-Wno-gnu-statement-expression',  # Allow ?: expression.
       '-Wno-gnu-conditional-omitted-operand',
       '-Wno-auto-import',               # Still needs old #import for backward compatibility. 

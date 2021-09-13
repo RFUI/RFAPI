@@ -19,7 +19,7 @@ typedef NSString * RFAPIName NS_EXTENSIBLE_STRING_ENUM;
     NSCopying,
     NSSecureCoding
 >
-/// Used to get a deine from a RFAPIDefineManager
+/// Used to get a define from a RFAPIDefineManager
 @property (copy, nullable) RFAPIName name;
 
 /**
